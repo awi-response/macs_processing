@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE MIPPS-Config-File>
+<MIPPS-Config-File versionMajor="0" versionMinor="8">
+    <QVariantMap>
+        <QVariantList name="Filters">
+            <QVariantMap>
+                <QVariantMap name="Filter">
+                    <QUrl name="[OPENFILE]FactorImage" value=""/>
+                    <QUrl name="[OPENFILE]OffsetImage" value=""/>
+                    <bool name="enabled" value="false"/>
+                    <double name="factor" value="1"/>
+                    <QString name="name" value="DSNU"/>
+                    <int name="offset" value="0"/>
+                </QVariantMap>
+            </QVariantMap>
+            <QVariantMap>
+                <QVariantMap name="Filter">
+                    <NamedEnum name="Bayer selection" type="NamedEnum::BayerSelectionMode" value="BayerSelection_ALL"/>
+                    <double name="a" value="-0.886995852"/>
+                    <bool name="analyze image" value="false"/>
+                    <double name="b" value="-1.4460821152"/>
+                    <double name="c" value="1.3840711117"/>
+                    <double name="cx" value="0.0081677185"/>
+                    <double name="cy" value="0.0007069817"/>
+                    <bool name="enabled" value="true"/>
+                    <QString name="name" value="Devignetting"/>
+                </QVariantMap>
+            </QVariantMap>
+            <QVariantMap>
+                <QVariantMap name="Filter">
+                    <QString name=".outputDir" value=""/>
+                    <bool name="compression" value="false"/>
+                    <bool name="enabled" value="true"/>
+                    <NamedEnum name="format" type="NamedEnum::OSAKImageFormat" value="OSAKImageFormat_tiff16"/>
+                    <QString name="name" value="Write"/>
+                    <QString name="prefix" value="33552_NIR/"/>
+                    <int name="quality" value="100"/>
+                    <QString name="suffix" value=""/>
+                </QVariantMap>
+            </QVariantMap>
+            <QVariantMap>
+                <QVariantMap name="Filter">
+                    <QString name=".outputDir" value=""/>
+                    <bool name="compression" value="false"/>
+                    <bool name="enabled" value="false"/>
+                    <NamedEnum name="format" type="NamedEnum::OSAKImageFormat" value="OSAKImageFormat_pyr"/>
+                    <QString name="name" value="Write"/>
+                    <QString name="prefix" value="pyr/"/>
+                    <int name="quality" value="100"/>
+                    <QString name="suffix" value=""/>
+                </QVariantMap>
+            </QVariantMap>
+        </QVariantList>
+    </QVariantMap>
+</MIPPS-Config-File>
