@@ -12,6 +12,8 @@ import rasterio
 from processing_utils import *
 from utils_postprocessing import *
 
+# add flexible module import
+import argparse
 #from MACS_00_Settings import *
 #import MACS_00_Settings as settings
 import importlib
@@ -21,7 +23,17 @@ import warnings
 warnings.filterwarnings('ignore')
 warnings.filterwarnings("ignore", category=rasterio.errors.NotGeoreferencedWarning)
 
-settings = importlib.import_module('MACS_00_Settings')
+
+
+parser = argparse.ArgumentParser()
+parser.add_argument("-s", "--settings", default=Path('MACS_00_Settings.py'),
+                    type=Path,
+                    help="Path to Settings file")
+args = parser.parse_args()
+
+module_name = args.settings.stem
+settings = importlib.import_module(module_name)
+#settings = importlib.import_module('MACS_00_Settings')
 
 def main():
     
@@ -39,6 +51,8 @@ def main():
                             ])
     
     logging.info('Creation of logfile')
+    
+    logging.info(f'Settings File: {args.settings}')
     
     # Copy AOI 
     aoi_target = settings.PROJECT_DIR / '02_studysites' / 'AOI.shp'
