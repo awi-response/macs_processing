@@ -1,20 +1,16 @@
 import argparse
-import geopandas as gpd
 import shutil
 import os
-import glob
 import pandas as pd
 import sys
-import numpy as np
 import tqdm
-import zipfile
 from pathlib import Path
 from joblib import delayed, Parallel
-import matplotlib.pyplot as plt
 import logging
 from processing_utils import *
 from utils_postprocessing import *
 import importlib
+import rasterio
 #from MACS_00_Settings import *
 
 # ignore warnings
@@ -46,7 +42,7 @@ logging.basicConfig(#filename=settings.PROJECT_DIR / f'{settings.PROJECT_DIR.nam
 # #### PostProcess Optical
 # * create 4 band mosaic + calculate pyramids
 
-logging.info(f'Start postprocessing Orthoimage tiles!')
+logging.info('Start postprocessing Orthoimage tiles!')
 
 def main():
     
@@ -61,17 +57,17 @@ def main():
     # Parallel version crashes
     _ = Parallel(n_jobs=40)(delayed(full_postprocessing_optical)(df, tile) for tile in tqdm.tqdm_notebook(tiles[:]))
     
-    logging.info(f'Finished postprocessing Orthoimage tiles!')
+    logging.info('Finished postprocessing Orthoimage tiles!')
     
     # #### PostProcess DSM
-    logging.info(f'Start postprocessing DSM tiles!')
+    logging.info('Start postprocessing DSM tiles!')
     
     tiles_dir_dsm = Path(settings.PROJECT_DIR) / '04_pix4d' / settings.PIX4d_PROJECT_NAME / '3_dsm_ortho' / '1_dsm' / 'tiles'
     flist_dsm = list(tiles_dir_dsm.glob('*.tif'))
     
     _ = Parallel(n_jobs=40)(delayed(calculate_pyramids)(filename) for filename in tqdm.tqdm_notebook(flist_dsm[:]))
     
-    logging.info(f'Finished postprocessing DSM tiles!')
+    logging.info('Finished postprocessing DSM tiles!')
     
     # #### Rename
     
@@ -88,7 +84,7 @@ def main():
     
     # #### Move and rename to output 
     
-    logging.info(f'Start moving and renaming Ortho tiles!')
+    logging.info('Start moving and renaming Ortho tiles!')
     
     tiles_dir = Path(settings.PROJECT_DIR) / '04_pix4d' / settings.PIX4d_PROJECT_NAME / '3_dsm_ortho' / '2_mosaic' / 'tiles'
     flist = list(tiles_dir.glob('mosaic*.tif'))
@@ -97,12 +93,12 @@ def main():
     tiles = pd.unique(df['tile_id'])
     
     move_and_rename_processed_tiles(df, settings.SITE_NAME, settings.TARGET_DIR_ORTHO, 'Ortho', move=False)
-    logging.info(f'Finished moving and renaming Ortho tiles!')
+    logging.info('Finished moving and renaming Ortho tiles!')
     
     
     # #### DSM 
     
-    logging.info(f'Start moving and renaming DSM tiles!')
+    logging.info('Start moving and renaming DSM tiles!')
     
     tiles_dir_dsm = Path(settings.PROJECT_DIR) / '04_pix4d' / settings.PIX4d_PROJECT_NAME / '3_dsm_ortho' / '1_dsm' / 'tiles'
     flist_dsm = list(tiles_dir_dsm.glob('*.tif'))
@@ -112,7 +108,7 @@ def main():
     
     move_and_rename_processed_tiles(df_dsm, settings.SITE_NAME, settings.TARGET_DIR_DSM, 'DSM', move=False)
     
-    logging.info(f'Finished moving and renaming DSM tiles!')
+    logging.info('Finished moving and renaming DSM tiles!')
     
     
     # #### Create footprints file 
@@ -131,7 +127,7 @@ def main():
     gdf_list = Parallel(n_jobs=40)(delayed(load_and_prepare_footprints)(vector_file) for vector_file in tqdm.tqdm_notebook(vector_list[:]))
     
     merge_single_vector_files(gdf_list, FOOTPRINTS_FILE, settings.SITE_NAME, date)
-    logging.info(f'Finished processing!')
+    logging.info('Finished processing!')
     
     # Cleanup temporary dir
     shutil.rmtree(TMP_MASK_VECTORIZE_DIR)

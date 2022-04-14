@@ -33,7 +33,6 @@ args = parser.parse_args()
 
 module_name = args.settings.stem
 settings = importlib.import_module(module_name)
-#settings = importlib.import_module('MACS_00_Settings')
 
 def main():
     
