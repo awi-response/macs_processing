@@ -12,10 +12,7 @@ import rasterio
 from processing_utils import *
 from utils_postprocessing import *
 
-# add flexible module import
 import argparse
-#from MACS_00_Settings import *
-#import MACS_00_Settings as settings
 import importlib
 
 # ignore warnings
