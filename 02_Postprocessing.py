@@ -131,6 +131,20 @@ def main():
     
     # Cleanup temporary dir
     shutil.rmtree(TMP_MASK_VECTORIZE_DIR)
+    
+    # Copy processing report, nav file log file
+    processing_info_dir = PRODUCT_DIR / 'processing_info'
+    os.makedirs(processing_info_dir, exist_ok=True)
+    
+    report_file = Path(settings.PROJECT_DIR) / '04_pix4d' / settings.SITE_NAME / '1_initial' / 'report' / f'{settings.PIX4d_PROJECT_NAME}_report.pdf'
+    shutil.copy(report_file, processing_info_dir)
+    
+    nav_file_in = Path(settings.PROJECT_DIR) / '01_rawdata' / 'tif' / 'geo_pix4d_new.txt'
+    nav_file_out = processing_info_dir / f'{settings.SITE_NAME}_nav.txt'
+    shutil.copy(nav_file_in, nav_file_out)
+    
+    shutil.copy(logfile, processing_info_dir)
+    
 
 if __name__=="__main__":
     main()
