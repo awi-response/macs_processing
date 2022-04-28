@@ -217,7 +217,7 @@ def create_mask_vector(raster_file, temporary_target_dir, remove_raster_mask=Fal
     s_extract_mask = f'gdal_translate -ot Byte -b mask {raster_file} {maskfile}'
     os.system(s_extract_mask)
 
-    s_polygonize_mask = f'{polygonize} -f GeoJSON {maskfile} {mask_vector}'
+    s_polygonize_mask = f'python {polygonize} -f GeoJSON {maskfile} {mask_vector}'
     os.system(s_polygonize_mask)
     
     # needs to be fixed - is not deleting at the moment
