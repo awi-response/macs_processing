@@ -132,10 +132,15 @@ def main():
     merge_single_vector_files(gdf_list, FOOTPRINTS_FILE, settings.SITE_NAME, date)
     logging.info('Finished processing!')
     
+    # remove NoData
+    logging.info('Deleting empty tiles!')
+    delete_empty_product_tiles(FOOTPRINTS_FILE, settings.TARGET_DIR_ORTHO, settings.TARGET_DIR_DSM)
+    
     # Cleanup temporary dir
     shutil.rmtree(TMP_MASK_VECTORIZE_DIR)
     
     # Copy processing report, nav file log file
+    logging.info('Copying reports!')
     processing_info_dir = PRODUCT_DIR / 'processing_info'
     os.makedirs(processing_info_dir, exist_ok=True)
     
@@ -144,9 +149,12 @@ def main():
     
     nav_file_in = Path(settings.PROJECT_DIR) / '01_rawdata' / 'tif' / 'geo_pix4d_new.txt'
     nav_file_out = processing_info_dir / f'{settings.SITE_NAME}_nav.txt'
-    shutil.copy(nav_file_in, nav_file_out)
     
+    logging.info('Finished Postprocessing!')
+    shutil.copy(nav_file_in, nav_file_out)
     shutil.copy(logfile, processing_info_dir)
+    
+    
     
 
 if __name__=="__main__":

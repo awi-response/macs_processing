@@ -276,9 +276,50 @@ def merge_single_vector_files(gdf_list, outfile, site_name, date_local):
     gdf_merged = gdf_merged.drop(columns=['DN'])
 
     gdf_merged['Site_name'] = site_name
-    gdf_merged['Date'] = date_local#f'{date_local[:4]}-{date_local[4:6]}-{date_local[6:]}'
+    gdf_merged['Date'] = date_local
 
     gdf_merged.to_file(outfile)
+    
+    
+def delete_empty_product_tiles(footprints_file, Orthodir, DSMdir):
+    """
+
+    Parameters
+    ----------
+    footprints_file : Path, str
+        Path to product footprints file.
+    Orthodir : Path
+        Path to Ortho products dir.
+    DSMdir : Path
+        Path to DSM products dir.
+
+    Returns
+    -------
+    None.
+
+    """
+    
+    df = gpd.read_file(footprints_file)
+
+    flist_ortho = list(Orthodir.glob('*.tif'))
+    delete_ortho = [f for f in flist_ortho if f.name not in df['Orthomosaic'].values]
+    for f in delete_ortho[:]:
+        f_pyramid = Path(str(f) + '.ovr')
+
+        os.remove(f)
+        os.remove(f_pyramid)
+
+    flist_dsm = list(DSMdir.glob('*.tif'))
+    delete_dsm = [f for f in flist_dsm if f.name not in df['DSM'].values]
+
+    for f in delete_dsm[:]:
+        f_pyramid = Path(str(f) + '.ovr')
+
+        os.remove(f)
+        os.remove(f_pyramid)
+    
+    
+    
     
     
 def parse_site_name(site_name):
