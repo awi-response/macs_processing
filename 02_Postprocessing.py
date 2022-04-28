@@ -52,10 +52,13 @@ def main():
     df['tile_id'] = df.apply(lambda x: x.row + '_' + x.col, axis=1)
     tiles = pd.unique(df['tile_id'])
     
+    # Get sensor names
+    nir_sensor = get_nir_sensor_name(df)
+    
     #### Run 
     
     # Parallel version crashes
-    _ = Parallel(n_jobs=40)(delayed(full_postprocessing_optical)(df, tile) for tile in tqdm.tqdm_notebook(tiles[:]))
+    _ = Parallel(n_jobs=40)(delayed(full_postprocessing_optical)(df, tile, nir_name=nir_sensor) for tile in tqdm.tqdm_notebook(tiles[:]))
     
     logging.info('Finished postprocessing Orthoimage tiles!')
     
