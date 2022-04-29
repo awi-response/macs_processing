@@ -281,6 +281,10 @@ def merge_single_vector_files(gdf_list, outfile, site_name, date_local):
     gdf_merged['Site_name'] = site_name
     gdf_merged['Date'] = date_local
 
+    # dissolve single part to multipart
+    cols = gdf_merged.columns
+    gdf_merged = gdf_merged.dissolve(by='Orthomosaic').reset_index(drop=False)[cols]
+
     gdf_merged.to_file(outfile)
 
 
@@ -326,3 +330,11 @@ def parse_site_name(site_name):
     region, site, site_number, date_tmp, resolution = site_name.split('_')
     date = f'{date_tmp[:4]}-{date_tmp[4:6]}-{date_tmp[6:]}'
     return region, site, site_number, date, resolution
+
+
+def clip_dsm_to_bounds(footprints_file, dsm_dir):
+
+
+    s = f'gdalwarp -cutline {footprints_file} -crop_to_cutline {infile} {outfile}'
+    pass
+
