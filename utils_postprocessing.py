@@ -34,9 +34,10 @@ def flist_to_df(filelist):
     df = pd.DataFrame(columns=['filename', 'sensor', 'row', 'col'])
     df['filename'] = filelist
     df['sensor'] = sensors
-    df['row'] = rows 
-    df['col'] = cols 
+    df['row'] = rows
+    df['col'] = cols
     return df
+
 
 # create more specific vrt files for each run to avoid duplicates on parallel run
 def stack_output(outmosaic, rgbfile, nirfile, remove_temporary_files=True):
@@ -49,14 +50,14 @@ def stack_output(outmosaic, rgbfile, nirfile, remove_temporary_files=True):
 
     basename_rgb = rgbfile.name[:-4]
     basename_nir = nirfile.name[:-4]
-    
+
     b1 = f'{basename_rgb}_1.vrt'
     b2 = f'{basename_rgb}_2.vrt'
     b3 = f'{basename_rgb}_3.vrt'
     b_nir = f'{basename_nir}_1.vrt'
     mos = f'{basename_rgb}.vrt'
-    
-    for band in [1,2,3]:
+
+    for band in [1, 2, 3]:
         s = f'gdalbuildvrt -b {band} {basename_rgb}_{band}.vrt {rgbfile}'
         os.system(s)
 
@@ -72,7 +73,7 @@ def stack_output(outmosaic, rgbfile, nirfile, remove_temporary_files=True):
     if remove_temporary_files:
         for file in [b1, b2, b3, b_nir, mos]:
             os.remove(file)
-            
+
 
 def calculate_pyramids(rasterfile):
     """
@@ -109,6 +110,7 @@ def mask_and_name_bands(mosaic_file):
         src.set_band_description(4, 'MACS NIR Band')
         src.write(data_masked)
 
+
 def get_nir_sensor_name(df):
     """
     
@@ -118,8 +120,6 @@ def get_nir_sensor_name(df):
             return sensor_name
     else:
         raise NameError("sensor name for NIR band does not match")
-        
-    #return sensor_name
 
 
 def full_postprocessing_optical(df, tile_id, rgb_name='group1', nir_name='nir'):
@@ -145,7 +145,7 @@ def full_postprocessing_optical(df, tile_id, rgb_name='group1', nir_name='nir'):
     stack_output(outmosaic, rgbfile, nirfile, remove_temporary_files=True)
     calculate_pyramids(outmosaic)
     mask_and_name_bands(outmosaic)
-    
+
 
 def move_and_rename_processed_tiles(df, out_basename, target_dir, product_type, move=False):
     """
@@ -175,8 +175,8 @@ def move_and_rename_processed_tiles(df, out_basename, target_dir, product_type, 
         infile_ovr = Path(str(infile) + '.ovr')
         outfile = target_dir / f'{out_basename}_{product_type}_{tile_id}.tif'
         outfile_ovr = Path(str(outfile) + '.ovr')
-        #print(infile, outfile)
-        
+        # print(infile, outfile)
+
         if move:
             shutil.move(infile, outfile)
         else:
@@ -186,12 +186,13 @@ def move_and_rename_processed_tiles(df, out_basename, target_dir, product_type, 
                 shutil.move(infile_ovr, outfile_ovr)
             else:
                 shutil.copy(infile_ovr, outfile_ovr)
-        
+
         except Exception as e:
             print(e)
 
 
-def create_mask_vector(raster_file, temporary_target_dir, remove_raster_mask=False, polygonize = Path(os.environ['CONDA_PREFIX']) / 'Scripts' / 'gdal_polygonize.py'):
+def create_mask_vector(raster_file, temporary_target_dir, remove_raster_mask=False,
+                       polygonize=Path(os.environ['CONDA_PREFIX']) / 'Scripts' / 'gdal_polygonize.py'):
     """
     Function to create vectors of valid data for a raster file
     Parameters
@@ -219,12 +220,13 @@ def create_mask_vector(raster_file, temporary_target_dir, remove_raster_mask=Fal
 
     s_polygonize_mask = f'python {polygonize} -f GeoJSON {maskfile} {mask_vector}'
     os.system(s_polygonize_mask)
-    
+
     # needs to be fixed - is not deleting at the moment
     if remove_raster_mask:
         os.remove(maskfile)
-    
+
     return mask_vector
+
 
 def load_and_prepare_footprints(vector_file):
     """
@@ -246,6 +248,7 @@ def load_and_prepare_footprints(vector_file):
     gdf['Orthomosaic'] = file_name_raster
     gdf['DSM'] = file_name_raster.replace('_Ortho_', '_DSM_')
     return gdf
+
 
 def merge_single_vector_files(gdf_list, outfile, site_name, date_local):
     """
@@ -279,8 +282,8 @@ def merge_single_vector_files(gdf_list, outfile, site_name, date_local):
     gdf_merged['Date'] = date_local
 
     gdf_merged.to_file(outfile)
-    
-    
+
+
 def delete_empty_product_tiles(footprints_file, Orthodir, DSMdir):
     """
 
@@ -298,7 +301,7 @@ def delete_empty_product_tiles(footprints_file, Orthodir, DSMdir):
     None.
 
     """
-    
+
     df = gpd.read_file(footprints_file)
 
     flist_ortho = list(Orthodir.glob('*.tif'))
@@ -317,11 +320,8 @@ def delete_empty_product_tiles(footprints_file, Orthodir, DSMdir):
 
         os.remove(f)
         os.remove(f_pyramid)
-    
-    
-    
-    
-    
+
+
 def parse_site_name(site_name):
     region, site, site_number, date_tmp, resolution = site_name.split('_')
     date = f'{date_tmp[:4]}-{date_tmp[4:6]}-{date_tmp[6:]}'
