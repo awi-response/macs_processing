@@ -1,14 +1,6 @@
-import geopandas as gpd
-import shutil
-import os
 import sys
-import numpy as np
-import tqdm
 import zipfile
-from pathlib import Path
-from joblib import delayed, Parallel
 import logging
-import rasterio
 from processing_utils import *
 from utils_postprocessing import *
 
@@ -57,10 +49,8 @@ def main():
     logging.info('Creating footprints selection')
     
     for projects_file, parent_dir in zip(settings.PROJECTS_FILES, settings.PARENT_DIRS):
-        #dss = []
         print(parent_dir.parent)
-        ds = get_overlapping_ds(settings.AOI, projects_file, parent_dir)
-        #dss.append(ds)
+        ds = get_overlapping_ds(settings.AOI, projects_file)
         if len(ds) > 0:
             break
     stats = get_dataset_stats(ds, parent_dir, settings.AOI)
