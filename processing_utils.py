@@ -143,12 +143,12 @@ def get_shutter_factor(OUTDIR, sensors):
     
 # Functions for footprints creation 
 
-def get_overlapping_ds(aoi_path, projects_file, parent_dir):
+def get_overlapping_ds(aoi_path, projects_file, parent_dir, name_attribute='Dataset'):
     #Open Projects file and AOI
     aoi = gpd.read_file(aoi_path).to_crs(epsg=4326)
     if 'Dataset' in aoi.columns: aoi.drop(columns=['Dataset'], inplace=True)
     datasets = gpd.read_file(projects_file).to_crs(epsg=4326)
-    overlapping_ds = gpd.sjoin(datasets, aoi, lsuffix='', how='inner')
+    overlapping_ds = gpd.sjoin(datasets, aoi, lsuffix='', how='inner').drop_duplicates(subset=name_attribute)
     return overlapping_ds
 
 def retrieve_footprints(overlapping_ds, project_id, parent_data_dir, aoi_file, fp_file_regex='*full.shp', name_attribute='Dataset'):
@@ -156,6 +156,10 @@ def retrieve_footprints(overlapping_ds, project_id, parent_data_dir, aoi_file, f
         project_name = overlapping_ds.loc[project_id][name_attribute]
     except:
         project_name = overlapping_ds.loc[int(project_id)][name_attribute]
+
+    if isinstance(project_name, pd.Series):
+        project_name = project_name.iloc[0]
+
     footprints = list((parent_data_dir / project_name).glob(fp_file_regex))[0]
     fp = gpd.read_file(footprints).to_crs(epsg=4326)
     aoi = gpd.read_file(aoi_file).to_crs(epsg=4326)
