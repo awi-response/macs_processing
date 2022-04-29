@@ -332,9 +332,8 @@ def parse_site_name(site_name):
     return region, site, site_number, date, resolution
 
 
-def clip_dsm_to_bounds(footprints_file, dsm_dir):
-
-
-    s = f'gdalwarp -cutline {footprints_file} -crop_to_cutline {infile} {outfile}'
-    pass
-
+def clip_dsm_to_bounds(footprints_file, filename, dsmdir, outdir):
+    infile = dsmdir / filename
+    outfile = outdir / filename
+    s = f'gdalwarp -cutline {footprints_file} -cwhere "DSM={filename}" -co COMPRESS=DEFLATE {infile} {outfile}'
+    os.system(s)
