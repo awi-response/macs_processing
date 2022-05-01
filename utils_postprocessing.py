@@ -311,19 +311,18 @@ def delete_empty_product_tiles(footprints_file, Orthodir, DSMdir):
     flist_ortho = list(Orthodir.glob('*.tif'))
     delete_ortho = [f for f in flist_ortho if f.name not in df['Orthomosaic'].values]
     for f in delete_ortho[:]:
-        f_pyramid = Path(str(f) + '.ovr')
-
-        os.remove(f)
-        os.remove(f_pyramid)
+        try:
+            os.remove(f)
+        except:
+            print(f"Skipped deleting {f.name}")
 
     flist_dsm = list(DSMdir.glob('*.tif'))
     delete_dsm = [f for f in flist_dsm if f.name not in df['DSM'].values]
-
     for f in delete_dsm[:]:
-        f_pyramid = Path(str(f) + '.ovr')
-
-        os.remove(f)
-        os.remove(f_pyramid)
+        try:
+            os.remove(f)
+        except:
+            print(f"Skipped deleting {f.name}")
 
 
 def parse_site_name(site_name):
