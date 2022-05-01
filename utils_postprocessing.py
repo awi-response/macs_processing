@@ -143,11 +143,10 @@ def full_postprocessing_optical(df, tile_id, rgb_name='group1', nir_name='nir'):
     nirfile = subset.query(f'sensor=="{nir_name}"').filename.values[0]
     outmosaic = rgbfile.parent / f'mosaic_{tile_id}.tif'
     stack_output(outmosaic, rgbfile, nirfile, remove_temporary_files=True)
-    calculate_pyramids(outmosaic)
     mask_and_name_bands(outmosaic)
 
 
-def move_and_rename_processed_tiles(df, out_basename, target_dir, product_type, move=False):
+def move_and_rename_processed_tiles(df, out_basename, target_dir, product_type, move=True):
     """
     
 
@@ -172,24 +171,24 @@ def move_and_rename_processed_tiles(df, out_basename, target_dir, product_type, 
     for index, row in df.iloc[:].iterrows():
         tile_id = row.tile_id
         infile = row.filename
-        infile_ovr = Path(str(infile) + '.ovr')
         outfile = target_dir / f'{out_basename}_{product_type}_{tile_id}.tif'
-        outfile_ovr = Path(str(outfile) + '.ovr')
-        # print(infile, outfile)
 
         if move:
             shutil.move(infile, outfile)
         else:
             shutil.copy(infile, outfile)
+
+        """
         try:
+
             if move:
                 shutil.move(infile_ovr, outfile_ovr)
             else:
                 shutil.copy(infile_ovr, outfile_ovr)
-
+        
         except Exception as e:
             print(e)
-
+        """
 
 def create_mask_vector(raster_file, temporary_target_dir, remove_raster_mask=False,
                        polygonize=Path(os.environ['CONDA_PREFIX']) / 'Scripts' / 'gdal_polygonize.py'):

@@ -78,9 +78,8 @@ def main():
     flist = list(tiles_dir.glob('mosaic*.tif'))
     df = flist_to_df(flist)
     df['tile_id'] = df.apply(lambda x: x.row + '_' + x.col, axis=1)
-    # tiles = pd.unique(df['tile_id'])
 
-    move_and_rename_processed_tiles(df, settings.SITE_NAME, settings.TARGET_DIR_ORTHO, 'Ortho', move=False)
+    move_and_rename_processed_tiles(df, settings.SITE_NAME, settings.TARGET_DIR_ORTHO, 'Ortho', move=True)
     logging.info('Finished moving and renaming Ortho tiles!')
 
     # #### DSM 
