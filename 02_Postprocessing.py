@@ -57,18 +57,6 @@ def main():
 
     logging.info('Finished postprocessing Orthoimage tiles!')
 
-    # #### PostProcess DSM
-    """
-    logging.info('Start postprocessing DSM tiles!')
-
-    tiles_dir_dsm = Path(
-        settings.PROJECT_DIR) / '04_pix4d' / settings.PIX4d_PROJECT_NAME / '3_dsm_ortho' / '1_dsm' / 'tiles'
-    flist_dsm = list(tiles_dir_dsm.glob('*.tif'))
-
-    #_ = Parallel(n_jobs=40)(delayed(calculate_pyramids)(filename) for filename in tqdm.tqdm_notebook(flist_dsm[:]))
-
-    logging.info('Finished postprocessing DSM tiles!')
-    """
     # #### Rename
 
     PRODUCT_DIR = Path(settings.PROJECT_DIR) / '06_DataProducts'
@@ -90,9 +78,8 @@ def main():
     flist = list(tiles_dir.glob('mosaic*.tif'))
     df = flist_to_df(flist)
     df['tile_id'] = df.apply(lambda x: x.row + '_' + x.col, axis=1)
-    # tiles = pd.unique(df['tile_id'])
 
-    move_and_rename_processed_tiles(df, settings.SITE_NAME, settings.TARGET_DIR_ORTHO, 'Ortho', move=False)
+    move_and_rename_processed_tiles(df, settings.SITE_NAME, settings.TARGET_DIR_ORTHO, 'Ortho', move=True)
     logging.info('Finished moving and renaming Ortho tiles!')
 
     # #### DSM 
@@ -149,11 +136,17 @@ def main():
         shutil.rmtree(settings.TARGET_DIR_DSM)
         os.rename(DSM_DIR_TMP, settings.TARGET_DIR_DSM)
 
+    logging.info('Finished postprocessing DSM tiles!')
+
+    logging.info('Calculating Ortho Pyramids!')
+    flist_ortho = list(settings.TARGET_DIR_ORTHO.glob('*.tif'))
+    _ = Parallel(n_jobs=40)(delayed(calculate_pyramids)(filename) for filename in tqdm.tqdm_notebook(flist_ortho[:]))
+
     logging.info('Calculating DSM Pyramids!')
     flist_dsm = list(settings.TARGET_DIR_DSM.glob('*.tif'))
     _ = Parallel(n_jobs=40)(delayed(calculate_pyramids)(filename) for filename in tqdm.tqdm_notebook(flist_dsm[:]))
 
-    logging.info('Finished postprocessing DSM tiles!')
+
 
     # Copy processing report, nav file log file
     logging.info('Copying reports!')
