@@ -99,6 +99,7 @@ def main():
     # #### Load filtered footprints file
     for dataset_id in dataset_ids:
         dataset_name = get_dataset_name(ds, dataset_id)
+        logging.info(f'Start processing dataset: {dataset_name}')
         path_infiles = Path(parent_dir) / dataset_name
         outdir_temporary = Path(settings.outdir) / dataset_name
         os.makedirs(outdir_temporary, exist_ok=True)
@@ -175,13 +176,11 @@ def main():
 
         if settings.SCALING:
             logging.info(f'Start reading Image statistics')
-            # TODO: make flexible nth image choice
-            # TODO: Create updated OUTDIR
             outdir_temp = {}
             for key in settings.OUTDIR.keys():
                 outdir_temp[key] = settings.OUTDIR[key].parent / dataset_name / settings.OUTDIR[key].name
 
-            df_stats = get_image_stats_multi(outdir_temp, settings.sensors, nth_images=1, quiet=False, n_jobs=40)
+            df_stats = get_image_stats_multi(outdir_temp, settings.sensors, nth_images=1, max_images=3000, quiet=False, n_jobs=40)
             #absolute
             if settings.SCALE_LOW:
                 scale_lower = int(df_stats['min'].mean().round())
