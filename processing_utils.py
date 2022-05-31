@@ -113,10 +113,17 @@ def read_stats_extended(image):
         return a.mean(), a.min(), a.max(), a.std(), np.percentile(a, 1), np.percentile(a, 99)
 
 
-def get_image_stats_multi(OUTDIR, sensors, n_jobs=40, nth_images=1, quiet=False):
+def get_image_stats_multi(OUTDIR, sensors, n_jobs=40, nth_images=1, max_images=3000, quiet=False):
     dfs = []
     for sensor in sensors:
-        images = list(OUTDIR[sensor].glob('*.tif'))[::nth_images]
+        imlist = list(OUTDIR[sensor].glob('*.tif'))
+        if len(imlist) > max_images:
+            images = list(np.random.choice(imlist, size=max_images))#####
+        else:
+            images = imlist[::nth_images]
+        # skip empt
+        if len(images) == 0:
+            continue
         if quiet:
             stats = Parallel(n_jobs=n_jobs)(delayed(read_stats_extended)(image) for image in images)
         else:
@@ -136,6 +143,8 @@ def get_shutter_factor(OUTDIR, sensors):
     shutter = {}
     for sensor in sensors:
         images = list(OUTDIR[sensor].glob('*.tif'))
+        if len(images) == 0:
+            continue
         f = images[0]
         shutter[sensor] = int(f.stem.split('_')[-1])
     if ('right' in sensors) and ('nir' in sensors):
