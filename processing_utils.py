@@ -179,7 +179,7 @@ def retrieve_footprints(overlapping_ds, project_id, parent_data_dir, aoi_file, f
 
     footprints = list((parent_data_dir / project_name).glob(fp_file_regex))[0]
     fp = gpd.read_file(footprints).to_crs(epsg=4326)
-    aoi = gpd.read_file(aoi_file).to_crs(epsg=4326)
+    aoi = gpd.read_file(aoi_file).to_crs(epsg=4326)[['geometry']]
 
     fp_selection = gpd.sjoin(fp, aoi)
     return fp_selection
