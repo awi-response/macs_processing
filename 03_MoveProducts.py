@@ -18,7 +18,7 @@ parser.add_argument("-s", "--settings", default=Path('MACS_00_Settings.py'),
                     help="Path to Settings file")
 parser.add_argument("-d", "--destination", default=Path(r'S:\p_macsprocessing\data_products'),
                     type=Path,
-                    help="Path to Settings file")
+                    help="Path to Product Storage Space/Directory")
 args = parser.parse_args()
 
 module_name = args.settings.stem
