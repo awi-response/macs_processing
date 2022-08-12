@@ -96,6 +96,8 @@ def main():
 
     if args.footprints:
         return 0
+
+
     # #### Load filtered footprints file
     for dataset_id in dataset_ids:
         dataset_name = get_dataset_name(ds, dataset_id)
@@ -273,8 +275,18 @@ def main():
         except:
             flist = os.listdir(s)
             target_dir = settings.DATA_DIR / s.name
+            ####
+
+            ####
+            duplicate_files = []
             for f in flist:
-                shutil.move(str(s / f), target_dir)
+                src_file = s / f
+                if not src_file.exists():
+                    shutil.move(str(src_file), target_dir)
+                else:
+                    duplicate_files.append(src_file)
+            if len(duplicate_files) > 0:
+                logging.info(f'Warning! {len(duplicate_files)} duplicate files!')
 
     for dataset_id in dataset_ids:
         dataset_name = get_dataset_name(ds, dataset_id)
