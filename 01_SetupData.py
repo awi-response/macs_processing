@@ -28,6 +28,10 @@ parser.add_argument("-l", "--listds", action='store_true',
 parser.add_argument("-f", "--footprints", action='store_true',
                     help="write only footprint and AOI file into processing directory. Overrides -l flag.")
 
+parser.add_argument("-dsid", "--dataset_ids", type=str, default=None,
+                    help="Preselect dataset ids, comma separated. Example: 12,34 . Overrides manual dataset id selection.")
+
+
 args = parser.parse_args()
 if args.footprints:
     args.listds = False # Override -l flag
@@ -76,7 +80,10 @@ def main():
     if args.listds:
         return 0
     # #### Select Dataset ID
-    dataset_id = input('Please select IDs (comma separated): ')
+    if not args.dataset_ids:
+        dataset_id = input('Please select IDs (comma separated): ')
+    else:
+        dataset_id = args.dataset_ids
     dataset_ids = [d.strip() for d in dataset_id.split(',')]
 
     # make loop
@@ -96,6 +103,8 @@ def main():
 
     if args.footprints:
         return 0
+
+
     # #### Load filtered footprints file
     for dataset_id in dataset_ids:
         dataset_name = get_dataset_name(ds, dataset_id)
@@ -273,8 +282,18 @@ def main():
         except:
             flist = os.listdir(s)
             target_dir = settings.DATA_DIR / s.name
+            ####
+
+            ####
+            duplicate_files = []
             for f in flist:
-                shutil.move(str(s / f), target_dir)
+                src_file = s / f
+                if not src_file.exists():
+                    shutil.move(str(src_file), target_dir)
+                else:
+                    duplicate_files.append(src_file)
+            if len(duplicate_files) > 0:
+                logging.info(f'Warning! {len(duplicate_files)} duplicate files!')
 
     for dataset_id in dataset_ids:
         dataset_name = get_dataset_name(ds, dataset_id)
