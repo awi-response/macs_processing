@@ -28,6 +28,10 @@ parser.add_argument("-l", "--listds", action='store_true',
 parser.add_argument("-f", "--footprints", action='store_true',
                     help="write only footprint and AOI file into processing directory. Overrides -l flag.")
 
+parser.add_argument("-dsid", "--dataset_ids", type=str, default=None,
+                    help="Preselect dataset ids, comma separated. Example: 12,34 . Overrides manual dataset id selection.")
+
+
 args = parser.parse_args()
 if args.footprints:
     args.listds = False # Override -l flag
@@ -76,7 +80,10 @@ def main():
     if args.listds:
         return 0
     # #### Select Dataset ID
-    dataset_id = input('Please select IDs (comma separated): ')
+    if not args.dataset_ids:
+        dataset_id = input('Please select IDs (comma separated): ')
+    else:
+        dataset_id = args.dataset_ids
     dataset_ids = [d.strip() for d in dataset_id.split(',')]
 
     # make loop
