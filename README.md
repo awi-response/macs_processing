@@ -5,7 +5,7 @@ all elements (scripts, workflows, descriptions, ...) needed for processing macs 
 01_SetupData.py
 * script to preprocess data to get ready for processing in pix4d
 
-`python 01_SetupData.py -s <SETTINGS_FILE> [-l] [-f]`
+`python 01_SetupData.py -s <SETTINGS_FILE> [-l] [-f] [dsid]`
 
 
 02_Postprocessing.py
