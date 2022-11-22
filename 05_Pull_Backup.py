@@ -26,7 +26,6 @@ args = parser.parse_args()
 print(args)
 
 
-
 tape_path = args.archive_dir
 processing_path = args.target_dir
 
@@ -72,7 +71,7 @@ def main():
     # process
     if not args.list_files:
         print('Opening file:', p_file)
-        """
+        #"""
         with tarfile.open(p_file) as f:
             flist = f.getnames()
             print(f'Number of files in archive: {len(flist)}')
@@ -82,9 +81,9 @@ def main():
             print(f'Number of files to extract: {len(unzip_subset)}')
 
             print('Start extraction to:', processing_path)
-            for ff in tqdm.tqdm_notebook(unzip_subset[:]):
+            for ff in tqdm.tqdm(unzip_subset[:100]):
                 f.extract(ff, path=processing_path)
-        """
+        #"""
 
         print('Finished without extracting files')
 
