@@ -23,5 +23,12 @@ Setup new envirnment using the provided environment.yml file
 * script to move final product files to specified directory (after postprocessing)
 
 `python 03_MoveProducts.py -s <SETTINGS_FILE> -d <destination>`
+
+**05_Pull_Backup.py**
+* script to pull necessary files for reprocessing from archive
+
+`python 03_MoveProducts.py -a <ARCHIVE_DIR> -t <TARGET_DIR>`
+
+
 ## Workflow
 ![macs_workflow_v1](https://user-images.githubusercontent.com/40014163/148205796-97045090-e266-48f8-b357-7eaaa8d41b9f.png)
