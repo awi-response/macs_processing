@@ -81,7 +81,7 @@ def main():
             print(f'Number of files to extract: {len(unzip_subset)}')
 
             print('Start extraction to:', processing_path)
-            for ff in tqdm.tqdm(unzip_subset[:100]):
+            for ff in tqdm.tqdm(unzip_subset[:]):
                 f.extract(ff, path=processing_path)
         #"""
 
