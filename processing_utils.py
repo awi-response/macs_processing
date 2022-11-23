@@ -186,6 +186,9 @@ def retrieve_footprints(overlapping_ds, project_id, parent_data_dir, aoi_file, f
 
 
 def get_dataset_name(ds, dataset_id, name_attribute='Dataset'):
+    """
+
+    """
     try:
         dataset_name = ds.loc[int(dataset_id)][name_attribute]
     except:

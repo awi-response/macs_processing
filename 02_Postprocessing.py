@@ -58,7 +58,6 @@ def main():
     logging.info('Finished postprocessing Orthoimage tiles!')
 
     # #### Rename
-
     PRODUCT_DIR = Path(settings.PROJECT_DIR) / '06_DataProducts'
     settings.TARGET_DIR_ORTHO = PRODUCT_DIR / 'Ortho'
     settings.TARGET_DIR_DSM = PRODUCT_DIR / 'DSM'
@@ -66,8 +65,6 @@ def main():
     region, site, site_number, date, resolution = parse_site_name(settings.SITE_NAME)
     os.makedirs(settings.TARGET_DIR_ORTHO, exist_ok=True)
     os.makedirs(settings.TARGET_DIR_DSM, exist_ok=True)
-
-    # #### Create output dirs 
 
     # #### Move and rename to output 
 
@@ -146,7 +143,14 @@ def main():
     flist_dsm = list(settings.TARGET_DIR_DSM.glob('*.tif'))
     _ = Parallel(n_jobs=40)(delayed(calculate_pyramids)(filename) for filename in tqdm.tqdm_notebook(flist_dsm[:]))
 
+    # Create VRT files
+    working_dir = Path(os.getcwd())
+    vrt_path = working_dir / 'create_vrt.py'
+    create_vrt(products_dir=PRODUCT_DIR, vrt_script_location=vrt_path)
+    os.chdir(working_dir)
 
+    # create previews
+    create_previews(products_dir=PRODUCT_DIR)
 
     # Copy processing report, nav file log file
     logging.info('Copying reports!')
