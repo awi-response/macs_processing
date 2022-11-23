@@ -381,10 +381,10 @@ def show_dsm_image(dsm, savepath=None, noData=-10000, show_colorbar=False, **kwa
         fig.savefig(savepath)
 
 
-def load_ortho(image_path):
+def load_ortho(image_path, pyramid_level=-2):
     with rasterio.open(image_path) as src:
         oviews = src.overviews(1)  # list of overviews from biggest to smallest
-        oview = oviews[-2]  # Use second-highest lowest overview
+        oview = oviews[pyramid_level]  # Use second-highest lowest overview
         print('Decimation factor= {}'.format(oview))
         red = src.read(3, out_shape=(1, int(src.height // oview), int(src.width // oview)))
         green = src.read(2, out_shape=(1, int(src.height // oview), int(src.width // oview)))
@@ -393,10 +393,10 @@ def load_ortho(image_path):
     return blue, green, red, nir
 
 
-def load_dsm(image_path):
+def load_dsm(image_path, pyramid_level=-2):
     with rasterio.open(image_path) as src:
         oviews = src.overviews(1)  # list of overviews from biggest to smallest
-        oview = oviews[-2]  # Use second-highest lowest overview
+        oview = oviews[pyramid_level]  # Use second-highest lowest overview
         print('Decimation factor= {}'.format(oview))
         dsm = src.read(1, out_shape=(1, int(src.height // oview), int(src.width // oview)))
     return dsm
@@ -421,7 +421,7 @@ def create_vrt(products_dir, vrt_script_location):
     os.remove(vrt_script)
 
 
-def create_previews(products_dir, overwrite=False):
+def create_previews(products_dir, overwrite=False, pyramid_level=-2):
     """
     full process wrapper
     """
@@ -443,8 +443,8 @@ def create_previews(products_dir, overwrite=False):
     print('Start processing previews')
 
     # Load Ortho + dsm
-    blue, green, red, nir = load_ortho(products_dir / 'Ortho.vrt')
-    dsm = load_dsm(products_dir / 'DSM.vrt')
+    blue, green, red, nir = load_ortho(products_dir / 'Ortho.vrt', pyramid_level=pyramid_level)
+    dsm = load_dsm(products_dir / 'DSM.vrt', pyramid_level=pyramid_level)
 
     # prepare data
     # RGB

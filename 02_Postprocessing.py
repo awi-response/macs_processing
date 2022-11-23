@@ -51,7 +51,6 @@ def main():
 
     #### Run 
 
-    # Parallel version crashes
     _ = Parallel(n_jobs=40)(
         delayed(full_postprocessing_optical)(df, tile, nir_name=nir_sensor) for tile in tqdm.tqdm_notebook(tiles[:]))
 
@@ -142,7 +141,7 @@ def main():
     logging.info('Calculating DSM Pyramids!')
     flist_dsm = list(settings.TARGET_DIR_DSM.glob('*.tif'))
     _ = Parallel(n_jobs=40)(delayed(calculate_pyramids)(filename) for filename in tqdm.tqdm_notebook(flist_dsm[:]))
-
+    
     # Create VRT files
     working_dir = Path(os.getcwd())
     vrt_path = working_dir / 'create_vrt.py'
@@ -150,7 +149,7 @@ def main():
     os.chdir(working_dir)
 
     # create previews
-    create_previews(products_dir=PRODUCT_DIR)
+    create_previews(products_dir=PRODUCT_DIR, pyramid_level=1)
 
     # Copy processing report, nav file log file
     logging.info('Copying reports!')
