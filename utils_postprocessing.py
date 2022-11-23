@@ -2,9 +2,9 @@ import geopandas as gpd
 import numpy as np
 import pandas as pd
 import rasterio
-import rasterio as rio
 import matplotlib.pyplot as plt
-import os, shutil
+import os
+import shutil
 from pathlib import Path
 from sklearn import preprocessing
 from mpl_toolkits.axes_grid1 import make_axes_locatable
@@ -191,6 +191,7 @@ def move_and_rename_processed_tiles(df, out_basename, target_dir, product_type, 
             print(e)
         """
 
+
 def create_mask_vector(raster_file, temporary_target_dir, remove_raster_mask=False,
                        polygonize=Path(os.environ['CONDA_PREFIX']) / 'Scripts' / 'gdal_polygonize.py'):
     """
@@ -337,13 +338,15 @@ def clip_dsm_to_bounds(footprints_file, filename, dsmdir, outdir):
     s = f'gdalwarp -cutline {footprints_file} -cwhere "DSM={filename}" -co COMPRESS=DEFLATE {infile} {outfile}'
     os.system(s)
 
+
 def prepare_band(inband, noData=0, p_low=0, p_high=98):
-    mask = inband==noData
-    p2 = np.percentile(inband[~mask],p_low)
-    p98 = np.percentile(inband[~mask],p_high)
+    mask = inband == noData
+    p2 = np.percentile(inband[~mask], p_low)
+    p98 = np.percentile(inband[~mask], p_high)
     normed = np.clip(preprocessing.MinMaxScaler().fit_transform(np.clip(inband, p2, p98)), 0, 1)
     normed[mask] = 0
     return np.ma.masked_where(mask, normed)
+
 
 def show_3band_image(image, savepath=None, **kwargs):
     fig, ax = plt.subplots(dpi=300, **kwargs)
@@ -357,11 +360,11 @@ def show_3band_image(image, savepath=None, **kwargs):
 
 
 def show_dsm_image(dsm, savepath=None, noData=-10000, show_colorbar=False, **kwargs):
-    mask = dsm==noData
-    p_low = np.percentile(dsm[~mask],1)
+    mask = dsm == noData
+    p_low = np.percentile(dsm[~mask], 1)
     if p_low < -5:
         p_low = -5
-    p_high = np.percentile(dsm[~mask],99)
+    p_high = np.percentile(dsm[~mask], 99)
 
     fig, ax = plt.subplots(dpi=300, **kwargs)
     im = ax.imshow(np.ma.masked_where(mask, dsm), vmin=p_low, vmax=p_high, cmap=plt.cm.terrain)
@@ -372,15 +375,15 @@ def show_dsm_image(dsm, savepath=None, noData=-10000, show_colorbar=False, **kwa
     if show_colorbar:
         divider = make_axes_locatable(ax)
         cax = divider.append_axes("right", size="5%", pad=0.05)
-        #plt.colorbar()
+        # plt.colorbar()
         fig.colorbar(im, cax=cax)
     if savepath:
         fig.savefig(savepath)
 
 
 def load_ortho(image_path):
-    with rio.open(image_path) as src:
-        oviews = src.overviews(1) # list of overviews from biggest to smallest
+    with rasterio.open(image_path) as src:
+        oviews = src.overviews(1)  # list of overviews from biggest to smallest
         oview = oviews[-2]  # Use second-highest lowest overview
         print('Decimation factor= {}'.format(oview))
         red = src.read(3, out_shape=(1, int(src.height // oview), int(src.width // oview)))
@@ -389,21 +392,17 @@ def load_ortho(image_path):
         nir = src.read(4, out_shape=(1, int(src.height // oview), int(src.width // oview)))
     return blue, green, red, nir
 
+
 def load_dsm(image_path):
-    with rio.open(image_path) as src:
-        oviews = src.overviews(1) # list of overviews from biggest to smallest
+    with rasterio.open(image_path) as src:
+        oviews = src.overviews(1)  # list of overviews from biggest to smallest
         oview = oviews[-2]  # Use second-highest lowest overview
         print('Decimation factor= {}'.format(oview))
         dsm = src.read(1, out_shape=(1, int(src.height // oview), int(src.width // oview)))
     return dsm
 
-def prepare_image_3band(band_list):
-    rgb_list = [prepare_band(band) for band in band_list]
-    rgb_list.append(~rgb_list[0].mask)
-    rgb_image = np.dstack(rgb_list)
-    return rgb_image
 
-def prepare_image_1band(array):
+def prepare_image_3band(band_list):
     rgb_list = [prepare_band(band) for band in band_list]
     rgb_list.append(~rgb_list[0].mask)
     rgb_image = np.dstack(rgb_list)
@@ -420,6 +419,7 @@ def create_vrt(products_dir, vrt_script_location):
     os.chdir(products_dir)
     os.system(f'python {vrt_script}')
     os.remove(vrt_script)
+
 
 def create_previews(products_dir, overwrite=False):
     """
