@@ -50,8 +50,8 @@ def pc_IDW_toDSM(infile, resolution, ret='all'):
     return outfile
 
 
-def fill_holes(infile, resolution):
-    filter = int(5/resolution)
+def fill_holes(infile, filter=11):
+    #filter = int(5/resolution)
     outfile = infile[:-4]+f'_filled.tif'
     wbt.fill_missing_data(
         i=infile,
@@ -63,9 +63,7 @@ def fill_holes(infile, resolution):
     return outfile
 
 
-def smooth_DSM(infile, filter=11, iterations=10, normdiff=50):
-    #filter = int(10 / resolution)
-    filter = 11#int(10 / resolution)
+def smooth_DSM(infile, filter=11, iterations=10, normdiff=50, max_diff=0.5):
     outfile = infile[:-4] + f'_smoothed.tif'
     wbt.feature_preserving_smoothing(
         dem=infile,

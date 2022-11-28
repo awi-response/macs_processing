@@ -124,9 +124,9 @@ def main():
         # Interpolate Point Cloud to DSM
         merged_pc_IDW = pc_IDW_toDSM(infile=merged_pc, resolution=resolution)
         # Fill small holes
-        merged_pc_IDW_filled = fill_holes(infile=merged_pc_IDW, resolution=resolution)
+        merged_pc_IDW_filled = fill_holes(infile=merged_pc_IDW, filter=int(5/resolution))
         # Smooth DSM
-        merged_pc_IDW_filled_smoothed = smooth_DSM(merged_pc_IDW_filled, resolution=resolution)
+        merged_pc_IDW_filled_smoothed = smooth_DSM(merged_pc_IDW_filled, filter=11)
         # Add Projection
         wbt_final_dsm_file = assign_crs_to_raster(merged_pc_IDW_filled_smoothed, crs=crs)
 
