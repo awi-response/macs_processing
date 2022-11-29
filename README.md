@@ -16,8 +16,13 @@ Setup new envirnment using the provided environment.yml file
 **02_Postprocessing.py**
 * script to postprocess data and make ready for publication after pix4d run
 
+Postprocessing example with pix4d calculated DSM tiles
+
 `python 02_Postprocessing.py -s <SETTINGS_FILE>`
 
+Postprocessing example with custom whiteboxtools based DSM caculation, only on the nir point cloud
+
+`python 02_Postprocessing.py -s <SETTINGS_FILE> -dsm wbt -pc nir`
 
 **03_MoveProducts.py**
 * script to move final product files to specified directory (after postprocessing)
