@@ -58,10 +58,10 @@ def main():
     nir_sensor = get_nir_sensor_name(df)
 
     #### Run 
-
+    #"""
     _ = Parallel(n_jobs=40)(
         delayed(full_postprocessing_optical)(df, tile, nir_name=nir_sensor) for tile in tqdm.tqdm_notebook(tiles[:]))
-
+    #"""
     logging.info('Finished postprocessing Orthoimage tiles!')
 
     # #### Rename
@@ -100,19 +100,21 @@ def main():
         tiles_dir_dsm = Path(
             settings.PROJECT_DIR) / '04_pix4d' / settings.PIX4d_PROJECT_NAME / '3_dsm_ortho' / '1_dsm' / 'tiles_wbt'
         os.makedirs(tiles_dir_dsm, exist_ok=True)
-        # TODO: add wbt processing here
-        # TODO: get crs + resolution here
+
         point_cloud_dir = Path(
             settings.PROJECT_DIR) / '04_pix4d' / settings.PIX4d_PROJECT_NAME / '2_densification' / 'point_cloud'
 
         #temp_dir_dsm = Path(settings.PROJECT_DIR)
         wbt.set_working_dir(point_cloud_dir)
+
+        # TODO: check if it can be removed
+        # ---------------------------
         wbt.set_compress_rasters(True)
         def my_callback(value):
             if not "%" in value:
                 print(value)
         wbt.set_default_callback(my_callback)
-
+        # ---------------------------
         # get region and file properties
         tile_index_list = list(tiles_dir.glob('*transparent_mosaic_group1*.tif'))
         crs = crs_from_file(tile_index_list[0])
@@ -137,7 +139,6 @@ def main():
 
         #wbt_final_dsm_file = 'merged_nir_IDW_filled_smoothed_projected.tif'
         # tiling
-
         dsm_mosaic = point_cloud_dir / wbt_final_dsm_file
         _ = Parallel(n_jobs=40)(
             delayed(clip_to_tile)(dsm_mosaic, f, target_dir=tiles_dir_dsm) for f in tqdm.tqdm(tile_index_list[:]))

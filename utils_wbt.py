@@ -96,10 +96,16 @@ def crs_from_file(infile):
 
 
 def clip_to_tile(input_mosaic, example_tile, target_dir, rename=['transparent_mosaic_group1', 'dsm']):
-    stem = example_tile.stem
-    stem_out = stem.replace(rename[0], rename[1])
-    tindex = target_dir / f'{stem}.geojson'
-    os.system(f'gdaltindex {tindex} {example_tile}')
-    clipped = target_dir / f'{stem_out}.tif'
-    os.system(f'gdalwarp -cutline {tindex} -crop_to_cutline -co COMPRESS=DEFLATE {input_mosaic} {clipped}')
-    os.remove(tindex)
+    with rasterio.open(example_tile) as src:
+        # get image properties
+        bounds = src.bounds
+        resolution = src.res
+        # file names
+        rename=['transparent_mosaic_group1', 'dsm']
+        stem = example_tile.stem
+        stem_out = stem.replace(rename[0], rename[1])
+        clipped = target_dir / f'{stem_out}.tif'
+        # run gdal_translate
+        # run with pixel count
+        gdal_string = f'gdalwarp -te {bounds.left} {bounds.top} {bounds.right} {bounds.bottom} -ts {src.width} {src.height} -co COMPRESS=DEFLATE {input_mosaic} {clipped}'
+        os.system(gdal_string)
