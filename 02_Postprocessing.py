@@ -133,7 +133,7 @@ def main():
         wbt_final_dsm_file = assign_crs_to_raster(merged_pc_IDW_filled_smoothed, crs=crs)
 
         # Cleanup
-        for file_delete in [merged_pc, merged_pc_IDW, merged_pc_IDW_filled]:
+        for file_delete in [merged_pc, merged_pc_IDW, merged_pc_IDW_filled, merged_pc_IDW_filled_smoothed]:
             print('Delete temporary files!')
             os.remove(point_cloud_dir / file_delete)
 
