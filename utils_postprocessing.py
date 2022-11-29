@@ -359,23 +359,30 @@ def show_3band_image(image, savepath=None, **kwargs):
         fig.savefig(savepath)
 
 
-def show_dsm_image(dsm, savepath=None, noData=-10000, show_colorbar=False, **kwargs):
-    mask = dsm == noData
+def show_dsm_image(dsm, savepath=None, noData=[-10000, -32768], show_colorbar=False, **kwargs):
+    # mask no data
+    if not isinstance(noData, list):
+        noData = [noData]
+    mask = np.isin(dsm, [-10000, -32768])
+
+    # calculate image stats for visualization
     p_low = np.percentile(dsm[~mask], 1)
     if p_low < -5:
         p_low = -5
     p_high = np.percentile(dsm[~mask], 99)
 
+    # create figure
     fig, ax = plt.subplots(dpi=300, **kwargs)
     im = ax.imshow(np.ma.masked_where(mask, dsm), vmin=p_low, vmax=p_high, cmap=plt.cm.terrain)
     ax.set_xticklabels('')
     ax.set_xticks([])
     ax.set_yticklabels('')
     ax.set_yticks([])
+
+    # add colorbar
     if show_colorbar:
         divider = make_axes_locatable(ax)
         cax = divider.append_axes("right", size="5%", pad=0.05)
-        # plt.colorbar()
         fig.colorbar(im, cax=cax)
     if savepath:
         fig.savefig(savepath)
