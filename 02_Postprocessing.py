@@ -1,6 +1,7 @@
 import argparse
 import importlib
 import logging
+import os
 import sys
 # ignore warnings
 import warnings
@@ -100,6 +101,8 @@ def main():
         logging.info('Creating DSMfile with WhiteBoxTools!')
         tiles_dir_dsm = Path(
             settings.PROJECT_DIR) / '04_pix4d' / settings.PIX4d_PROJECT_NAME / '3_dsm_ortho' / '1_dsm' / 'tiles_wbt'
+        if tiles_dir_dsm.exists():
+            os.remove(tiles_dir_dsm)
         os.makedirs(tiles_dir_dsm, exist_ok=True)
 
         point_cloud_dir = Path(
