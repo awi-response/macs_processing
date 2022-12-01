@@ -16,10 +16,10 @@ warnings.filterwarnings("ignore", category=rasterio.errors.NotGeoreferencedWarni
 parser = argparse.ArgumentParser()
 parser.add_argument("-s", "--settings", required=True, type=Path, help="Path to Settings file")
 
-parser.add_argument("-dsm", "--dsm_mode", default='pix4d', type=str, choices=['pix4d', 'wbt'],
+parser.add_argument("-dsm", "--dsm_mode", default='wbt', type=str, choices=['pix4d', 'wbt'],
                     help='Set dsm_processing_mode, "pix4d" for using pix4d provided dsm tiles; "wbt" for custom '
                          'whiteboxtools created DSM')
-parser.add_argument("-pc", "--point_cloud", default='both', type=str, choices=["both", "nir", "rgb"],
+parser.add_argument("-pc", "--point_cloud", default='nir', type=str, choices=["both", "nir", "rgb"],
                     help='Set which point cloud to use. Options: "both", "nir", "rgb"')
 
 parser.add_argument("-keep_dsm_if", "--keep_dsm_if", action='store_true',
