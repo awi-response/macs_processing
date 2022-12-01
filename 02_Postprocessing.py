@@ -22,6 +22,11 @@ parser.add_argument("-dsm", "--dsm_mode", default='pix4d', type=str, help='Set d
                                                                           'whiteboxtools created DSM')
 parser.add_argument("-pc", "--point_cloud", default='both', type=str,
                     help='Set which point cloud to use. Options: "both", "nir", "rgb"')
+
+parser.add_argument("-keep_dsm_if", "--keep_dsm_if", action='store_true',
+                    help="keep intermediate DSM files (for debugging)")
+
+
 args = parser.parse_args()
 
 module_name = args.settings.stem
@@ -133,9 +138,10 @@ def main():
         wbt_final_dsm_file = assign_crs_to_raster(merged_pc_IDW_filled_smoothed, crs=crs)
 
         # Cleanup
-        for file_delete in [merged_pc, merged_pc_IDW, merged_pc_IDW_filled, merged_pc_IDW_filled_smoothed]:
-            print('Delete temporary files!')
-            os.remove(point_cloud_dir / file_delete)
+        if not args.keep_dsm_if:
+            for file_delete in [merged_pc, merged_pc_IDW, merged_pc_IDW_filled, merged_pc_IDW_filled_smoothed]:
+                print('Delete temporary files!')
+                os.remove(point_cloud_dir / file_delete)
 
         # wbt_final_dsm_file = 'merged_nir_IDW_filled_smoothed_projected.tif'
         # tiling
@@ -143,7 +149,8 @@ def main():
         _ = Parallel(n_jobs=40)(
             delayed(clip_to_tile)(dsm_mosaic, f, target_dir=tiles_dir_dsm) for f in tqdm.tqdm(tile_index_list[:]))
         # cleanup dsm mosaic
-        os.remove(dsm_mosaic)
+        if not args.keep_dsm_if:
+            os.remove(dsm_mosaic)
 
     flist_dsm = list(tiles_dir_dsm.glob('*.tif'))
     df_dsm = flist_to_df(flist_dsm)
