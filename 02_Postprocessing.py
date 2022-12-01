@@ -138,20 +138,19 @@ def main():
         # Add Projection
         wbt_final_dsm_file = assign_crs_to_raster(merged_pc_IDW_filled_smoothed, crs=crs)
 
-        # Cleanup
-        if not args.keep_dsm_if:
-            for file_delete in [merged_pc, merged_pc_IDW, merged_pc_IDW_filled, merged_pc_IDW_filled_smoothed]:
-                print('Delete temporary files!')
-                os.remove(point_cloud_dir / file_delete)
-
-        # wbt_final_dsm_file = 'merged_nir_IDW_filled_smoothed_projected.tif'
         # tiling
         dsm_mosaic = point_cloud_dir / wbt_final_dsm_file
         _ = Parallel(n_jobs=40)(
             delayed(clip_to_tile)(dsm_mosaic, f, target_dir=tiles_dir_dsm) for f in tqdm.tqdm(tile_index_list[:]))
-        # cleanup dsm mosaic
+
+        # cleanup dsm mosaic and intermediate files
         if not args.keep_dsm_if:
-            os.remove(dsm_mosaic)
+            for file_delete in [merged_pc, merged_pc_IDW, merged_pc_IDW_filled, merged_pc_IDW_filled_smoothed, wbt_final_dsm_file]:
+                try:
+                    print('Delete temporary files!')
+                    os.remove(point_cloud_dir / file_delete)
+                except:
+                    continue
 
     flist_dsm = list(tiles_dir_dsm.glob('*.tif'))
     df_dsm = flist_to_df(flist_dsm)
