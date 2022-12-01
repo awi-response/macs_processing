@@ -18,11 +18,15 @@ Setup new envirnment using the provided environment.yml file
 
 Postprocessing example with pix4d calculated DSM tiles
 
-`python 02_Postprocessing.py -s <SETTINGS_FILE>`
+`python 02_Postprocessing.py -s <SETTINGS_FILE> -dsm pix4d`
 
 Postprocessing example with custom whiteboxtools based DSM caculation, only on the nir point cloud
 
-`python 02_Postprocessing.py -s <SETTINGS_FILE> -dsm wbt -pc nir`
+`python 02_Postprocessing.py -s <SETTINGS_FILE>`
+
+Postprocessing example with custom whiteboxtools based DSM caculation, using both point clouds
+
+`python 02_Postprocessing.py -s <SETTINGS_FILE> -pc both`
 
 **03_MoveProducts.py**
 * script to move final product files to specified directory (after postprocessing)
