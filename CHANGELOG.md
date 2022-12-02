@@ -1,3 +1,8 @@
+## [0.6.0] - 2022-12-01
+### Added
+- added script to pull and extract data from archive
+- added whiteboxtools DSM processing
+
 ## [0.5.0] - 2022-08-12
 ### Added
 - added logging/verbosity for moving data products script
