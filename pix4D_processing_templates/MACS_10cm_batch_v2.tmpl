@@ -17,17 +17,17 @@
 		<!--Matching Image Pairs-->
 		<matchStrategy>AutoAerial</matchStrategy>
 		<!--Matching Strategy-->
-		<geometricallyVerifiedMatching>true</geometricallyVerifiedMatching>
+		<geometricallyVerifiedMatching>false</geometricallyVerifiedMatching>
 		<!--    Calibration    -->
 		<!--Targeted number of keypoints-->
 		<keypointSelectionMethod>Automatic</keypointSelectionMethod>
 		<numberOfKeypoints>10000</numberOfKeypoints>
 		<!--Method-->
-		<calibrationMethod>Standard</calibrationMethod>
+		<calibrationMethod>GeolocationAndOrientation</calibrationMethod>
 		<!--Optimizer-->
 		<optimizerType>Ceres</optimizerType>
 		<!--Camera optimization-->
-		<internalParamOptimization>All</internalParamOptimization>
+		<internalParamOptimization>AllPrior</internalParamOptimization>
 		<externalParamOptimization>All</externalParamOptimization>
 		<leverarmParamOptimization>None</leverarmParamOptimization>
 		<!--Rematch-->
@@ -45,8 +45,8 @@
 		<!--Densification-->
 		<pclImageDownscaleFactor>1</pclImageDownscaleFactor>
 		<pclImageMultiscale>false</pclImageMultiscale>
-		<pclDensity>High</pclDensity>
-		<pclMinNoMatches>6</pclMinNoMatches>
+		<pclDensity>Optimal</pclDensity>
+		<pclMinNoMatches>4</pclMinNoMatches>
 		<!--Export-->
 		<pclExportLAS>true</pclExportLAS>
 		<pclExportLAZ>false</pclExportLAZ>
