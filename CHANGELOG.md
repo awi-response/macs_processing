@@ -1,3 +1,7 @@
+## [0.6.1] - 2022-12-30
+### Changed
+- fixed preprocessing issue, where multiple projects were not merged
+
 ## [0.6.0] - 2022-12-01
 ### Added
 - added script to pull and extract data from archive
