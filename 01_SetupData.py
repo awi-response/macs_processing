@@ -277,6 +277,12 @@ def main():
     sublist = [d for d in list(settings.DATA_DIR.glob('*/*')) if d.is_dir()]
 
     for s in sublist:
+        target = (settings.DATA_DIR / s.name)
+        flist = list(s.glob('*.tif'))
+        os.makedirs(target, exist_ok=True)
+        [shutil.move(str(f), str(target)) for f in flist[:]]
+        #os.remove(s.parent)
+        """
         try:
             shutil.move(str(s), settings.DATA_DIR, shutil.copytree)
         except:
@@ -294,7 +300,7 @@ def main():
                     duplicate_files.append(src_file)
             if len(duplicate_files) > 0:
                 logging.info(f'Warning! {len(duplicate_files)} duplicate files!')
-
+        """
     for dataset_id in dataset_ids:
         dataset_name = get_dataset_name(ds, dataset_id)
         shutil.rmtree(str(settings.DATA_DIR / dataset_name))
