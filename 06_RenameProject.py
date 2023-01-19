@@ -17,7 +17,9 @@ parser.add_argument("-d", "--directory",
                     default=[Path(r'D:\MACS_Batch_Processing'),
                              Path(r'E:\MACS_Batch_Processing'),
                              Path(r'S:\p_macsprocessing\aoi'),
-                             Path(r'D:\Pix4D_Processing\macs_processing')],
+                             Path(r'D:\Pix4D_Processing\macs_processing'),
+                             Path(r'S:\p_macsprocessing\data_products')
+                             ],
                     type=list, help="data directories")
 parser.add_argument("-noask", "--noask", action='store_true', help="execute script without asking")
 args = parser.parse_args()
