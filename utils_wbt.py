@@ -109,3 +109,29 @@ def clip_to_tile(input_mosaic, example_tile, target_dir, rename=['transparent_mo
         # run with pixel count
         gdal_string = f'gdalwarp -te {bounds.left} {bounds.top} {bounds.right} {bounds.bottom} -ts {src.width} {src.height} -co COMPRESS=DEFLATE {input_mosaic} {clipped}'
         os.system(gdal_string)
+
+
+    def create_point_cloud_tiles(point_cloud, footprint_tile_path, settings, product_name='PCNir'):
+        """
+        point cloud: path to point cloud
+        footprint_tile_path: path to footprint_tile (geojson)
+        settings: settings object
+        product_name: name of product (PCNIR for NIR PC or PCRGB for RGB Point clouds
+        """
+
+        # individual tile
+        footprint = footprint_tile_path
+        footprint_shp = footprint.with_suffix('.shp')
+        # convert to shp
+        os.system(f'ogr2ogr -f "ESRI Shapefile" {footprint_shp} {footprint}')
+        # create output name
+        tile_id = footprint.stem.rstrip("_mask").split('_Ortho_')[-1]
+        outfile_name = f'{settings.PIX4d_PROJECT_NAME}_{product_name}_{tile_id}.las'
+        outfile = settings.TARGET_DIR_PC / outfile_name
+
+        wbt.clip_lidar_to_polygon(
+            i=point_cloud,
+            polygons=footprint_shp,
+            output=outfile
+        )
+        return 0
