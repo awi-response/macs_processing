@@ -222,19 +222,27 @@ def main():
     point_cloud_rgb = list(point_clouds_dir.glob('*group1_densified_point_cloud.las'))[0]
 
     # Error here
-    _ = Parallel(n_jobs=10)(delayed(create_point_cloud_tiles)(point_cloud_nir, tile, settings, target_dir=settings.TARGET_DIR_PC, product_name='PointCloudNIR') for tile in tqdm.tqdm_notebook(vector_list[:]))
-    _ = Parallel(n_jobs=10)(
-        delayed(create_point_cloud_tiles)(point_cloud_rgb, tile, settings, target_dir=settings.TARGET_DIR_PC, product_name='PointCloudRGB') for tile in
-        tqdm.tqdm_notebook(vector_list[:]))
+    _ = Parallel(n_jobs=40)(delayed(create_point_cloud_tiles_las2las)
+                           (point_cloud_nir,
+                            tile, settings,
+                            target_dir=settings.TARGET_DIR_PC,
+                            product_name='PointCloudNIR')
+                           for tile in tqdm.tqdm_notebook(vector_list[:]))
+    _ = Parallel(n_jobs=40)(delayed(create_point_cloud_tiles_las2las)
+                           (point_cloud_rgb,
+                            tile, settings,
+                            target_dir=settings.TARGET_DIR_PC,
+                            product_name='PointCloudRGB')
+                           for tile in tqdm.tqdm_notebook(vector_list[:]))
 
     if PROCESS:
         logging.info('Calculating Ortho Pyramids!')
         flist_ortho = list(settings.TARGET_DIR_ORTHO.glob('*.tif'))
-        _ = Parallel(n_jobs=40)(delayed(calculate_pyramids)(filename) for filename in tqdm.tqdm_notebook(flist_ortho[:]))
+        _ = Parallel(n_jobs=40)(delayed(calculate_pyramids)(filename) for filename in tqdm.tqdm(flist_ortho[:]))
 
         logging.info('Calculating DSM Pyramids!')
         flist_dsm = list(settings.TARGET_DIR_DSM.glob('*.tif'))
-        _ = Parallel(n_jobs=40)(delayed(calculate_pyramids)(filename) for filename in tqdm.tqdm_notebook(flist_dsm[:]))
+        _ = Parallel(n_jobs=40)(delayed(calculate_pyramids)(filename) for filename in tqdm.tqdm(flist_dsm[:]))
 
         # Create VRT files
         working_dir = Path(os.getcwd())

@@ -1,6 +1,7 @@
 import os
 from pathlib import Path
 import rasterio
+import fiona
 from whitebox import WhiteboxTools
 
 wbt = WhiteboxTools()
@@ -127,7 +128,6 @@ def create_point_cloud_tiles(point_cloud, footprint_tile_path, settings_file, ta
     # create output name
     tile_id = footprint.stem.rstrip("_mask").split('_Ortho_')[-1]
     outfile_name = f'{settings_file.PIX4d_PROJECT_NAME}_{product_name}_{tile_id}.las'
-    #outfile = settings_file.TARGET_DIR_PC / outfile_name
     outfile = target_dir / outfile_name
 
     wbt.clip_lidar_to_polygon(
@@ -135,4 +135,34 @@ def create_point_cloud_tiles(point_cloud, footprint_tile_path, settings_file, ta
         polygons=footprint_shp,
         output=outfile
     )
+    return 0
+
+
+def create_point_cloud_tiles_las2las(point_cloud, footprint_tile_path, settings_file, target_dir, product_name='PCNir'):
+    """
+    clip point cloud to subset (specified by vector file)
+
+    point cloud: path to point cloud
+    footprint_tile_path: path to footprint_tile (geojson)
+    settings_file: settings object
+    target_dir: target directory
+    product_name: name of product (PCNIR for NIR PC or PCRGB for RGB Point clouds)
+    """
+    # individual tile
+    footprint = footprint_tile_path
+    footprint_shp = footprint.with_suffix('.shp')
+    # convert to shp
+    #os.system(f'ogr2ogr -f "ESRI Shapefile" {footprint_shp} {footprint}')
+    # create output name
+    tile_id = footprint.stem.rstrip("_mask").split('_Ortho_')[-1]
+    outfile_name = f'{settings_file.PIX4d_PROJECT_NAME}_{product_name}_{tile_id}.las'
+    outfile = target_dir / outfile_name
+
+    # get coordinates
+    with fiona.open(footprint) as src:
+        min_x, min_y, max_x, max_y = src.bounds
+    # run clip with lastools las2las
+    s = f'las2las -keep_xy {min_x} {min_y} {max_x} {max_y} -i {point_cloud} -o {outfile}'
+    os.system(s)
+
     return 0
