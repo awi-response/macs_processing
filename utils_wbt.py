@@ -150,9 +150,7 @@ def create_point_cloud_tiles_las2las(point_cloud, footprint_tile_path, settings_
     """
     # individual tile
     footprint = footprint_tile_path
-    footprint_shp = footprint.with_suffix('.shp')
-    # convert to shp
-    #os.system(f'ogr2ogr -f "ESRI Shapefile" {footprint_shp} {footprint}')
+
     # create output name
     tile_id = footprint.stem.rstrip("_mask").split('_Ortho_')[-1]
     outfile_name = f'{settings_file.PIX4d_PROJECT_NAME}_{product_name}_{tile_id}.las'
