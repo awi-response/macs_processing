@@ -1,7 +1,6 @@
 import argparse
 import importlib
 import logging
-import os
 import sys
 # ignore warnings
 import warnings
@@ -223,7 +222,10 @@ def main():
     point_cloud_rgb = list(point_clouds_dir.glob('*group1_densified_point_cloud.las'))[0]
 
     # Error here
-    [create_point_cloud_tiles(point_cloud_nir, tile, settings, product_name='PCNir') for tile in vector_list[:5]]
+    _ = Parallel(n_jobs=10)(delayed(create_point_cloud_tiles)(point_cloud_nir, tile, settings, target_dir=settings.TARGET_DIR_PC, product_name='PointCloudNIR') for tile in tqdm.tqdm_notebook(vector_list[:]))
+    _ = Parallel(n_jobs=10)(
+        delayed(create_point_cloud_tiles)(point_cloud_rgb, tile, settings, target_dir=settings.TARGET_DIR_PC, product_name='PointCloudRGB') for tile in
+        tqdm.tqdm_notebook(vector_list[:]))
 
     if PROCESS:
         logging.info('Calculating Ortho Pyramids!')
