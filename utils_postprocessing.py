@@ -61,14 +61,14 @@ def stack_output(outmosaic, rgbfile, nirfile, remove_temporary_files=True):
     mos = f'{basename_rgb}.vrt'
 
     for band in [1, 2, 3]:
-        s = f'gdalbuildvrt -b {band} {basename_rgb}_{band}.vrt {rgbfile}'
+        s = f'gdalbuildvrt -q -b {band} {basename_rgb}_{band}.vrt {rgbfile}'
         os.system(s)
 
     for band in [1]:
-        s = f'gdalbuildvrt -b {band} {basename_nir}_{band}.vrt {nirfile}'
+        s = f'gdalbuildvrt -q -b {band} {basename_nir}_{band}.vrt {nirfile}'
         os.system(s)
 
-    s = f'gdalbuildvrt -separate {mos} {b3} {b2} {b1} {b_nir}'
+    s = f'gdalbuildvrt -q -separate {mos} {b3} {b2} {b1} {b_nir}'
     os.system(s)
 
     s = f'gdal_translate -a_nodata 0 -co COMPRESS=DEFLATE -q -co BIGTIFF=YES {mos} {outmosaic}'
