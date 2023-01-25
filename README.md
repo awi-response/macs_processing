@@ -6,6 +6,9 @@ We recommend to use a custom conda environment
 
 Setup new envirnment using the provided environment.yml file
 
+#### Software requirements
+Please install lastools (required for point cloud clipping)
+
 ## Scripts
 **01_SetupData.py**
 * script to preprocess data to get ready for processing in pix4d
