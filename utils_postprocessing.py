@@ -71,7 +71,7 @@ def stack_output(outmosaic, rgbfile, nirfile, remove_temporary_files=True):
     s = f'gdalbuildvrt -separate {mos} {b3} {b2} {b1} {b_nir}'
     os.system(s)
 
-    s = f'gdal_translate -a_nodata 0 -co COMPRESS=DEFLATE -co BIGTIFF=YES {mos} {outmosaic}'
+    s = f'gdal_translate -a_nodata 0 -co COMPRESS=DEFLATE -q -co BIGTIFF=YES {mos} {outmosaic}'
     os.system(s)
     if remove_temporary_files:
         for file in [b1, b2, b3, b_nir, mos]:
@@ -216,7 +216,7 @@ def create_mask_vector(raster_file, temporary_target_dir, remove_raster_mask=Fal
     maskfile = temporary_target_dir / (raster_file.stem + '_mask.tif')
     mask_vector = temporary_target_dir / (raster_file.stem + '_mask.geojson')
 
-    s_extract_mask = f'gdal_translate -ot Byte -b mask {raster_file} {maskfile}'
+    s_extract_mask = f'gdal_translate -q -ot Byte -b mask {raster_file} {maskfile}'
     os.system(s_extract_mask)
 
     s_polygonize_mask = f'python {polygonize} -f GeoJSON {maskfile} {mask_vector}'
@@ -335,7 +335,7 @@ def parse_site_name(site_name):
 def clip_dsm_to_bounds(footprints_file, filename, dsmdir, outdir):
     infile = dsmdir / filename
     outfile = outdir / filename
-    s = f'gdalwarp -cutline {footprints_file} -cwhere "DSM={filename}" -co COMPRESS=DEFLATE {infile} {outfile}'
+    s = f'gdalwarp -cutline {footprints_file} -cwhere "DSM={filename}" -q -co COMPRESS=DEFLATE {infile} {outfile}'
     os.system(s)
 
 

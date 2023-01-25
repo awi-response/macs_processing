@@ -1,7 +1,6 @@
 import argparse
 import importlib
 import logging
-import os
 import sys
 # ignore warnings
 import warnings
@@ -47,6 +46,7 @@ logging.basicConfig(level=logging.INFO,
 
 logging.info('Start postprocessing Orthoimage tiles!')
 
+PROCESS = False
 
 def main():
     tiles_dir = Path(
@@ -59,23 +59,23 @@ def main():
     # Get sensor names
     nir_sensor = get_nir_sensor_name(df)
 
-    #### Run 
-    # """
+    #### Run
     _ = Parallel(n_jobs=40)(
-        delayed(full_postprocessing_optical)(df, tile, nir_name=nir_sensor) for tile in tqdm.tqdm_notebook(tiles[:]))
-    # """
+        delayed(full_postprocessing_optical)(df, tile, nir_name=nir_sensor) for tile in tqdm.tqdm(tiles[:]))
     logging.info('Finished postprocessing Orthoimage tiles!')
 
     # #### Rename
     PRODUCT_DIR = Path(settings.PROJECT_DIR) / '06_DataProducts'
     settings.TARGET_DIR_ORTHO = PRODUCT_DIR / 'Ortho'
     settings.TARGET_DIR_DSM = PRODUCT_DIR / 'DSM'
+    settings.TARGET_DIR_PC = PRODUCT_DIR / 'PointClouds'
+
 
     region, site, site_number, date, resolution = parse_site_name(settings.SITE_NAME)
     os.makedirs(settings.TARGET_DIR_ORTHO, exist_ok=True)
     os.makedirs(settings.TARGET_DIR_DSM, exist_ok=True)
 
-    # #### Move and rename to output 
+    # #### Move and rename to output
 
     logging.info('Start moving and renaming Ortho tiles!')
 
@@ -89,8 +89,7 @@ def main():
     move_and_rename_processed_tiles(df, settings.SITE_NAME, settings.TARGET_DIR_ORTHO, 'Ortho', move=True)
     logging.info('Finished moving and renaming Ortho tiles!')
 
-    # #### DSM 
-
+    # #### DSM
     logging.info('Start moving and renaming DSM tiles!')
     # Change here to WBT based processing
     if args.dsm_mode == 'pix4d':
@@ -110,7 +109,7 @@ def main():
 
         # temp_dir_dsm = Path(settings.PROJECT_DIR)
         wbt.set_working_dir(point_cloud_dir)
-
+        """
         # TODO: check if it can be removed
         # ---------------------------
         wbt.set_compress_rasters(True)
@@ -121,6 +120,8 @@ def main():
 
         wbt.set_default_callback(my_callback)
         # ---------------------------
+        """
+
         # get region and file properties
         tile_index_list = list(tiles_dir.glob('*transparent_mosaic_group1*.tif'))
         crs = crs_from_file(tile_index_list[0])
@@ -158,8 +159,7 @@ def main():
     move_and_rename_processed_tiles(df_dsm, settings.SITE_NAME, settings.TARGET_DIR_DSM, 'DSM', move=False)
     logging.info('Finished moving and renaming DSM tiles!')
 
-    # #### Create footprints file 
-
+    # #### Create footprints file
     TMP_MASK_VECTORIZE_DIR = PRODUCT_DIR / 'tmp_footprints'  # Path(r'D:\Pix4D_Processing\test')
     os.makedirs(TMP_MASK_VECTORIZE_DIR, exist_ok=True)
     Path(os.environ['CONDA_PREFIX']) / 'Scripts' / 'gdal_polygonize.py'
@@ -169,11 +169,11 @@ def main():
     # create vector mask of Data (DN=0 for noData, DN=255 for valid Data)
     flist_out = list(settings.TARGET_DIR_ORTHO.glob('*.tif'))
     vector_list = Parallel(n_jobs=40)(
-        delayed(create_mask_vector)(infile, TMP_MASK_VECTORIZE_DIR) for infile in tqdm.tqdm_notebook(flist_out[:]))
+        delayed(create_mask_vector)(infile, TMP_MASK_VECTORIZE_DIR) for infile in tqdm.tqdm(flist_out[:]))
 
     # Merge vectors and remove noData parts
     gdf_list = Parallel(n_jobs=40)(
-        delayed(load_and_prepare_footprints)(vector_file) for vector_file in tqdm.tqdm_notebook(vector_list[:]))
+        delayed(load_and_prepare_footprints)(vector_file) for vector_file in tqdm.tqdm(vector_list[:]))
 
     merge_single_vector_files(gdf_list, FOOTPRINTS_FILE, settings.SITE_NAME, date)
     logging.info('Finished processing!')
@@ -182,9 +182,7 @@ def main():
     logging.info('Deleting empty tiles!')
     delete_empty_product_tiles(FOOTPRINTS_FILE, settings.TARGET_DIR_ORTHO, settings.TARGET_DIR_DSM)
 
-    # Cleanup temporary dir
-    shutil.rmtree(TMP_MASK_VECTORIZE_DIR)
-
+    # START DSM PROCESSING
     logging.info('Start postprocessing DSM tiles!')
     # Clip DSM to footprints
     df = gpd.read_file(FOOTPRINTS_FILE)
@@ -203,11 +201,41 @@ def main():
 
     logging.info('Calculating Ortho Pyramids!')
     flist_ortho = list(settings.TARGET_DIR_ORTHO.glob('*.tif'))
-    _ = Parallel(n_jobs=40)(delayed(calculate_pyramids)(filename) for filename in tqdm.tqdm_notebook(flist_ortho[:]))
+    _ = Parallel(n_jobs=40)(delayed(calculate_pyramids)(filename) for filename in tqdm.tqdm(flist_ortho[:]))
 
     logging.info('Calculating DSM Pyramids!')
     flist_dsm = list(settings.TARGET_DIR_DSM.glob('*.tif'))
-    _ = Parallel(n_jobs=40)(delayed(calculate_pyramids)(filename) for filename in tqdm.tqdm_notebook(flist_dsm[:]))
+    _ = Parallel(n_jobs=40)(delayed(calculate_pyramids)(filename) for filename in tqdm.tqdm(flist_dsm[:]))
+
+
+    # ############### CLIP Point Clouds to footprint ################### #
+    # extract individual tiles from footprints file
+    logging.info('Start tiling Point Clouds!')
+    os.makedirs(settings.TARGET_DIR_PC, exist_ok=True)
+
+    # point cloud
+    point_clouds_dir = settings.Path(
+                settings.PROJECT_DIR) / '04_pix4d' / settings.PIX4d_PROJECT_NAME / '2_densification' / 'point_cloud'
+    point_cloud_nir = list(point_clouds_dir.glob('*NIR_densified_point_cloud.las'))[0]
+    point_cloud_rgb = list(point_clouds_dir.glob('*group1_densified_point_cloud.las'))[0]
+    # RUN Point Cloud Clipping
+    # NIR Point Cloud
+    _ = Parallel(n_jobs=40)(delayed(create_point_cloud_tiles_las2las)
+                           (point_cloud_nir,
+                            tile, settings,
+                            target_dir=settings.TARGET_DIR_PC,
+                            product_name='PointCloudNIR')
+                           for tile in tqdm.tqdm(vector_list[:]))
+    # RGB Point Cloud
+    _ = Parallel(n_jobs=40)(delayed(create_point_cloud_tiles_las2las)
+                           (point_cloud_rgb,
+                            tile, settings,
+                            target_dir=settings.TARGET_DIR_PC,
+                            product_name='PointCloudRGB')
+                           for tile in tqdm.tqdm(vector_list[:]))
+
+    logging.info('Finished tiling Point Clouds!')
+
 
     # Create VRT files
     working_dir = Path(os.getcwd())
@@ -234,6 +262,8 @@ def main():
     shutil.copy(nav_file_in, nav_file_out)
     shutil.copy(logfile, processing_info_dir)
 
+    # Cleanup temporary dir
+    shutil.rmtree(TMP_MASK_VECTORIZE_DIR)
 
 if __name__ == "__main__":
     main()
