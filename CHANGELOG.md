@@ -1,3 +1,9 @@
+## [0.7.0] - 2023-01-25
+### Added
+- addition of point cloud tiles to data products 
+### Changed
+- code cleanup
+
 ## [0.6.1] - 2022-12-30
 ### Changed
 - fixed preprocessing issue, where multiple projects were not merged
