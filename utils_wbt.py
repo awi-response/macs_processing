@@ -10,7 +10,7 @@ wbt = WhiteboxTools()
 def assign_crs_to_raster(infile, crs):
     working_dir = Path(wbt.get_working_dir())
     outfile = infile[:-4] + '_projected.tif'
-    gdal_string = f'gdal_translate -a_srs {crs} -co COMPRESS=DEFLATE -co BIGTIFF=YES -co NUM_THREADS=ALL_CPUS {working_dir/infile} {working_dir/outfile} '
+    gdal_string = f'gdal_translate -a_srs {crs} -co COMPRESS=DEFLATE -co BIGTIFF=YES -co NUM_THREADS=ALL_CPUS {working_dir / infile} {working_dir / outfile} '
     os.system(gdal_string)
     return outfile
 
@@ -52,8 +52,7 @@ def pc_IDW_toDSM(infile, resolution, ret='all'):
 
 
 def fill_holes(infile, filter=11):
-    #filter = int(5/resolution)
-    outfile = infile[:-4]+f'_filled.tif'
+    outfile = infile[:-4] + f'_filled.tif'
     wbt.fill_missing_data(
         i=infile,
         output=outfile,
@@ -72,7 +71,7 @@ def smooth_DSM(infile, filter=11, iterations=10, normdiff=50, max_diff=0.5):
         filter=filter,
         norm_diff=normdiff,
         num_iter=iterations,
-        max_diff=0.5,
+        max_diff=max_diff,
         zfactor=None
     )
     return outfile
@@ -96,19 +95,20 @@ def crs_from_file(infile):
         return src.crs.to_string()
 
 
-def clip_to_tile(input_mosaic, example_tile, target_dir, rename=['transparent_mosaic_group1', 'dsm']):
+def clip_to_tile(input_mosaic, example_tile, target_dir, rename=None):
+    if rename is None:
+        rename = ['transparent_mosaic_group1', 'dsm']
     with rasterio.open(example_tile) as src:
         # get image properties
         bounds = src.bounds
-        resolution = src.res
         # file names
-        rename=['transparent_mosaic_group1', 'dsm']
+        rename = ['transparent_mosaic_group1', 'dsm']
         stem = example_tile.stem
         stem_out = stem.replace(rename[0], rename[1])
         clipped = target_dir / f'{stem_out}.tif'
         # run gdal_translate
         # run with pixel count
-        gdal_string = f'gdalwarp -te {bounds.left} {bounds.top} {bounds.right} {bounds.bottom} -ts {src.width} {src.height} -co COMPRESS=DEFLATE {input_mosaic} {clipped}'
+        gdal_string = f'gdalwarp -te {bounds.left} {bounds.top} {bounds.right} {bounds.bottom} -ts {src.width} {src.height} -co COMPRESS=DEFLATE {input_mosaic} {clipped} '
         os.system(gdal_string)
 
 
