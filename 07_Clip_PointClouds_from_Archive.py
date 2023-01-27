@@ -1,10 +1,8 @@
 import argparse
-import shutil
 
 from joblib import Parallel, delayed
 
 from utils_postprocessing import *
-from tqdm import tqdm
 
 # warnings.filterwarnings('ignore')
 
@@ -60,27 +58,31 @@ def main():
     unzip_tarfile(p_file, site_name, target_dir=args.processing_dir)
 
     # setup paths
-    ortho_product_list, point_cloud_dir, point_cloud_nir, point_cloud_rgb = setup_PCclip_paths(site_name)
+    ortho_product_list, point_cloud_dir, point_cloud_nir, point_cloud_rgb = setup_pointcloud_clip_paths(site_name)
 
     # run clipping RGB
-    print('Start clipping point clouds')
+    print('Start clipping point RGB clouds')
     Parallel(n_jobs=40)(
-        delayed(clip_las_file)(ortho_file, point_cloud_rgb, point_cloud_dir, product_name='PointCloudRGB') for ortho_file in tqdm(ortho_product_list[:]))
+        delayed(clip_las_file)(ortho_file, point_cloud_rgb, point_cloud_dir, product_name='PointCloudRGB') for
+        ortho_file in tqdm.tqdm(ortho_product_list[:]))
+    print('Start clipping point NIR clouds')
     Parallel(n_jobs=40)(
         delayed(clip_las_file)(ortho_file, point_cloud_nir, point_cloud_dir, product_name='PointCloudNIR') for
         ortho_file in
-        tqdm(ortho_product_list[:]))
+        tqdm.tqdm(ortho_product_list[:]))
 
-    final_dir = args.output_dir / site_name / '06_DataProducts'
+    final_dir = args.output_dir / site_name / 'PointClouds'
+    print(f'Moving Data Products to {final_dir}')
     shutil.move(point_cloud_dir, final_dir)
+    print('Finished reprocessing Point Cloud Tiles!')
+
+    # delete
 
     return 0
 
 
-def setup_PCclip_paths(site_name):
+def setup_pointcloud_clip_paths(site_name):
     data_products_dir = args.processing_dir / site_name / '06_DataProducts'
-    footprints_file = list(data_products_dir.glob('*.geojson'))[0]
-    #
     raster_products_dir = args.output_dir / site_name
     ortho_product_list = list((raster_products_dir / 'Ortho').glob(f'{site_name}*.tif'))
     point_cloud_dir = args.processing_dir / site_name / '04_pix4d' / site_name / '2_densification' / 'point_cloud'
@@ -95,10 +97,11 @@ def setup_PCclip_paths(site_name):
 def clip_las_file(ortho_file, point_cloud, point_cloud_dir, product_name='PointCloudRGB'):
     outfile = ortho_file.stem.replace('Ortho', product_name) + '.las'
     point_cloud_tile = point_cloud_dir / outfile
-    with rasterio.open(ortho_file) as src:
-        min_x, min_y, max_x, max_y = src.bounds
-        s = f'las2las -keep_xy {min_x} {min_y} {max_x} {max_y} -i {point_cloud} -o {point_cloud_tile}'
-        os.system(s)
+    if not point_cloud_tile.exists():
+        with rasterio.open(ortho_file) as src:
+            min_x, min_y, max_x, max_y = src.bounds
+            s = f'las2las -keep_xy {min_x} {min_y} {max_x} {max_y} -i {point_cloud} -o {point_cloud_tile}'
+            os.system(s)
 
 
 if __name__ == "__main__":
