@@ -1,3 +1,5 @@
+import tarfile
+
 import geopandas as gpd
 import numpy as np
 import pandas as pd
@@ -6,8 +8,11 @@ import matplotlib.pyplot as plt
 import os
 import shutil
 from pathlib import Path
+
+import tqdm
 from sklearn import preprocessing
 from mpl_toolkits.axes_grid1 import make_axes_locatable
+import re
 
 
 def flist_to_df(filelist):
@@ -462,3 +467,35 @@ def create_previews(products_dir, overwrite=False, pyramid_level=-2):
     show_3band_image(rgb_image, savepath=filename_rgb)
     show_3band_image(cir_image, savepath=filename_cir)
     show_dsm_image(dsm, savepath=filename_dsm, show_colorbar=True)
+
+
+def create_unziplist2(flist, subset=['01_rawdata', '02_studysites', '04_pix4d'],
+                      exclude=['2_densification/', '3_dsm_ortho/']):
+    outlist = []
+    for sub in subset:
+        #outlist.extend([f for f in flist if sub in f])
+        outlist.extend(list(pd.Series(flist)[pd.Series(flist).str.contains(sub)]))
+        # exclusion - not working yet
+    if len(exclude) > 0:
+        pattern = '|'.join(exclude)
+        r = pd.Series(outlist)
+        contains = r.str.contains(pattern)
+        outlist = r[~contains].values
+
+    return outlist
+
+
+def unzip_tarfile(p_file, site_name, target_dir):
+    with tarfile.open(p_file) as f:
+        flist = f.getnames()
+        print(f'Number of files in archive: {len(flist)}')
+        # check if rawdata should be processed
+        subset = [f'04_pix4d/{site_name}/2_densification/point_cloud', 'tile_footprints']
+        unzip_subset = create_unziplist2(flist, subset=subset, exclude=[])
+        assert len(unzip_subset) > 0
+        unzip_subset = [f for f in unzip_subset if not (target_dir / f).exists()]
+        print(f'Number of files to extract: {len(unzip_subset)}')
+        # extract
+        print('Start extraction to:', target_dir)
+        for ff in tqdm.tqdm(unzip_subset[:]):
+            f.extract(ff, path=target_dir)
