@@ -1,3 +1,8 @@
+## [0.7.1] - 2023-01-27
+### Added
+- added Point Cloud Clipping Script for reprocessing from Archive
+
+
 ## [0.7.0] - 2023-01-25
 ### Added
 - addition of point cloud tiles to data products 
