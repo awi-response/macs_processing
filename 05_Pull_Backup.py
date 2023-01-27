@@ -5,6 +5,7 @@ import tqdm
 import pandas as pd
 import argparse
 import shutil
+from utils_postprocessing import *
 
 # warnings.filterwarnings('ignore')
 
@@ -31,20 +32,6 @@ print(args)
 
 tape_path = args.archive_dir
 processing_path = args.target_dir
-
-
-def create_unziplist2(flist, subset=['01_rawdata', '02_studysites', '04_pix4d'],
-                      exclude=['2_densification/', '3_dsm_ortho/']):
-    outlist = []
-    for sub in subset:
-        outlist.extend([f for f in flist if sub in f])
-        # exclusion - not working yet
-    pattern = '|'.join(exclude)
-    r = pd.Series(outlist)
-    contains = r.str.contains(pattern)
-    outlist = r[~contains].values
-
-    return outlist
 
 
 def main():
