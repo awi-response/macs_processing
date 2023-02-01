@@ -71,9 +71,9 @@ def main():
         ortho_file in
         tqdm.tqdm(ortho_product_list[:]))
 
-    final_dir = args.output_dir / site_name / 'PointClouds'
+    final_dir = args.output_dir / site_name# / 'PointClouds'
     print(f'Moving Data Products to {final_dir}')
-    shutil.move(point_cloud_dir, final_dir)
+    shutil.move(str(point_cloud_dir), str(final_dir))
     print('Finished reprocessing Point Cloud Tiles!')
 
     # delete
