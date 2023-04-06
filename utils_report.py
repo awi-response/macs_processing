@@ -104,3 +104,43 @@ def highlight_zero(val):
 def highlight_invalid(row):
     color = '#FFA500' if row['all_valid'] == False else 'white'
     return [f'background-color: {color}' for _ in row]
+
+
+def check_vrt_is_linux(row):
+    return all([vrt_is_linux(row['products_dir'] / item) for item in ['Ortho.vrt', 'DSM.vrt']])
+
+
+def vrt_is_linux(vrt_file):
+    with open(vrt_file, 'r') as src:
+        txt = src.readlines()
+        n_win_ds = len([True for line in txt if '\\' in line])
+    return n_win_ds == 0
+
+
+def vrt_win_to_linux(infile, outfile):
+        # open file and replace if necessary
+        with open(infile, 'r') as src:
+            txt = src.readlines()
+            txt_updated = [line.replace('\\', '/') for line in txt]
+
+        with open(outfile, 'w') as tgt:
+            tgt.writelines(txt_updated)
+
+            
+def vrt_transform_win_to_linux(vrt_file, backup=False):
+    
+    # check if already linux vrt file
+    if not vrt_is_linux(vrt_file):
+        
+        # create name
+        vrt_file_updated = vrt_file.parent / (vrt_file.stem + '_new.vrt')
+        vrt_file_backup = vrt_file.parent / (vrt_file.stem + '_backup.vrt')
+        
+        # open file and replace if necessary
+        vrt_win_to_linux(vrt_file, vrt_file_updated)
+
+        # renaming
+        if backup:
+            shutil.copy2(vrt_file, vrt_file_backup)
+        os.remove(vrt_file)
+        os.rename(vrt_file_updated, vrt_file)
