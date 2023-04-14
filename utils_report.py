@@ -3,6 +3,7 @@ import pandas as pd
 from pathlib import Path
 import os
 import shutil
+import laspy
 
 
 def flatten(lst):
@@ -146,3 +147,22 @@ def vrt_transform_win_to_linux(vrt_file, backup=False):
             shutil.copy2(vrt_file, vrt_file_backup)
         os.remove(vrt_file)
         os.rename(vrt_file_updated, vrt_file)
+        
+def get_point_densities(flist, series_name=''):
+    densities = []
+    for lidar_file in flist:
+        with laspy.open(lidar_file) as inFile:
+            header = inFile.header
+            point_density = header.point_count / ((header.x_max-header.x_min) * (header.y_max-header.y_min))
+            densities.append(point_density)
+    return pd.Series(densities, name=series_name)
+
+def get_median_point_density(row):
+    pc_dir = (row['products_dir'] / 'PointClouds')
+
+    flist_NIR = list(pc_dir.glob('*PointCloudNIR*.las'))
+    flist_RGB = list(pc_dir.glob('*PointCloudRGB*.las'))
+    nir = get_point_densities(flist_NIR, 'PointCloudsNIR_density')
+    rgb = get_point_densities(flist_RGB, 'PointCloudsRGB_density')
+
+    return pd.concat([rgb, nir], axis=1).median().round(2)
