@@ -60,8 +60,8 @@ def main():
         logging.info(f'Settings File: {args.settings}')
 
         # Copy AOI
-        aoi_target = settings.PROJECT_DIR / '02_studysites' / 'AOI.shp'
-        gpd.read_file(settings.AOI).to_file(aoi_target)
+        aoi_target = settings.PROJECT_DIR / '02_studysites' / 'AOI.gpkg'
+        gpd.read_file(settings.AOI).to_file(aoi_target, driver='GPKG')
 
         logging.info('Creating footprints selection')
 
@@ -91,14 +91,18 @@ def main():
         dataset_name = get_dataset_name(ds, dataset_id)
         footprints = retrieve_footprints(ds, dataset_id, parent_dir, settings.AOI)
         print("Total number of images:", len(footprints))
-        print("NIR images:", (footprints['Looking'] == 'center').sum())
-        print("RGB right images:", (footprints['Looking'] == 'right').sum())
-        print("RGB left images:", (footprints['Looking'] == 'left').sum())
-
+        if 'Looking' in footprints.columns:
+            macs_config = 'MACS2018'
+            print("NIR images:", (footprints['Looking'] == 'center').sum())
+            print("RGB right images:", (footprints['Looking'] == 'right').sum())
+            print("RGB left images:", (footprints['Looking'] == 'left').sum())
+        else:
+            print("NIR images:", (footprints['Sensor'] == 'NIR').sum())
+            print("RGB images:", (footprints['Sensor'] == 'RGB').sum())
         # create subdirectory for footprints
-        footprints_path = settings.path_footprints.parent / dataset_name / 'footprints.shp'
+        footprints_path = settings.path_footprints.parent / dataset_name / 'footprints.gpkg'
         os.makedirs(footprints_path.parent, exist_ok=True)
-        footprints.to_file(footprints_path)
+        footprints.to_file(footprints_path, driver='GPKG')
         logging.info(f'Footprints file save to {footprints_path}')
 
     if args.footprints:
@@ -113,14 +117,20 @@ def main():
         outdir_temporary = Path(settings.outdir) / dataset_name
         os.makedirs(outdir_temporary, exist_ok=True)
 
-        footprints_path = settings.path_footprints.parent / dataset_name / 'footprints.shp'
+        footprints_path = settings.path_footprints.parent / dataset_name / 'footprints.gpkg'
         df_final = prepare_df_for_mipps(footprints_path, path_infiles)
         df_final['full_path'] = df_final.apply(lambda x: f'"{x.full_path}"', axis=1)
 
         print("Total number of images:", len(df_final))
-        print("NIR images:", (df_final['Looking'] == 'center').sum())
-        print("RGB right images:", (df_final['Looking'] == 'right').sum())
-        print("RGB left images:", (df_final['Looking'] == 'left').sum())
+        if 'Looking' in df_final.columns:
+            macs_config = 'MACS2018'
+            print("NIR images:", (df_final['Looking'] == 'center').sum())
+            print("RGB right images:", (df_final['Looking'] == 'right').sum())
+            print("RGB left images:", (df_final['Looking'] == 'left').sum())
+        else:
+            macs_config = 'MACS2023'
+            print("NIR images:", (df_final['Sensor'] == 'NIR').sum())
+            print("RGB images:", (df_final['Sensor'] == 'RGB').sum())
 
         # ### Run Process
         os.chdir(settings.MIPPS_DIR)
@@ -128,57 +138,18 @@ def main():
         max_roll = 3 # Select maximum roll angle to avoid image issues - SET in main settings part?
         chunksize = 20 # this is a mipps-script thing
 
+        """
         logging.info(f'Start exporting MACS files to TIFF using DLR mipps')
         logging.info(f"Total number of images: {len(df_final)}")
         logging.info(f"NIR images: {(df_final['Looking'] == 'center').sum()}")
         logging.info(f"RGB right images: {(df_final['Looking'] == 'right').sum()}")
         logging.info(f"RGB left images:{(df_final['Looking'] == 'left').sum()}")
-
+        """
         # this is relevant for NIR only
-        if 'nir' in settings.sensors:
-            logging.info(f'Start transforming NIR files')
-            logging.info(f'MIPPS Script: {settings.mipps_script_nir.name}')
-
-            looking = 'center'
-            q = (np.abs(df_final['Roll[deg]']) < max_roll) & (df_final['Looking'] == looking)
-            df_nir = df_final[q]
-            print(len(df_nir))
-            split = len(df_nir) // chunksize
-            if split == 0: split+=1
-            for df in tqdm.tqdm(np.array_split(df_nir, split)):
-                outlist = ' '.join(df['full_path'].values[:])
-                s = f'{settings.MIPPS_BIN} -c={settings.mipps_script_nir} -o={outdir_temporary} -j=4 {outlist}'
-                os.system(s)
-
-        # this is RGB
-        if 'right' in settings.sensors:
-            logging.info(f'Start transforming RGB right files')
-            logging.info(f'MIPPS Script: {settings.mipps_script_right.name}')
-
-            looking = 'right'
-            q = (np.abs(df_final['Roll[deg]']) < max_roll) & (df_final['Looking'] == looking)
-            df_right = df_final[q]
-            split = len(df_right) // chunksize
-            if split == 0: split+=1
-            for df in tqdm.tqdm(np.array_split(df_right, split)):
-                outlist = ' '.join(df['full_path'].values[:])
-                s = f'{settings.MIPPS_BIN} -c={settings.mipps_script_right} -o={outdir_temporary} -j=4 {outlist}'
-                os.system(s)
-
-        if 'left' in settings.sensors:
-            logging.info(f'Start transforming RGB left files')
-            logging.info(f'MIPPS Script: {settings.mipps_script_left.name}')
-
-            looking = 'left'
-            q = (np.abs(df_final['Roll[deg]']) < max_roll) & (df_final['Looking'] == looking)
-            df_left = df_final[q]
-            split = len(df_left) // chunksize
-            if split == 0: split+=1
-            for df in tqdm.tqdm(np.array_split(df_left, split)):
-                outlist = ' '.join(df['full_path'].values[:])
-                s = f'{settings.MIPPS_BIN} -c={settings.mipps_script_left} -o={outdir_temporary} -j=4 {outlist}'
-                os.system(s)
-
+        if macs_config == 'MACS2018':
+            run_mipps_macs18(chunksize, df_final, max_roll, outdir_temporary)
+        elif macs_config == 'MACS2023':
+            run_mipps_macs23(chunksize, df_final, max_roll, outdir_temporary)
         # ### Rescale image values
 
         # #### Image Statistics
@@ -189,6 +160,7 @@ def main():
             for key in settings.OUTDIR.keys():
                 outdir_temp[key] = settings.OUTDIR[key].parent / dataset_name / settings.OUTDIR[key].name
 
+            # TODO: needs to get fixed
             df_stats = get_image_stats_multi(outdir_temp, settings.sensors, nth_images=1, max_images=3000, quiet=False, n_jobs=40)
             #absolute
             if settings.SCALE_LOW:
@@ -304,6 +276,82 @@ def main():
     for dataset_id in dataset_ids:
         dataset_name = get_dataset_name(ds, dataset_id)
         shutil.rmtree(str(settings.DATA_DIR / dataset_name))
+
+
+def run_mipps_macs18(chunksize, df_final, max_roll, outdir_temporary):
+    if 'nir' in settings.sensors:
+        logging.info(f'Start transforming NIR files')
+        logging.info(f'MIPPS Script: {settings.mipps_script_nir.name}')
+
+        looking = 'center'
+        q = (np.abs(df_final['Roll[deg]']) < max_roll) & (df_final['Looking'] == looking)
+        df_nir = df_final[q]
+        print(len(df_nir))
+        split = len(df_nir) // chunksize
+        if split == 0: split += 1
+        for df in tqdm.tqdm(np.array_split(df_nir, split)):
+            outlist = ' '.join(df['full_path'].values[:])
+            s = f'{settings.MIPPS_BIN} -c={settings.mipps_script_nir} -o={outdir_temporary} -j=4 {outlist}'
+            os.system(s)
+    # this is RGB
+    if 'right' in settings.sensors:
+        logging.info(f'Start transforming RGB right files')
+        logging.info(f'MIPPS Script: {settings.mipps_script_right.name}')
+
+        looking = 'right'
+        q = (np.abs(df_final['Roll[deg]']) < max_roll) & (df_final['Looking'] == looking)
+        df_right = df_final[q]
+        split = len(df_right) // chunksize
+        if split == 0: split += 1
+        for df in tqdm.tqdm(np.array_split(df_right, split)):
+            outlist = ' '.join(df['full_path'].values[:])
+            s = f'{settings.MIPPS_BIN} -c={settings.mipps_script_right} -o={outdir_temporary} -j=4 {outlist}'
+            os.system(s)
+    if 'left' in settings.sensors:
+        logging.info(f'Start transforming RGB left files')
+        logging.info(f'MIPPS Script: {settings.mipps_script_left.name}')
+
+        looking = 'left'
+        q = (np.abs(df_final['Roll[deg]']) < max_roll) & (df_final['Looking'] == looking)
+        df_left = df_final[q]
+        split = len(df_left) // chunksize
+        if split == 0: split += 1
+        for df in tqdm.tqdm(np.array_split(df_left, split)):
+            outlist = ' '.join(df['full_path'].values[:])
+            s = f'{settings.MIPPS_BIN} -c={settings.mipps_script_left} -o={outdir_temporary} -j=4 {outlist}'
+            os.system(s)
+
+def run_mipps_macs23(chunksize, df_final, max_roll, outdir_temporary):
+    pwd = Path(settings.pwd)
+    if 'nir' in settings.sensors:
+        logging.info(f'Start transforming NIR files')
+        # TODO, unhardcode, change outputdir to sensorname
+        mipps_script_nir = pwd / Path('mipps_scripts/99683/99683_per_pixel.mipps')
+        logging.info(f'MIPPS Script: {mipps_script_nir.name}')
+
+        q = (np.abs(df_final['Roll[deg]']) < max_roll) & (df_final['Sensor'] == 'NIR')
+        df_nir = df_final[q]
+        print(len(df_nir))
+        split = len(df_nir) // chunksize
+        if split == 0: split += 1
+        for df in tqdm.tqdm(np.array_split(df_nir, split)):
+            outlist = ' '.join(df['full_path'].values[:])
+            s = f'{settings.MIPPS_BIN} -c={mipps_script_nir} -o={outdir_temporary} -j=4 {outlist}'
+            os.system(s)
+    # this is RGB
+    if 'right' in settings.sensors:
+        logging.info(f'Start transforming RGB files')
+        mipps_script_rgb = pwd / Path('mipps_scripts/121502/121502_per_pixel.mipps')
+        logging.info(f'MIPPS Script: {mipps_script_rgb.name}')
+        q = (np.abs(df_final['Roll[deg]']) < max_roll) & (df_final['Sensor'] == 'RGB')
+        df_right = df_final[q]
+        split = len(df_right) // chunksize
+        if split == 0: split += 1
+        for df in tqdm.tqdm(np.array_split(df_right, split)):
+            outlist = ' '.join(df['full_path'].values[:])
+            s = f'{settings.MIPPS_BIN} -c={mipps_script_rgb} -o={outdir_temporary} -j=4 {outlist}'
+            os.system(s)
+
 
 if __name__=="__main__":
     main()
