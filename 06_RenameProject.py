@@ -20,13 +20,14 @@ parser.add_argument("-d", "--directory",
                              Path(r'D:\Pix4D_Processing\macs_processing'),
                              Path(r'S:\p_macsprocessing\data_products')
                              ],
-                    type=list, help="data directories")
+                    type=Path, nargs='*',help="data directories")
 parser.add_argument("-noask", "--noask", action='store_true', help="execute script without asking")
 args = parser.parse_args()
 
 dir_list = args.directory
 if not isinstance(dir_list, list):
-    dir_list = list(dir_list)
+    dir_list = [Path(dir_list)]
+print(dir_list)
 
 #process_dir = args.directory
 oldname = args.inname
