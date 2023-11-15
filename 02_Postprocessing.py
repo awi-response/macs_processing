@@ -21,6 +21,9 @@ parser.add_argument("-dsm", "--dsm_mode", default='wbt', type=str, choices=['pix
 parser.add_argument("-pc", "--point_cloud", default='nir', type=str, choices=["both", "nir", "rgb"],
                     help='Set which point cloud to use. Options: "both", "nir", "rgb"')
 
+parser.add_argument("-m", "--mosaic", action='store_true',
+                    help='Set flag to calculate COG mosaic')
+
 parser.add_argument("-keep_dsm_if", "--keep_dsm_if", action='store_true',
                     help="keep intermediate DSM files (for debugging)")
 
@@ -58,10 +61,11 @@ def main():
 
     # Get sensor names
     nir_sensor = get_nir_sensor_name(df)
+    rgb_sensor = get_rgb_sensor_name(df)
 
     #### Run
     _ = Parallel(n_jobs=40)(
-        delayed(full_postprocessing_optical)(df, tile, nir_name=nir_sensor) for tile in tqdm.tqdm(tiles[:]))
+        delayed(full_postprocessing_optical)(df, tile, nir_name=nir_sensor, rgb_name=rgb_sensor) for tile in tqdm.tqdm(tiles[:]))
     logging.info('Finished postprocessing Orthoimage tiles!')
 
     # #### Rename
@@ -76,7 +80,7 @@ def main():
     os.makedirs(settings.TARGET_DIR_DSM, exist_ok=True)
 
     # #### Move and rename to output
-
+    #"""
     logging.info('Start moving and renaming Ortho tiles!')
 
     tiles_dir = Path(
@@ -109,21 +113,9 @@ def main():
 
         # temp_dir_dsm = Path(settings.PROJECT_DIR)
         wbt.set_working_dir(point_cloud_dir)
-        """
-        # TODO: check if it can be removed
-        # ---------------------------
-        wbt.set_compress_rasters(True)
-
-        def my_callback(value):
-            if not "%" in value:
-                print(value)
-
-        wbt.set_default_callback(my_callback)
-        # ---------------------------
-        """
 
         # get region and file properties
-        tile_index_list = list(tiles_dir.glob('*transparent_mosaic_group1*.tif'))
+        tile_index_list = list(tiles_dir.glob(f'*.tif'))
         crs = crs_from_file(tile_index_list[0])
         resolution = resolution_from_file(tile_index_list[0])
 
@@ -216,8 +208,8 @@ def main():
     # point cloud
     point_clouds_dir = settings.Path(
                 settings.PROJECT_DIR) / '04_pix4d' / settings.PIX4d_PROJECT_NAME / '2_densification' / 'point_cloud'
-    point_cloud_nir = list(point_clouds_dir.glob('*NIR_densified_point_cloud.las'))[0]
-    point_cloud_rgb = list(point_clouds_dir.glob('*group1_densified_point_cloud.las'))[0]
+    point_cloud_nir = list(point_clouds_dir.glob(f'*{nir_sensor}_densified_point_cloud.las'))[0]
+    point_cloud_rgb = list(point_clouds_dir.glob(f'*{rgb_sensor}_densified_point_cloud.las'))[0]
     # RUN Point Cloud Clipping
     # NIR Point Cloud
     _ = Parallel(n_jobs=40)(delayed(create_point_cloud_tiles_las2las)
@@ -236,7 +228,6 @@ def main():
 
     logging.info('Finished tiling Point Clouds!')
 
-
     # Create VRT files
     working_dir = Path(os.getcwd())
     vrt_path = working_dir / 'create_vrt.py'
@@ -245,6 +236,21 @@ def main():
 
     # create previews
     create_previews(products_dir=PRODUCT_DIR, pyramid_level=1, overwrite=True)
+    #"""
+    # create COG mosaics
+    if args.mosaic:
+        logging.info('Create COG mosaics.')
+        ortho_vrt = PRODUCT_DIR / 'Ortho.vrt'
+        ortho_cog = PRODUCT_DIR / f'{settings.SITE_NAME}_Ortho.tif'
+        dsm_vrt = PRODUCT_DIR / 'DSM.vrt'
+        dsm_cog = PRODUCT_DIR / f'{settings.SITE_NAME}_DSM.tif'
+        hillshade_cog = PRODUCT_DIR / f'{settings.SITE_NAME}_Hillshade.tif'
+        s_cog_ortho = f'gdal_translate -of COG -co BIGTIFF=YES -co NUM_THREADS=ALL_CPUS -co COMPRESS=DEFLATE {ortho_vrt} {ortho_cog}'
+        s_cog_dsm = f'gdal_translate -of COG -co BIGTIFF=YES -co NUM_THREADS=ALL_CPUS -co COMPRESS=DEFLATE {dsm_vrt} {dsm_cog}'
+        s_hillshade = f'gdaldem hillshade -multidirectional -of COG -co BIGTIFF=YES -co NUM_THREADS=ALL_CPUS -co COMPRESS=DEFLATE {dsm_cog} {hillshade_cog}'
+        for run in [s_cog_ortho, s_cog_dsm, s_hillshade]:
+            os.system(run)
+
 
     # Copy processing report, nav file log file
     logging.info('Copying reports!')
