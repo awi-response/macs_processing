@@ -219,16 +219,24 @@ def main():
 
 
         # #### Write exif information into all images
-
-        logging.info(f'Start writing EXIF Tags')
-        for sensor in tqdm.tqdm(settings.sensors):
-            print(sensor)
-            write_exif(outdir_temp[sensor], settings.tag[sensor], settings.EXIF_PATH)
-        logging.info(f'Finished writing EXIF Tags')
-
         navfile = list(Path(path_infiles).glob('*nav.txt'))[0]
-        shutil.copy(navfile, outdir_temp['nir'].parent / 'nav.txt')
+        logging.info(f'Start writing EXIF Tags')
+        # screwed up! - needs to fix
+        if macs_config == 'MACS2018':
+            for sensor in tqdm.tqdm(settings.sensors):
+                print(sensor)
+                write_exif(outdir_temp[sensor], settings.tag[sensor], settings.EXIF_PATH)
+            logging.info(f'Finished writing EXIF Tags')
+            shutil.copy(navfile, outdir_temp['nir'].parent / 'nav.txt')
+        elif macs_config == 'MACS2023':
+            for sensor in tqdm.tqdm(['99683_NIR', '121502_RGB']):
+                write_exif((outdir_temporary / sensor), tag=sensor, exifpath=settings.EXIF_PATH)
 
+        #navfile = list(Path(path_infiles).glob('*nav.txt'))[0]
+        if macs_config == 'MACS2018':
+            shutil.copy(navfile, outdir_temp['nir'].parent / 'nav.txt')
+        elif macs_config == 'MACS2023':
+            shutil.copy(navfile, outdir_temporary / 'nav.txt')
 
     # 1. merge nav files
     # #### Nav
@@ -253,26 +261,8 @@ def main():
         flist = list(s.glob('*.tif'))
         os.makedirs(target, exist_ok=True)
         [shutil.move(str(f), str(target)) for f in flist[:]]
-        #os.remove(s.parent)
-        """
-        try:
-            shutil.move(str(s), settings.DATA_DIR, shutil.copytree)
-        except:
-            flist = os.listdir(s)
-            target_dir = settings.DATA_DIR / s.name
-            ####
 
-            ####
-            duplicate_files = []
-            for f in flist:
-                src_file = s / f
-                if not src_file.exists():
-                    shutil.move(str(src_file), target_dir)
-                else:
-                    duplicate_files.append(src_file)
-            if len(duplicate_files) > 0:
-                logging.info(f'Warning! {len(duplicate_files)} duplicate files!')
-        """
+    # delete empty dirs
     for dataset_id in dataset_ids:
         dataset_name = get_dataset_name(ds, dataset_id)
         shutil.rmtree(str(settings.DATA_DIR / dataset_name))
@@ -334,9 +324,11 @@ def run_mipps_macs23(chunksize, df_final, max_roll, outdir_temporary):
         print(len(df_nir))
         split = len(df_nir) // chunksize
         if split == 0: split += 1
+        outdir_nir = outdir_temporary / '99683_NIR'
+        os.makedirs(outdir_nir, exist_ok=True)
         for df in tqdm.tqdm(np.array_split(df_nir, split)):
             outlist = ' '.join(df['full_path'].values[:])
-            s = f'{settings.MIPPS_BIN} -c={mipps_script_nir} -o={outdir_temporary} -j=4 {outlist}'
+            s = f'{settings.MIPPS_BIN} -c={mipps_script_nir} -o={outdir_nir} -j=4 {outlist}'
             os.system(s)
     # this is RGB
     if 'right' in settings.sensors:
@@ -347,9 +339,11 @@ def run_mipps_macs23(chunksize, df_final, max_roll, outdir_temporary):
         df_right = df_final[q]
         split = len(df_right) // chunksize
         if split == 0: split += 1
+        outdir_rgb = outdir_temporary / '121502_RGB'
+        os.makedirs(outdir_rgb, exist_ok=True)
         for df in tqdm.tqdm(np.array_split(df_right, split)):
             outlist = ' '.join(df['full_path'].values[:])
-            s = f'{settings.MIPPS_BIN} -c={mipps_script_rgb} -o={outdir_temporary} -j=4 {outlist}'
+            s = f'{settings.MIPPS_BIN} -c={mipps_script_rgb} -o={outdir_rgb} -j=4 {outlist}'
             os.system(s)
 
 
