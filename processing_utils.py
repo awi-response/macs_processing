@@ -40,8 +40,15 @@ def prepare_df_for_mipps(path_footprints, path_infiles):
     df_full = pd.DataFrame()
     df_full['full_path'] = flist
     df_full['basename'] = pd.DataFrame(df_full['full_path'].apply(lambda x: os.path.basename(x)))
-    # return Inner join of lists - create filtered list of filepaths 
-    return df.set_index('Basename').join(df_full.set_index('basename'))
+    # workaroud for different versions
+    if 'Basename' in df.columns:
+        df.set_index('Basename', inplace=True)
+    elif 'Name' in df.columns:
+        df.set_index('Name', inplace=True)
+
+    df_full['basename'] = pd.DataFrame(df_full['full_path'].apply(lambda x: os.path.basename(x)))
+    # return Inner join of lists - create filtered list of filepaths
+    return df.join(df_full.set_index('basename'))
 
 
 def write_exif(outdir, tag, exifpath):
@@ -177,6 +184,8 @@ def retrieve_footprints(overlapping_ds, project_id, parent_data_dir, aoi_file, f
     if isinstance(project_name, pd.Series):
         project_name = project_name.iloc[0]
 
+    # crashes in 2023 configuration
+    # streamline structure for all projects
     footprints = list((parent_data_dir / project_name).glob(fp_file_regex))[0]
     fp = gpd.read_file(footprints).to_crs(epsg=4326)
     aoi = gpd.read_file(aoi_file).to_crs(epsg=4326)[['geometry']]
@@ -195,16 +204,23 @@ def get_dataset_name(ds, dataset_id, name_attribute='Dataset'):
         dataset_name = ds.loc[dataset_id][name_attribute]
     return dataset_name
 
-
+# TODO: crashes here because
 def get_dataset_stats(datasets_file, parent_dir, aoi, name_attribute='Dataset'):
     grp = []
     idxs = datasets_file[name_attribute].index
     for idx in idxs:
         dataset_name = datasets_file[name_attribute].loc[idx]
         footprints = retrieve_footprints(datasets_file, idx, parent_dir, aoi)
+        # workaround for missing 'Looking' attribute
+        if 'Looking' not in footprints.columns:
+            footprints['Looking'] = 'center'
         stats = footprints.groupby(by='Looking').count().iloc[:, 0].T
         grp.append(stats.rename(dataset_name))
     stats = pd.concat(grp, axis=1).T
+    # workaround
+    for col in ['center', 'left', 'right']:
+        if col not in stats.columns:
+            stats[col] = 0
     stats['total_images'] = stats[['center', 'left', 'right']].sum(axis=1)
     stats['dataset_id'] = idxs
     stats[name_attribute] = stats.index

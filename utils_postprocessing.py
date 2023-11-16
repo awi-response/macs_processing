@@ -120,15 +120,19 @@ def mask_and_name_bands(mosaic_file):
 
 
 def get_nir_sensor_name(df):
-    """
-    
-    """
     for sensor_name in ['nir', 'grayscale']:
         if len(df.query(f'sensor=="{sensor_name}"')) > 0:
             return sensor_name
     else:
         raise NameError("sensor name for NIR band does not match")
 
+
+def get_rgb_sensor_name(df):
+    for sensor_name in ['rgb', 'group1', 'RGB']:
+        if len(df.query(f'sensor=="{sensor_name}"')) > 0:
+            return sensor_name
+    else:
+        raise NameError("sensor name for NIR band does not match")
 
 def full_postprocessing_optical(df, tile_id, rgb_name='group1', nir_name='nir'):
     """
