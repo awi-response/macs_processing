@@ -72,19 +72,24 @@ def main():
     for projects_file, parent_dir in zip(settings.PROJECTS_FILES, settings.PARENT_DIRS):
         print(parent_dir.parent)
         ds = get_overlapping_ds(settings.AOI, projects_file)
-        if len(ds) > 0:
-            break
-    stats = get_dataset_stats(ds, parent_dir, settings.AOI)
-    print(stats)
+        # jump to next campaign if there is no overlap
+        if len(ds) == 0:
+            continue
+        stats = get_dataset_stats(ds, parent_dir, settings.AOI)
+        print(stats)
 
-    if args.listds:
-        return 0
-    # #### Select Dataset ID
-    if not args.dataset_ids:
-        dataset_id = input('Please select IDs (comma separated): ')
-    else:
-        dataset_id = args.dataset_ids
-    dataset_ids = [d.strip() for d in dataset_id.split(',')]
+        if args.listds:
+            return 0
+        # #### Select Dataset ID
+        if not args.dataset_ids:
+            dataset_id = input('Please select IDs (comma separated): ')
+        else:
+            dataset_id = args.dataset_ids
+        # jump to next dataset if empty
+        if dataset_id == '':
+            continue
+        dataset_ids = [d.strip() for d in dataset_id.split(',')]
+
 
     # make loop
     for dataset_id in dataset_ids:
