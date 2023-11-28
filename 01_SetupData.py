@@ -60,8 +60,12 @@ def main():
         logging.info(f'Settings File: {args.settings}')
 
         # Copy AOI
+        # GPKG Version
         aoi_target = settings.PROJECT_DIR / '02_studysites' / 'AOI.gpkg'
         gpd.read_file(settings.AOI).to_file(aoi_target, driver='GPKG')
+        # SHP version, necessary for Pix4D
+        aoi_target_shp = settings.PROJECT_DIR / '02_studysites' / 'AOI.shp'
+        gpd.read_file(settings.AOI).to_file(aoi_target_shp, driver='ESRI Shapefile')
 
         logging.info('Creating footprints selection')
 
