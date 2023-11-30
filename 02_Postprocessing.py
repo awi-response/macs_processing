@@ -18,7 +18,7 @@ parser.add_argument("-s", "--settings", required=True, type=Path, help="Path to 
 parser.add_argument("-dsm", "--dsm_mode", default='wbt', type=str, choices=['pix4d', 'wbt'],
                     help='Set dsm_processing_mode, "pix4d" for using pix4d provided dsm tiles; "wbt" for custom '
                          'whiteboxtools created DSM')
-parser.add_argument("-pc", "--point_cloud", default='nir', type=str, choices=["both", "nir", "rgb"],
+parser.add_argument("-pc", "--point_cloud", default='both', type=str, choices=["both", "nir", "rgb"],
                     help='Set which point cloud to use. Options: "both", "nir", "rgb"')
 
 parser.add_argument("-m", "--mosaic", action='store_true',
@@ -49,7 +49,7 @@ logging.basicConfig(level=logging.INFO,
 
 logging.info('Start postprocessing Orthoimage tiles!')
 
-PROCESS = False
+PROCESS = True
 
 def main():
     tiles_dir = Path(
@@ -63,10 +63,16 @@ def main():
     nir_sensor = get_nir_sensor_name(df)
     rgb_sensor = get_rgb_sensor_name(df)
 
+    # Validate input files - raise error if file sets are completely empty
+    content_is_valid = check_ortho_validity(df)
+    if not content_is_valid:
+        raise Exception('Processed Orthotiles do not contain Data')
+
     #### Run
-    _ = Parallel(n_jobs=40)(
-        delayed(full_postprocessing_optical)(df, tile, nir_name=nir_sensor, rgb_name=rgb_sensor) for tile in tqdm.tqdm(tiles[:]))
-    logging.info('Finished postprocessing Orthoimage tiles!')
+    if True:
+        _ = Parallel(n_jobs=40)(
+            delayed(full_postprocessing_optical)(df, tile, nir_name=nir_sensor, rgb_name=rgb_sensor) for tile in tqdm.tqdm(tiles[:]))
+        logging.info('Finished postprocessing Orthoimage tiles!')
 
     # #### Rename
     PRODUCT_DIR = Path(settings.PROJECT_DIR) / '06_DataProducts'
@@ -85,13 +91,14 @@ def main():
 
     tiles_dir = Path(
         settings.PROJECT_DIR) / '04_pix4d' / settings.PIX4d_PROJECT_NAME / '3_dsm_ortho' / '2_mosaic' / 'tiles'
-    flist = list(tiles_dir.glob('mosaic*.tif'))
-    df = flist_to_df(flist)
-    df['tile_id'] = df.apply(lambda x: x.row + '_' + x.col, axis=1)
+    if True:
+        flist = list(tiles_dir.glob('mosaic*.tif'))
+        df = flist_to_df(flist)
+        df['tile_id'] = df.apply(lambda x: x.row + '_' + x.col, axis=1)
 
-    # TODO: uncomment
-    move_and_rename_processed_tiles(df, settings.SITE_NAME, settings.TARGET_DIR_ORTHO, 'Ortho', move=True)
-    logging.info('Finished moving and renaming Ortho tiles!')
+        # TODO: uncomment
+        move_and_rename_processed_tiles(df, settings.SITE_NAME, settings.TARGET_DIR_ORTHO, 'Ortho', move=True)
+        logging.info('Finished moving and renaming Ortho tiles!')
 
     # #### DSM
     logging.info('Start moving and renaming DSM tiles!')
@@ -105,6 +112,7 @@ def main():
         tiles_dir_dsm = Path(
             settings.PROJECT_DIR) / '04_pix4d' / settings.PIX4d_PROJECT_NAME / '3_dsm_ortho' / '1_dsm' / 'tiles_wbt'
         if tiles_dir_dsm.exists():
+            #pass
             shutil.rmtree(tiles_dir_dsm)
         os.makedirs(tiles_dir_dsm, exist_ok=True)
 
@@ -120,59 +128,66 @@ def main():
         resolution = resolution_from_file(tile_index_list[0])
 
         # run processes
-        # Merge Point Clouds
-        merged_pc = merge_point_clouds(which_point_cloud=args.point_cloud)
-        # Interpolate Point Cloud to DSM
-        merged_pc_IDW = pc_IDW_toDSM(infile=merged_pc, resolution=resolution)
-        # Fill small holes
-        merged_pc_IDW_filled = fill_holes(infile=merged_pc_IDW, filter=int(5 / resolution))
-        # Smooth DSM
-        merged_pc_IDW_filled_smoothed = smooth_DSM(merged_pc_IDW_filled, filter=11)
-        # Add Projection
-        wbt_final_dsm_file = assign_crs_to_raster(merged_pc_IDW_filled_smoothed, crs=crs)
+        if True:
+            # Merge Point Clouds
+            merged_pc = merge_point_clouds(which_point_cloud=args.point_cloud)
+            # Interpolate Point Cloud to DSM
+            merged_pc_IDW = pc_IDW_toDSM(infile=merged_pc, resolution=resolution)
+            # Fill small holes
+            merged_pc_IDW_filled = fill_holes(infile=merged_pc_IDW, filter=int(5 / resolution))
+            # Smooth DSM
+            merged_pc_IDW_filled_smoothed = smooth_DSM(merged_pc_IDW_filled, filter=11)
+            # Add Projection
+            wbt_final_dsm_file = assign_crs_to_raster(merged_pc_IDW_filled_smoothed, crs=crs)
 
-        # tiling
-        dsm_mosaic = point_cloud_dir / wbt_final_dsm_file
-        _ = Parallel(n_jobs=40)(
-            delayed(clip_to_tile)(dsm_mosaic, f, target_dir=tiles_dir_dsm) for f in tqdm.tqdm(tile_index_list[:]))
+        if True:
+            # tiling
+            dsm_mosaic = point_cloud_dir / wbt_final_dsm_file
+            _ = Parallel(n_jobs=40)(
+                delayed(clip_to_tile)(dsm_mosaic, f, target_dir=tiles_dir_dsm) for f in tqdm.tqdm(tile_index_list[:]))
 
-        # cleanup dsm mosaic and intermediate files
-        if not args.keep_dsm_if:
-            for file_delete in [merged_pc, merged_pc_IDW, merged_pc_IDW_filled, merged_pc_IDW_filled_smoothed, wbt_final_dsm_file]:
-                try:
-                    print('Delete temporary files!')
-                    os.remove(point_cloud_dir / file_delete)
-                except:
-                    continue
+            # cleanup dsm mosaic and intermediate files
+            if not args.keep_dsm_if:
+                for file_delete in [merged_pc, merged_pc_IDW, merged_pc_IDW_filled, merged_pc_IDW_filled_smoothed, wbt_final_dsm_file]:
+                    try:
+                        print('Delete temporary files!')
+                        os.remove(point_cloud_dir / file_delete)
+                    except:
+                        continue
 
     flist_dsm = list(tiles_dir_dsm.glob('*.tif'))
     df_dsm = flist_to_df(flist_dsm)
     df_dsm['tile_id'] = df_dsm.apply(lambda x: x.row + '_' + x.col, axis=1)
-    move_and_rename_processed_tiles(df_dsm, settings.SITE_NAME, settings.TARGET_DIR_DSM, 'DSM', move=False)
+    if True:
+        move_and_rename_processed_tiles(df_dsm, settings.SITE_NAME, settings.TARGET_DIR_DSM, 'DSM', move=False)
     logging.info('Finished moving and renaming DSM tiles!')
 
     # #### Create footprints file
     TMP_MASK_VECTORIZE_DIR = PRODUCT_DIR / 'tmp_footprints'  # Path(r'D:\Pix4D_Processing\test')
     os.makedirs(TMP_MASK_VECTORIZE_DIR, exist_ok=True)
+    # TODO: This is doing nothing
     Path(os.environ['CONDA_PREFIX']) / 'Scripts' / 'gdal_polygonize.py'
     FOOTPRINTS_FILE = PRODUCT_DIR / f'{settings.SITE_NAME}_tile_footprints.geojson'
 
     logging.info(f'Start merging footprints to file {FOOTPRINTS_FILE}!')
     # create vector mask of Data (DN=0 for noData, DN=255 for valid Data)
     flist_out = list(settings.TARGET_DIR_ORTHO.glob('*.tif'))
-    vector_list = Parallel(n_jobs=40)(
-        delayed(create_mask_vector)(infile, TMP_MASK_VECTORIZE_DIR) for infile in tqdm.tqdm(flist_out[:]))
+    if True:
+        vector_list = Parallel(n_jobs=40)(
+            delayed(create_mask_vector)(infile, TMP_MASK_VECTORIZE_DIR) for infile in tqdm.tqdm(flist_out[:]))
 
     # Merge vectors and remove noData parts
-    gdf_list = Parallel(n_jobs=40)(
-        delayed(load_and_prepare_footprints)(vector_file) for vector_file in tqdm.tqdm(vector_list[:]))
+    if True:
+        gdf_list = Parallel(n_jobs=40)(
+            delayed(load_and_prepare_footprints)(vector_file) for vector_file in tqdm.tqdm(vector_list[:]))
 
     merge_single_vector_files(gdf_list, FOOTPRINTS_FILE, settings.SITE_NAME, date)
     logging.info('Finished processing!')
 
     # remove NoData
     logging.info('Deleting empty tiles!')
-    delete_empty_product_tiles(FOOTPRINTS_FILE, settings.TARGET_DIR_ORTHO, settings.TARGET_DIR_DSM)
+    if True:
+        delete_empty_product_tiles(FOOTPRINTS_FILE, settings.TARGET_DIR_ORTHO, settings.TARGET_DIR_DSM)
 
     # START DSM PROCESSING
     logging.info('Start postprocessing DSM tiles!')
@@ -182,22 +197,23 @@ def main():
     DSM_DIR_TMP = settings.TARGET_DIR_DSM.parent / 'DSM_tmp'
     delete_input = True
     os.makedirs(DSM_DIR_TMP)
-    Parallel(n_jobs=40)(
-        delayed(clip_dsm_to_bounds)(FOOTPRINTS_FILE, filename, settings.TARGET_DIR_DSM, DSM_DIR_TMP) for filename in
-        tqdm.tqdm(fnames[:]))
+    if True:
+        Parallel(n_jobs=40)(
+            delayed(clip_dsm_to_bounds)(FOOTPRINTS_FILE, filename, settings.TARGET_DIR_DSM, DSM_DIR_TMP) for filename in
+            tqdm.tqdm(fnames[:]))
     if delete_input:
         shutil.rmtree(settings.TARGET_DIR_DSM)
         os.rename(DSM_DIR_TMP, settings.TARGET_DIR_DSM)
 
     logging.info('Finished postprocessing DSM tiles!')
+    if False:
+        logging.info('Calculating Ortho Pyramids!')
+        flist_ortho = list(settings.TARGET_DIR_ORTHO.glob('*.tif'))
+        _ = Parallel(n_jobs=40)(delayed(calculate_pyramids)(filename) for filename in tqdm.tqdm(flist_ortho[:]))
 
-    logging.info('Calculating Ortho Pyramids!')
-    flist_ortho = list(settings.TARGET_DIR_ORTHO.glob('*.tif'))
-    _ = Parallel(n_jobs=40)(delayed(calculate_pyramids)(filename) for filename in tqdm.tqdm(flist_ortho[:]))
-
-    logging.info('Calculating DSM Pyramids!')
-    flist_dsm = list(settings.TARGET_DIR_DSM.glob('*.tif'))
-    _ = Parallel(n_jobs=40)(delayed(calculate_pyramids)(filename) for filename in tqdm.tqdm(flist_dsm[:]))
+        logging.info('Calculating DSM Pyramids!')
+        flist_dsm = list(settings.TARGET_DIR_DSM.glob('*.tif'))
+        _ = Parallel(n_jobs=40)(delayed(calculate_pyramids)(filename) for filename in tqdm.tqdm(flist_dsm[:]))
 
 
     # ############### CLIP Point Clouds to footprint ################### #
@@ -259,13 +275,18 @@ def main():
 
     report_file = Path(
         settings.PROJECT_DIR) / '04_pix4d' / settings.SITE_NAME / '1_initial' / 'report' / f'{settings.PIX4d_PROJECT_NAME}_report.pdf '
-    shutil.copy(report_file, processing_info_dir)
+    if report_file.exists():
+        shutil.copy(report_file, processing_info_dir)
 
     nav_file_in = Path(settings.PROJECT_DIR) / '01_rawdata' / 'tif' / 'geo_pix4d_new.txt'
     nav_file_out = processing_info_dir / f'{settings.SITE_NAME}_nav.txt'
 
     logging.info('Finished Postprocessing!')
-    shutil.copy(nav_file_in, nav_file_out)
+    try:
+        shutil.copy(nav_file_in, nav_file_out)
+    except:
+        print(f'nav_file_in could not be found! Copy skipped')
+
     shutil.copy(logfile, processing_info_dir)
 
     # Cleanup temporary dir

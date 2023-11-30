@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 import os
 import shutil
 from pathlib import Path
-
+from joblib import Parallel, delayed
 import tqdm
 from sklearn import preprocessing
 from mpl_toolkits.axes_grid1 import make_axes_locatable
@@ -76,7 +76,7 @@ def stack_output(outmosaic, rgbfile, nirfile, remove_temporary_files=True):
     s = f'gdalbuildvrt -q -separate {mos} {b3} {b2} {b1} {b_nir}'
     os.system(s)
 
-    s = f'gdal_translate -a_nodata 0 -co COMPRESS=DEFLATE -q -co BIGTIFF=YES {mos} {outmosaic}'
+    s = f'gdal_translate -of COG -a_nodata 0 -co COMPRESS=DEFLATE -q -co BIGTIFF=YES {mos} {outmosaic}'
     os.system(s)
     if remove_temporary_files:
         for file in [b1, b2, b3, b_nir, mos]:
@@ -133,6 +133,49 @@ def get_rgb_sensor_name(df):
             return sensor_name
     else:
         raise NameError("sensor name for NIR band does not match")
+
+def check_tile_validity(image_path):
+    with rasterio.open(image_path) as src:
+        return src.read(1).mean() != 0
+
+
+def check_ortho_validity(df, n_jobs=40):
+    """
+    This function checks the validity of both NIR (Near-Infrared) and RGB (Red-Green-Blue) images in a given dataframe.
+
+    Parameters:
+    df (pandas.DataFrame): A DataFrame containing the filenames and sensor types of the images.
+    n_jobs (int, optional): The number of jobs to run in parallel. Default is 40.
+
+    The DataFrame 'df' is expected to have at least two columns: 'sensor' and 'filename'.
+    The 'sensor' column should contain the sensor type of the image ('nir' or 'rgb'),
+    and the 'filename' column should contain the filename of the image.
+
+    The function uses the 'check_tile_validity' function (not defined in this scope) to check the validity of each image.
+    This is done in parallel using the joblib library's 'Parallel' and 'delayed' functions.
+
+    After checking the validity of the images, the function prints the number of valid NIR and RGB images,
+    and whether there is any content in them. It also prints whether postprocessing should continue based on the validity of the images.
+
+    Returns:
+    bool: True if all images are valid, False otherwise.
+    """
+
+    # test for nir validity
+    flist_nir = df.query('sensor == "nir"')['filename'].values
+    nir_validity = Parallel(n_jobs=n_jobs)(delayed(check_tile_validity)(im) for im in flist_nir[:])
+    # test for rgb validity
+    flist_rgb = df.query('sensor == "rgb"')['filename'].values
+    rgb_validity = Parallel(n_jobs=n_jobs)(delayed(check_tile_validity)(im) for im in flist_rgb[:])
+
+    # documentation
+    print(f'NIR images have content:{any(nir_validity)}, {sum(nir_validity)}/{len(flist_nir)} images')
+    print(f'RGB images have content:{any(rgb_validity)}, {sum(rgb_validity)}/{len(flist_rgb)} images')
+    is_valid = all([nir_validity, rgb_validity])
+    print(f'Continue Postprocessing: {is_valid}')
+
+    return is_valid
+
 
 def full_postprocessing_optical(df, tile_id, rgb_name='group1', nir_name='nir'):
     """
