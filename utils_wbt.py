@@ -10,7 +10,7 @@ wbt = WhiteboxTools()
 def assign_crs_to_raster(infile, crs):
     working_dir = Path(wbt.get_working_dir())
     outfile = infile[:-4] + '_projected.tif'
-    gdal_string = f'gdal_translate -a_srs {crs} -co COMPRESS=DEFLATE -co BIGTIFF=YES -co NUM_THREADS=ALL_CPUS {working_dir / infile} {working_dir / outfile} '
+    gdal_string = f'gdal_translate -of COG -a_srs {crs} -co COMPRESS=DEFLATE -co BIGTIFF=YES -co NUM_THREADS=ALL_CPUS {working_dir / infile} {working_dir / outfile} '
     os.system(gdal_string)
     return outfile
 
@@ -108,7 +108,7 @@ def clip_to_tile(input_mosaic, example_tile, target_dir, rename=None):
         clipped = target_dir / f'{stem_out}.tif'
         # run gdal_translate
         # run with pixel count
-        gdal_string = f'gdalwarp -te {bounds.left} {bounds.top} {bounds.right} {bounds.bottom} -ts {src.width} {src.height} -co COMPRESS=DEFLATE {input_mosaic} {clipped} '
+        gdal_string = f'gdalwarp -of COG -te {bounds.left} {bounds.top} {bounds.right} {bounds.bottom} -ts {src.width} {src.height} -co COMPRESS=DEFLATE {input_mosaic} {clipped} '
         os.system(gdal_string)
 
 
