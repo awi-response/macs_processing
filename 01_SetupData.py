@@ -170,13 +170,13 @@ def main():
         # ### Rescale image values
 
         # #### Image Statistics
+        outdir_temp = {}
+        for key in settings.OUTDIR.keys():
+            outdir_temp[key] = settings.OUTDIR[key].parent / dataset_name / settings.OUTDIR[key].name
 
         if settings.SCALING:
             logging.info(f'Start reading Image statistics')
-            outdir_temp = {}
-            for key in settings.OUTDIR.keys():
-                outdir_temp[key] = settings.OUTDIR[key].parent / dataset_name / settings.OUTDIR[key].name
-
+            
             # TODO: needs to get fixed
             df_stats = get_image_stats_multi(outdir_temp, settings.sensors, nth_images=1, max_images=3000, quiet=False, n_jobs=40)
             #absolute
