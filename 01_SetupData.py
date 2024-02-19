@@ -31,6 +31,9 @@ parser.add_argument("-f", "--footprints", action='store_true',
 parser.add_argument("-dsid", "--dataset_ids", type=str, default=None,
                     help="Preselect dataset ids, comma separated. Example: 12,34 . Overrides manual dataset id selection.")
 
+parser.add_argument("-nav", "--navfile", type=str, default='*nav.txt',
+                    help="Regex for nav file. Default: '*nav.txt'. Please change if you want to use a different nav file")
+
 
 args = parser.parse_args()
 if args.footprints:
@@ -93,6 +96,8 @@ def main():
         if dataset_id == '':
             continue
         dataset_ids = [d.strip() for d in dataset_id.split(',')]
+        if len(dataset_ids) > 0:
+            break
 
 
     # make loop
@@ -123,6 +128,9 @@ def main():
         dataset_name = get_dataset_name(ds, dataset_id)
         logging.info(f'Start processing dataset: {dataset_name}')
         path_infiles = Path(parent_dir) / dataset_name
+        # get navfile
+        navfile = list(Path(path_infiles).glob(args.navfile))[0]
+
         outdir_temporary = Path(settings.outdir) / dataset_name
         os.makedirs(outdir_temporary, exist_ok=True)
 
@@ -228,7 +236,6 @@ def main():
 
 
         # #### Write exif information into all images
-        navfile = list(Path(path_infiles).glob('*nav.txt'))[0]
         logging.info(f'Start writing EXIF Tags')
         # screwed up! - needs to fix
         if macs_config == 'MACS2018':
