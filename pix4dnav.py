@@ -1,21 +1,27 @@
-
 # coding: utf-8
-
 # ### Script to convert geolocation into correct format
 
-# In[1]:
-
-
-#import geopandas as gpd
+import argparse
 import pandas as pd
 import os
 
 
-INFILE = 'nav.txt'
-outfile = 'geo_pix4d_new.txt'
-#NEW_CRS = 'EPSG:4326'
-H_ACC = 1
-V_ACC = 1
+parser = argparse.ArgumentParser()
+
+parser.add_argument("-i", "--infile", type=str, default='nav.txt',
+                    help="input file")
+parser.add_argument("-o", "--outfile", type=str, default='geo_pix4d_new.txt',
+                    help="output file")
+parser.add_argument("-ha", "--horizontal_accuracy", type=float, default=1.0,
+                    help="Horizontal accuracy for pix4D. Default = 1")
+parser.add_argument("-va", "--vertical_accuracy", type=float, default=1.0,
+                    help="Horizontal accuracy for pix4D. Default = 1")
+
+args = parser.parse_args()
+INFILE = args.infile#'nav.txt'
+outfile = args.outfile#'geo_pix4d_new.txt'
+H_ACC = args.horizontal_accuracy
+V_ACC = args.vertical_accuracy
 
 
 # #### Load images 
