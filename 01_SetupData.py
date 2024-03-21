@@ -34,6 +34,13 @@ parser.add_argument("-dsid", "--dataset_ids", type=str, default=None,
 parser.add_argument("-nav", "--navfile", type=str, default='*nav.txt',
                     help="Regex for nav file. Default: '*nav.txt'. Please change if you want to use a different nav file")
 
+parser.add_argument("-ha", "--horizontal_accuracy", type=float, default=1.0,
+                    help="Horizontal accuracy for pix4D. Default = 1")
+
+parser.add_argument("-va", "--vertical_accuracy", type=float, default=1.0,
+                    help="Horizontal accuracy for pix4D. Default = 1")
+
+
 
 args = parser.parse_args()
 if args.footprints:
@@ -163,10 +170,12 @@ def main():
         logging.info(f"RGB left images:{(df_final['Looking'] == 'left').sum()}")
         """
         # this is relevant for NIR only
+        
         if macs_config == 'MACS2018':
             run_mipps_macs18(chunksize, df_final, max_roll, outdir_temporary)
         elif macs_config == 'MACS2023':
             run_mipps_macs23(chunksize, df_final, max_roll, outdir_temporary)
+        
         # ### Rescale image values
 
         # #### Image Statistics
