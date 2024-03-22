@@ -31,8 +31,8 @@ parser.add_argument("-f", "--footprints", action='store_true',
 parser.add_argument("-dsid", "--dataset_ids", type=str, default=None,
                     help="Preselect dataset ids, comma separated. Example: 12,34 . Overrides manual dataset id selection.")
 
-parser.add_argument("-nav", "--navfile", type=str, default='*nav.txt',
-                    help="Regex for nav file. Default: '*nav.txt'. Please change if you want to use a different nav file")
+parser.add_argument("-nav", "--navfile", type=str, default='*_nav_RTK.txt',
+                    help="Regex for nav file. Default: '*_nav_RTK.txt'. Please change if you want to use a different nav file")
 
 parser.add_argument("-ha", "--horizontal_accuracy", type=float, default=1.0,
                     help="Horizontal accuracy for pix4D. Default = 1")
@@ -52,12 +52,13 @@ settings = importlib.import_module(module_name)
 def main():
 
     if not args.listds:
+        
+        # unzip data structure
         with zipfile.ZipFile(settings.zippath, 'r') as zip_ref:
             zip_ref.extractall(settings.PROJECT_DIR)
         shutil.copy(settings.nav_script_path, settings.outdir)
 
         # logger
-
         logfile = settings.PROJECT_DIR / f'{settings.PROJECT_DIR.name}.log'
         logging.basicConfig(level=logging.INFO,
                             format='%(asctime)s %(message)s',
@@ -66,7 +67,6 @@ def main():
                                 ])
 
         logging.info('Creation of logfile')
-    
         logging.info(f'Settings File: {args.settings}')
 
         # Copy AOI
@@ -274,7 +274,7 @@ def main():
 
     # 2. run transformation
     os.chdir(settings.DATA_DIR)
-    os.system('python pix4dnav.py')
+    os.system(f'python pix4dnav.py -ha {args.horizontal_accuracy} -va {args.vertical_accuracy}')
 
     logging.info(f'Finished preparing nav file')
 

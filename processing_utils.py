@@ -204,25 +204,34 @@ def get_dataset_name(ds, dataset_id, name_attribute='Dataset'):
         dataset_name = ds.loc[dataset_id][name_attribute]
     return dataset_name
 
-# TODO: crashes here because
+
 def get_dataset_stats(datasets_file, parent_dir, aoi, name_attribute='Dataset'):
     grp = []
     idxs = datasets_file[name_attribute].index
     for idx in idxs:
         dataset_name = datasets_file[name_attribute].loc[idx]
         footprints = retrieve_footprints(datasets_file, idx, parent_dir, aoi)
+        
         # workaround for missing 'Looking' attribute
-        if 'Looking' not in footprints.columns:
-            footprints['Looking'] = 'center'
-        stats = footprints.groupby(by='Looking').count().iloc[:, 0].T
+        if 'Looking' in footprints.columns:
+            macs_config = 'MACS2018'
+            stats = footprints.groupby(by='Looking').count().iloc[:, 0].T
+            for col in ['center', 'left', 'right']:
+                if col not in stats.index:
+                    stats[col] = 0
+            stats['total_images'] = stats[['center', 'left', 'right']].sum()
+        else:
+            stats = footprints.groupby(by='Sensor').count().iloc[:, 0].T
+            for col in ['RGB', 'NIR']:
+                if col not in stats.index:
+                    stats[col] = 0
+            stats['total_images (NIR+RGB)'] = stats[['RGB', 'NIR']].sum()
+
         grp.append(stats.rename(dataset_name))
     stats = pd.concat(grp, axis=1).T
-    # workaround
-    for col in ['center', 'left', 'right']:
-        if col not in stats.columns:
-            stats[col] = 0
-    stats['total_images'] = stats[['center', 'left', 'right']].sum(axis=1)
+    
     stats['dataset_id'] = idxs
     stats[name_attribute] = stats.index
     stats = stats.set_index('dataset_id', drop=True)
+    
     return stats
