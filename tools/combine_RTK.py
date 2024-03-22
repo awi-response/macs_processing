@@ -21,7 +21,7 @@ for f in flist:
     header += data
 
 basename = flist[0].absolute().parent.name
-outfile = f'{basename}_nav_RTK.txt'
+outfile = flist[0].absolute().parent / f'{basename}_nav_RTK.txt'
 print(f'Merging navfiles to {outfile}')
 with open(outfile, 'w') as dst:
     dst.writelines(header)
