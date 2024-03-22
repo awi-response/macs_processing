@@ -90,6 +90,9 @@ def main():
         if len(ds) == 0:
             continue
         stats = get_dataset_stats(ds, parent_dir, settings.AOI)
+        # check if navfile can be found
+        stats['Navfile'] = stats['Dataset'].apply(lambda x: len(list((parent_dir / x).glob(args.navfile))))
+        # print list with stats
         print(stats)
 
         if args.listds:
