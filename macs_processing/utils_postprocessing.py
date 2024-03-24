@@ -337,8 +337,10 @@ def merge_single_vector_files(gdf_list, outfile, site_name, date_local):
     # dissolve single part to multipart
     cols = gdf_merged.columns
     gdf_merged = gdf_merged.dissolve(by='Orthomosaic').reset_index(drop=False)[cols]
-
+    outfile_gpkg = outfile.parent / f'{outfile.stem}.gpkg'
+    
     gdf_merged.to_file(outfile)
+    gdf_merged.to_file(outfile_gpkg, drive='GPKG')
 
 
 def delete_empty_product_tiles(footprints_file, Orthodir, DSMdir):

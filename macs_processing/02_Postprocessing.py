@@ -18,6 +18,7 @@ parser.add_argument("-s", "--settings", required=True, type=Path, help="Path to 
 parser.add_argument("-dsm", "--dsm_mode", default='wbt', type=str, choices=['pix4d', 'wbt'],
                     help='Set dsm_processing_mode, "pix4d" for using pix4d provided dsm tiles; "wbt" for custom '
                          'whiteboxtools created DSM')
+
 parser.add_argument("-pc", "--point_cloud", default='both', type=str, choices=["both", "nir", "rgb"],
                     help='Set which point cloud to use. Options: "both", "nir", "rgb"')
 
@@ -79,14 +80,14 @@ def main():
     settings.TARGET_DIR_ORTHO = PRODUCT_DIR / 'Ortho'
     settings.TARGET_DIR_DSM = PRODUCT_DIR / 'DSM'
     settings.TARGET_DIR_PC = PRODUCT_DIR / 'PointClouds'
-
+    #"""
 
     region, site, site_number, date, resolution = parse_site_name(settings.SITE_NAME)
     os.makedirs(settings.TARGET_DIR_ORTHO, exist_ok=True)
     os.makedirs(settings.TARGET_DIR_DSM, exist_ok=True)
 
     # #### Move and rename to output
-    #"""
+
     logging.info('Start moving and renaming Ortho tiles!')
 
     tiles_dir = Path(
@@ -161,9 +162,9 @@ def main():
     if True:
         move_and_rename_processed_tiles(df_dsm, settings.SITE_NAME, settings.TARGET_DIR_DSM, 'DSM', move=False)
     logging.info('Finished moving and renaming DSM tiles!')
-
+    #"""
     # #### Create footprints file
-    TMP_MASK_VECTORIZE_DIR = PRODUCT_DIR / 'tmp_footprints'  # Path(r'D:\Pix4D_Processing\test')
+    TMP_MASK_VECTORIZE_DIR = PRODUCT_DIR / 'tmp_footprints'
     os.makedirs(TMP_MASK_VECTORIZE_DIR, exist_ok=True)
     # TODO: This is doing nothing
     Path(os.environ['CONDA_PREFIX']) / 'Scripts' / 'gdal_polygonize.py'
@@ -172,15 +173,17 @@ def main():
     logging.info(f'Start merging footprints to file {FOOTPRINTS_FILE}!')
     # create vector mask of Data (DN=0 for noData, DN=255 for valid Data)
     flist_out = list(settings.TARGET_DIR_ORTHO.glob('*.tif'))
+    
     if True:
         vector_list = Parallel(n_jobs=40)(
             delayed(create_mask_vector)(infile, TMP_MASK_VECTORIZE_DIR) for infile in tqdm.tqdm(flist_out[:]))
-
+    
     # Merge vectors and remove noData parts
     if True:
         gdf_list = Parallel(n_jobs=40)(
             delayed(load_and_prepare_footprints)(vector_file) for vector_file in tqdm.tqdm(vector_list[:]))
-
+    
+    date = '2023-07-12'# temporary
     merge_single_vector_files(gdf_list, FOOTPRINTS_FILE, settings.SITE_NAME, date)
     logging.info('Finished processing!')
 
@@ -201,9 +204,9 @@ def main():
         Parallel(n_jobs=40)(
             delayed(clip_dsm_to_bounds)(FOOTPRINTS_FILE, filename, settings.TARGET_DIR_DSM, DSM_DIR_TMP) for filename in
             tqdm.tqdm(fnames[:]))
-    if delete_input:
-        shutil.rmtree(settings.TARGET_DIR_DSM)
-        os.rename(DSM_DIR_TMP, settings.TARGET_DIR_DSM)
+        if delete_input:
+            shutil.rmtree(settings.TARGET_DIR_DSM)
+            os.rename(DSM_DIR_TMP, settings.TARGET_DIR_DSM)
 
     logging.info('Finished postprocessing DSM tiles!')
     if False:
@@ -228,22 +231,24 @@ def main():
     point_cloud_rgb = list(point_clouds_dir.glob(f'*{rgb_sensor}_densified_point_cloud.las'))[0]
     # RUN Point Cloud Clipping
     # NIR Point Cloud
-    _ = Parallel(n_jobs=40)(delayed(create_point_cloud_tiles_las2las)
-                           (point_cloud_nir,
-                            tile, settings,
-                            target_dir=settings.TARGET_DIR_PC,
-                            product_name='PointCloudNIR')
-                           for tile in tqdm.tqdm(vector_list[:]))
+    if True:
+        _ = Parallel(n_jobs=40)(delayed(create_point_cloud_tiles_las2las)
+                               (point_cloud_nir,
+                                tile, settings,
+                                target_dir=settings.TARGET_DIR_PC,
+                                product_name='PointCloudNIR')
+                               for tile in tqdm.tqdm(vector_list[:]))
     # RGB Point Cloud
-    _ = Parallel(n_jobs=40)(delayed(create_point_cloud_tiles_las2las)
-                           (point_cloud_rgb,
-                            tile, settings,
-                            target_dir=settings.TARGET_DIR_PC,
-                            product_name='PointCloudRGB')
-                           for tile in tqdm.tqdm(vector_list[:]))
+    if True:
+        _ = Parallel(n_jobs=40)(delayed(create_point_cloud_tiles_las2las)
+                               (point_cloud_rgb,
+                                tile, settings,
+                                target_dir=settings.TARGET_DIR_PC,
+                                product_name='PointCloudRGB')
+                               for tile in tqdm.tqdm(vector_list[:]))
 
     logging.info('Finished tiling Point Clouds!')
-
+    
     # Create VRT files
     working_dir = Path(os.getcwd())
     vrt_path = working_dir / 'create_vrt.py'
@@ -251,7 +256,7 @@ def main():
     os.chdir(working_dir)
 
     # create previews
-    create_previews(products_dir=PRODUCT_DIR, pyramid_level=1, overwrite=True)
+    #create_previews(products_dir=PRODUCT_DIR, pyramid_level=1, overwrite=True)
     #"""
     # create COG mosaics
     if args.mosaic:

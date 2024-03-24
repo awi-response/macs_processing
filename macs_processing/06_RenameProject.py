@@ -9,7 +9,6 @@ def create_outname(infile, string_in, string_replace):
     name = infile.name.replace(string_in, string_replace)
     return infile.parent / name
 
-
 parser = argparse.ArgumentParser()
 parser.add_argument("-i", "--inname", required=True, type=str, help="input name")
 parser.add_argument("-o", "--outname", required=True, type=str, help="output name")

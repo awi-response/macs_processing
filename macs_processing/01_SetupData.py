@@ -15,8 +15,6 @@ import warnings
 warnings.filterwarnings('ignore')
 warnings.filterwarnings("ignore", category=rasterio.errors.NotGeoreferencedWarning)
 
-
-
 parser = argparse.ArgumentParser()
 parser.add_argument("-s", "--settings",
                     type=Path, required=True,
@@ -39,7 +37,6 @@ parser.add_argument("-ha", "--horizontal_accuracy", type=float, default=1.0,
 
 parser.add_argument("-va", "--vertical_accuracy", type=float, default=1.0,
                     help="Horizontal accuracy for pix4D. Default = 1")
-
 
 
 args = parser.parse_args()
@@ -373,7 +370,6 @@ def run_mipps_macs23(chunksize, df_final, max_roll, outdir_temporary):
             outlist = ' '.join(df['full_path'].values[:])
             s = f'{settings.MIPPS_BIN} -c={mipps_script_rgb} -o={outdir_rgb} -j=4 {outlist}'
             os.system(s)
-
 
 if __name__=="__main__":
     main()

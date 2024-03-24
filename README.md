@@ -13,7 +13,7 @@ Please install lastools (required for point cloud clipping)
 **01_SetupData.py**
 * script to preprocess data to get ready for processing in pix4d
 
-`python 01_SetupData.py -s <SETTINGS_FILE> [-l] [-f] [dsid]`
+`python 01_SetupData.py -s <SETTINGS_FILE> [-l] [-f] [-dsid] <DATSET_ID> -nav <REGEX of NAV file> -ha <HORIZONTAL_ACCURACY [m]> -va <VERTICAL_ACCURACY [m]>`
 
 
 **02_Postprocessing.py**
@@ -21,7 +21,7 @@ Please install lastools (required for point cloud clipping)
 
 Postprocessing example with pix4d calculated DSM tiles
 
-`python 02_Postprocessing.py -s <SETTINGS_FILE> -dsm pix4d`
+`python 02_Postprocessing.py -s <SETTINGS_FILE> -dsm pix4d [-m] -pc [rbg, nir, both]`
 
 Postprocessing example with custom whiteboxtools based DSM caculation, only on the nir point cloud
 
