@@ -26,6 +26,8 @@ setup(
     entry_points={
         'console_scripts': [
             '01_SetupData = macs_processing.01_SetupData:main_function',
+            '02_Postprocessing = macs_processing.02_Postprocessing:main_function',
+            '03_MoveProducts = macs_processing.03_MoveProducts:main_function',
         ],
     },
 )
