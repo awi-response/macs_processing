@@ -48,38 +48,40 @@ def flist_to_df(filelist):
 
 
 # create more specific vrt files for each run to avoid duplicates on parallel run
-def stack_output(outmosaic, rgbfile, nirfile, remove_temporary_files=True):
+def stack_output(outmosaic, rgbfile, nirfile, remove_temporary_files=True, vrt_dir=Path('.')):
     """
     Function to stack together RGB and NIR images
     Input: 
         4 Band RGB (RGB-A)
         2 Band NIR (NIR-A)
     """
-
+    vrt_dir.mkdir(exist_ok=True)
     basename_rgb = rgbfile.name[:-4]
     basename_nir = nirfile.name[:-4]
 
-    b1 = f'{basename_rgb}_1.vrt'
-    b2 = f'{basename_rgb}_2.vrt'
-    b3 = f'{basename_rgb}_3.vrt'
-    b_nir = f'{basename_nir}_1.vrt'
-    mos = f'{basename_rgb}.vrt'
+    #b_nir = vrt_dir / f'{basename_nir}_1.vrt'
+    mos = vrt_dir / f'{basename_rgb}.vrt'
 
+    rgb_vrt = []
     for band in [1, 2, 3]:
-        s = f'gdalbuildvrt -q -b {band} {basename_rgb}_{band}.vrt {rgbfile}'
+        infile = vrt_dir / f'{basename_rgb}_{band}.vrt'
+        rgb_vrt.append(infile)
+        s = f'gdalbuildvrt -q -b {band} {infile} {rgbfile}'
         os.system(s)
 
     for band in [1]:
-        s = f'gdalbuildvrt -q -b {band} {basename_nir}_{band}.vrt {nirfile}'
+        infile_nir = vrt_dir / f'{basename_nir}_{band}.vrt'
+        s = f'gdalbuildvrt -q -b {band} {infile_nir} {nirfile}'
         os.system(s)
-
-    s = f'gdalbuildvrt -q -separate {mos} {b3} {b2} {b1} {b_nir}'
+    
+    b1, b2, b3 = rgb_vrt
+    s = f'gdalbuildvrt -q -separate {mos} {b3} {b2} {b1} {infile_nir}'
     os.system(s)
 
     s = f'gdal_translate -of COG -a_nodata 0 -co COMPRESS=DEFLATE -q -co BIGTIFF=YES {mos} {outmosaic}'
     os.system(s)
     if remove_temporary_files:
-        for file in [b1, b2, b3, b_nir, mos]:
+        for file in [b1, b2, b3, infile_nir, mos]:
             os.remove(file)
 
 
@@ -177,7 +179,7 @@ def check_ortho_validity(df, n_jobs=40):
     return is_valid
 
 
-def full_postprocessing_optical(df, tile_id, rgb_name='group1', nir_name='nir'):
+def full_postprocessing_optical(df, tile_id, rgb_name='group1', nir_name='nir', target_dir_mosaic=None, vrt_dir=Path('.')):
     """
     Wrapper function to sequentially run
 
@@ -196,8 +198,12 @@ def full_postprocessing_optical(df, tile_id, rgb_name='group1', nir_name='nir'):
     subset = df[df['tile_id'] == tile_id]
     rgbfile = subset.query(f'sensor=="{rgb_name}"').filename.values[0]
     nirfile = subset.query(f'sensor=="{nir_name}"').filename.values[0]
-    outmosaic = rgbfile.parent / f'mosaic_{tile_id}.tif'
-    stack_output(outmosaic, rgbfile, nirfile, remove_temporary_files=True)
+    if target_dir_mosaic is not None:
+        target_dir_mosaic.mkdir(exist_ok=True)
+        outmosaic = target_dir_mosaic / f'mosaic_{tile_id}.tif'
+    else:
+        outmosaic = rgbfile.parent / f'mosaic_{tile_id}.tif'
+    stack_output(outmosaic, rgbfile, nirfile, remove_temporary_files=True, vrt_dir=vrt_dir)
     mask_and_name_bands(outmosaic)
 
 
@@ -268,10 +274,10 @@ def create_mask_vector(raster_file, temporary_target_dir, remove_raster_mask=Fal
     maskfile = temporary_target_dir / (raster_file.stem + '_mask.tif')
     mask_vector = temporary_target_dir / (raster_file.stem + '_mask.geojson')
 
-    s_extract_mask = f'gdal_translate -q -ot Byte -b mask {raster_file} {maskfile}'
+    s_extract_mask = f'gdal_translate -q -ot Byte -b mask -of GTiff {raster_file} {maskfile}'
     os.system(s_extract_mask)
 
-    s_polygonize_mask = f'python {polygonize} -f GeoJSON {maskfile} {mask_vector}'
+    s_polygonize_mask = f'python {polygonize} -q -f GeoJSON {maskfile} {mask_vector}'
     os.system(s_polygonize_mask)
 
     # needs to be fixed - is not deleting at the moment
@@ -383,10 +389,16 @@ def parse_site_name(site_name):
     date = f'{date_tmp[:4]}-{date_tmp[4:6]}-{date_tmp[6:]}'
     return region, site, site_number, date, resolution
 
+def parse_site_name_v2(site_name):
+    region, site, date_tmp, resolution, site_number = site_name.split('_')
+    date = f'{date_tmp[:4]}-{date_tmp[4:6]}-{date_tmp[6:]}'
+    return region, site, site_number, date, resolution
+
 
 def clip_dsm_to_bounds(footprints_file, filename, dsmdir, outdir):
     infile = dsmdir / filename
     outfile = outdir / filename
+    # here issue
     s = f'gdalwarp -cutline {footprints_file} -cwhere "DSM={filename}" -q -co COMPRESS=DEFLATE {infile} {outfile}'
     os.system(s)
 
