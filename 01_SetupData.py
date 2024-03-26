@@ -4,7 +4,6 @@ import zipfile
 import logging
 from processing_utils import *
 from utils_postprocessing import *
-
 import argparse
 import importlib
 import geopandas as gpd
@@ -14,8 +13,6 @@ import rasterio
 import warnings
 warnings.filterwarnings('ignore')
 warnings.filterwarnings("ignore", category=rasterio.errors.NotGeoreferencedWarning)
-
-
 
 parser = argparse.ArgumentParser()
 parser.add_argument("-s", "--settings",
@@ -31,6 +28,15 @@ parser.add_argument("-f", "--footprints", action='store_true',
 parser.add_argument("-dsid", "--dataset_ids", type=str, default=None,
                     help="Preselect dataset ids, comma separated. Example: 12,34 . Overrides manual dataset id selection.")
 
+parser.add_argument("-nav", "--navfile", type=str, default='*_nav_RTK.txt',
+                    help="Regex for nav file. Default: '*_nav_RTK.txt'. Please change if you want to use a different nav file")
+
+parser.add_argument("-ha", "--horizontal_accuracy", type=float, default=0.05,
+                    help="Horizontal accuracy for pix4D. Default = 1")
+
+parser.add_argument("-va", "--vertical_accuracy", type=float, default=0.05,
+                    help="Horizontal accuracy for pix4D. Default = 1")
+
 
 args = parser.parse_args()
 if args.footprints:
@@ -42,12 +48,13 @@ settings = importlib.import_module(module_name)
 def main():
 
     if not args.listds:
+        
+        # unzip data structure
         with zipfile.ZipFile(settings.zippath, 'r') as zip_ref:
             zip_ref.extractall(settings.PROJECT_DIR)
         shutil.copy(settings.nav_script_path, settings.outdir)
 
         # logger
-
         logfile = settings.PROJECT_DIR / f'{settings.PROJECT_DIR.name}.log'
         logging.basicConfig(level=logging.INFO,
                             format='%(asctime)s %(message)s',
@@ -56,12 +63,15 @@ def main():
                                 ])
 
         logging.info('Creation of logfile')
-    
         logging.info(f'Settings File: {args.settings}')
 
         # Copy AOI
+        # GPKG Version
         aoi_target = settings.PROJECT_DIR / '02_studysites' / 'AOI.gpkg'
         gpd.read_file(settings.AOI).to_file(aoi_target, driver='GPKG')
+        # SHP version, necessary for Pix4D
+        aoi_target_shp = settings.PROJECT_DIR / '02_studysites' / 'AOI.shp'
+        gpd.read_file(settings.AOI).to_file(aoi_target_shp, driver='ESRI Shapefile')
 
         logging.info('Creating footprints selection')
 
@@ -76,6 +86,9 @@ def main():
         if len(ds) == 0:
             continue
         stats = get_dataset_stats(ds, parent_dir, settings.AOI)
+        # check if navfile can be found
+        stats['Navfile'] = stats['Dataset'].apply(lambda x: len(list((parent_dir / x).glob(args.navfile))))
+        # print list with stats
         print(stats)
 
         if args.listds:
@@ -89,6 +102,8 @@ def main():
         if dataset_id == '':
             continue
         dataset_ids = [d.strip() for d in dataset_id.split(',')]
+        if len(dataset_ids) > 0:
+            break
 
 
     # make loop
@@ -119,6 +134,9 @@ def main():
         dataset_name = get_dataset_name(ds, dataset_id)
         logging.info(f'Start processing dataset: {dataset_name}')
         path_infiles = Path(parent_dir) / dataset_name
+        # get navfile
+        navfile = list(Path(path_infiles).glob(args.navfile))[0]
+
         outdir_temporary = Path(settings.outdir) / dataset_name
         os.makedirs(outdir_temporary, exist_ok=True)
 
@@ -151,20 +169,22 @@ def main():
         logging.info(f"RGB left images:{(df_final['Looking'] == 'left').sum()}")
         """
         # this is relevant for NIR only
+        
         if macs_config == 'MACS2018':
             run_mipps_macs18(chunksize, df_final, max_roll, outdir_temporary)
         elif macs_config == 'MACS2023':
             run_mipps_macs23(chunksize, df_final, max_roll, outdir_temporary)
+        
         # ### Rescale image values
 
         # #### Image Statistics
+        outdir_temp = {}
+        for key in settings.OUTDIR.keys():
+            outdir_temp[key] = settings.OUTDIR[key].parent / dataset_name / settings.OUTDIR[key].name
 
         if settings.SCALING:
             logging.info(f'Start reading Image statistics')
-            outdir_temp = {}
-            for key in settings.OUTDIR.keys():
-                outdir_temp[key] = settings.OUTDIR[key].parent / dataset_name / settings.OUTDIR[key].name
-
+            
             # TODO: needs to get fixed
             df_stats = get_image_stats_multi(outdir_temp, settings.sensors, nth_images=1, max_images=3000, quiet=False, n_jobs=40)
             #absolute
@@ -224,7 +244,6 @@ def main():
 
 
         # #### Write exif information into all images
-        navfile = list(Path(path_infiles).glob('*nav.txt'))[0]
         logging.info(f'Start writing EXIF Tags')
         # screwed up! - needs to fix
         if macs_config == 'MACS2018':
@@ -254,7 +273,7 @@ def main():
 
     # 2. run transformation
     os.chdir(settings.DATA_DIR)
-    os.system('python pix4dnav.py')
+    os.system(f'python pix4dnav.py -ha {args.horizontal_accuracy} -va {args.vertical_accuracy}')
 
     logging.info(f'Finished preparing nav file')
 
@@ -350,7 +369,6 @@ def run_mipps_macs23(chunksize, df_final, max_roll, outdir_temporary):
             outlist = ' '.join(df['full_path'].values[:])
             s = f'{settings.MIPPS_BIN} -c={mipps_script_rgb} -o={outdir_rgb} -j=4 {outlist}'
             os.system(s)
-
 
 if __name__=="__main__":
     main()
