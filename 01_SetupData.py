@@ -4,7 +4,6 @@ import zipfile
 import logging
 from processing_utils import *
 from utils_postprocessing import *
-
 import argparse
 import importlib
 import geopandas as gpd
@@ -14,8 +13,6 @@ import rasterio
 import warnings
 warnings.filterwarnings('ignore')
 warnings.filterwarnings("ignore", category=rasterio.errors.NotGeoreferencedWarning)
-
-
 
 parser = argparse.ArgumentParser()
 parser.add_argument("-s", "--settings",
@@ -34,12 +31,11 @@ parser.add_argument("-dsid", "--dataset_ids", type=str, default=None,
 parser.add_argument("-nav", "--navfile", type=str, default='*_nav_RTK.txt',
                     help="Regex for nav file. Default: '*_nav_RTK.txt'. Please change if you want to use a different nav file")
 
-parser.add_argument("-ha", "--horizontal_accuracy", type=float, default=1.0,
+parser.add_argument("-ha", "--horizontal_accuracy", type=float, default=0.05,
                     help="Horizontal accuracy for pix4D. Default = 1")
 
-parser.add_argument("-va", "--vertical_accuracy", type=float, default=1.0,
+parser.add_argument("-va", "--vertical_accuracy", type=float, default=0.05,
                     help="Horizontal accuracy for pix4D. Default = 1")
-
 
 
 args = parser.parse_args()
@@ -373,7 +369,6 @@ def run_mipps_macs23(chunksize, df_final, max_roll, outdir_temporary):
             outlist = ' '.join(df['full_path'].values[:])
             s = f'{settings.MIPPS_BIN} -c={mipps_script_rgb} -o={outdir_rgb} -j=4 {outlist}'
             os.system(s)
-
 
 if __name__=="__main__":
     main()
