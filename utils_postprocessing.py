@@ -452,8 +452,9 @@ def show_dsm_image(dsm, savepath=None, noData=[-10000, -32768], show_colorbar=Fa
         fig.savefig(savepath)
 
 
-def load_ortho(image_path, pyramid_level=-2):
-    with rasterio.open(image_path) as src:
+def load_ortho(image_path, pyramid_level=-2, overviews=[2,4,8]):
+    with rasterio.open(image_path, 'r+') as src:
+        src.build_overviews(overviews)
         oviews = src.overviews(1)  # list of overviews from biggest to smallest
         oview = oviews[pyramid_level]  # Use second-highest lowest overview
         print('Decimation factor= {}'.format(oview))
@@ -464,8 +465,9 @@ def load_ortho(image_path, pyramid_level=-2):
     return blue, green, red, nir
 
 
-def load_dsm(image_path, pyramid_level=-2):
-    with rasterio.open(image_path) as src:
+def load_dsm(image_path, pyramid_level=-2, overviews=[2,4,8]):
+    with rasterio.open(image_path, 'r+') as src:
+        src.build_overviews(overviews)
         oviews = src.overviews(1)  # list of overviews from biggest to smallest
         oview = oviews[pyramid_level]  # Use second-highest lowest overview
         print('Decimation factor= {}'.format(oview))

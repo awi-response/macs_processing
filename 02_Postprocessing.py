@@ -271,6 +271,10 @@ def main():
     create_vrt(products_dir=PRODUCT_DIR, vrt_script_location=vrt_path)
     os.chdir(working_dir)
 
+    # create previews
+    logging.info('Creating previews!')
+    create_previews(products_dir=PRODUCT_DIR, pyramid_level=1, overwrite=True)
+
     #"""
     # create COG mosaics
     if args.mosaic:
@@ -280,8 +284,8 @@ def main():
         dsm_vrt = PRODUCT_DIR / 'DSM.vrt'
         dsm_cog = PRODUCT_DIR / f'{settings.SITE_NAME}_DSM.tif'
         hillshade_cog = PRODUCT_DIR / f'{settings.SITE_NAME}_Hillshade.tif'
-        s_cog_ortho = f'gdal_translate -of COG -co BIGTIFF=YES -co NUM_THREADS=ALL_CPUS -co COMPRESS=DEFLATE {ortho_vrt} {ortho_cog}'
-        s_cog_dsm = f'gdal_translate -of COG -co BIGTIFF=YES -co NUM_THREADS=ALL_CPUS -co COMPRESS=DEFLATE {dsm_vrt} {dsm_cog}'
+        s_cog_ortho = f'gdal_translate -stats -of COG -co BIGTIFF=YES -co NUM_THREADS=ALL_CPUS -co COMPRESS=DEFLATE {ortho_vrt} {ortho_cog}'
+        s_cog_dsm = f'gdal_translate -stats -of COG -co BIGTIFF=YES -co NUM_THREADS=ALL_CPUS -co COMPRESS=DEFLATE {dsm_vrt} {dsm_cog}'
         s_hillshade = f'gdaldem hillshade -multidirectional -of COG -co BIGTIFF=YES -co NUM_THREADS=ALL_CPUS -co COMPRESS=DEFLATE {dsm_cog} {hillshade_cog}'
         for run in [s_cog_ortho, s_cog_dsm, s_hillshade]:
             os.system(run)
