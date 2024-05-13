@@ -49,15 +49,44 @@ Postprocessing example with custom whiteboxtools based DSM caculation, using bot
 `python 02_Postprocessing.py -s <SETTINGS_FILE> -pc both`
 
 **03_MoveProducts.py**
+
 * script to move final product files to specified directory (after postprocessing)
 
 `python 03_MoveProducts.py -s <SETTINGS_FILE> -d <destination>`
 
 **05_Pull_Backup.py**
+
 * script to pull necessary files for reprocessing from archive
 
 `python 03_MoveProducts.py -a <ARCHIVE_DIR> -t <TARGET_DIR>`
 
 ## Workflow
+
+### Full Workflow example
+
+#### 1 Preprocessing
+
+Convert MACS data to TIFF and setup processing structure
+`python 01_SetupData.py -s -s <SETTINGS_FILE>`
+
+#### 2 Processing
+
+* Run Pix 4d
+* Use Processing templates in `pix4D_processing_templates`
+
+#### 3 Postprocessing
+
+Calculate DSM with Whiteboxtools
+`python 02_SetupData.py -s <SETTINGS_FILE> -m`
+
+* `-m` for creating mosaics
+
+#### 4 Move files to final location
+
+* move files to server location and make ready for shipping
+
+`python 03_MoveProducts.py -s <SETTINGS_FILE> -d <destination>`
+
+### Diagram
 
 ![macs_workflow_v1](https://user-images.githubusercontent.com/40014163/148205796-97045090-e266-48f8-b357-7eaaa8d41b9f.png)
