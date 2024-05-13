@@ -1,0 +1,76 @@
+
+<cameraModelDB>
+	<version>19</version>
+	<rigs/>
+	<cameras>
+		<camera name="MACS_Polar18_Left33577">
+			<imageWidth>4864</imageWidth>
+			<imageHeight>3232</imageHeight>
+			<pixelSize>7.4</pixelSize>
+			<principalPointXmm>17.852278</principalPointXmm>
+			<principalPointYmm>12.08827</principalPointYmm>
+			<lensType>perspective</lensType>
+			<focalLengthmm>90.82686</focalLengthmm>
+			<distortion>3</distortion>
+			<radialK1>0.20834</radialK1>
+			<radialK2>-0.956152</radialK2>
+			<radialK3>0.000026376</radialK3>
+			<tangentialT1>0</tangentialT1>
+			<tangentialT2>0</tangentialT2>
+			<cameraModelSource>user</cameraModelSource>
+			<exifID>MACS_RGB_Left_33577_0.0_4864x3232</exifID>
+			<bandConfig>
+				<band name="R" centralWaveLength="0" width="0" weight="1"/>
+				<band name="G" centralWaveLength="0" width="0" weight="0"/>
+				<band name="B" centralWaveLength="0" width="0" weight="0"/>
+			</bandConfig>
+		</camera>
+		<camera name="MACS_Polar18_Nadir33552">
+			<imageWidth>4864</imageWidth>
+			<imageHeight>3232</imageHeight>
+			<pixelSize>7.4</pixelSize>
+			<principalPointXmm>18.101362</principalPointXmm>
+			<principalPointYmm>11.96617</principalPointYmm>
+			<lensType>perspective</lensType>
+			<focalLengthmm>51.704836</focalLengthmm>
+			<distortion>3</distortion>
+			<radialK1>-0.0118766</radialK1>
+			<radialK2>0.180223</radialK2>
+			<radialK3>-0.000398448</radialK3>
+			<tangentialT1>0</tangentialT1>
+			<tangentialT2>0</tangentialT2>
+			<cameraModelSource>user</cameraModelSource>
+			<exifID>MACS_NIR_33552_0.0_4864x3232</exifID>
+			<bandConfig>
+				<band name="NIR" centralWaveLength="0" width="0" weight="1"/>
+			</bandConfig>
+		</camera>
+		<camera name="MACS_Polar18_Right33576">
+			<imageWidth>4864</imageWidth>
+			<imageHeight>3232</imageHeight>
+			<pixelSize>7.4</pixelSize>
+			<principalPointXmm>17.926204</principalPointXmm>
+			<principalPointYmm>12.076948</principalPointYmm>
+			<lensType>perspective</lensType>
+			<focalLengthmm>90.78616</focalLengthmm>
+			<distortion>3</distortion>
+			<radialK1>0.226746</radialK1>
+			<radialK2>-1.22248</radialK2>
+			<radialK3>0.000005029</radialK3>
+			<tangentialT1>0</tangentialT1>
+			<tangentialT2>0</tangentialT2>
+			<cameraModelSource>user</cameraModelSource>
+			<exifID>MACS_RGB_Right_33576_0.0_4864x3232</exifID>
+			<bandConfig>
+				<band name="R" centralWaveLength="0" width="0" weight="1"/>
+				<band name="G" centralWaveLength="0" width="0" weight="0"/>
+				<band name="B" centralWaveLength="0" width="0" weight="0"/>
+			</bandConfig>
+		</camera>
+	</cameras>
+	<mappings>
+		<mapping exif="MACS_NIR_33552_0.0_4864x3232" camera="MACS_Polar18_Nadir33552"/>
+		<mapping exif="MACS_RGB_Left_33577_0.0_4864x3232" camera="MACS_Polar18_Left33577"/>
+		<mapping exif="MACS_RGB_Right_33576_0.0_4864x3232" camera="MACS_Polar18_Right33576"/>
+	</mappings>
+</cameraModelDB>
