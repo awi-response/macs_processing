@@ -1,22 +1,39 @@
 # macs_processing
+
 all elements (scripts, workflows, descriptions, ...) needed for processing macs images for publication
 
 ## Environment setup
+
 We recommend to use a custom conda environment
 
 Setup new envirnment using the provided environment.yml file
 
-#### Software requirements
+`conda create -n MACS -f environment.yml`
+
+### Additional Software requirements
+
 Please install lastools (required for point cloud clipping)
 
+## Further Setup Steps
+
+### Pix4d
+
+#### Install Camera files
+
+1. Open Pix4d
+2. Help --> Settings --> Tab (Camera Database) --> Import
+3. Select file: `pix4D_cameras/pix4D-kameradatenbank_MACS-Polar18.xml`
+
 ## Scripts
+
 **01_SetupData.py**
+
 * script to preprocess data to get ready for processing in pix4d
 
 `python 01_SetupData.py -s <SETTINGS_FILE> [-l] [-f] [dsid]`
 
-
 **02_Postprocessing.py**
+
 * script to postprocess data and make ready for publication after pix4d run
 
 Postprocessing example with pix4d calculated DSM tiles
@@ -41,6 +58,6 @@ Postprocessing example with custom whiteboxtools based DSM caculation, using bot
 
 `python 03_MoveProducts.py -a <ARCHIVE_DIR> -t <TARGET_DIR>`
 
-
 ## Workflow
+
 ![macs_workflow_v1](https://user-images.githubusercontent.com/40014163/148205796-97045090-e266-48f8-b357-7eaaa8d41b9f.png)
