@@ -2,17 +2,28 @@
 
 all elements (scripts, workflows, descriptions, ...) needed for processing macs images for publication
 
-## Environment setup
+## Conda Environment
 
 We recommend to use a custom conda environment
 
 Setup new envirnment using the provided environment.yml file
+#### Create conda environment
 
-`conda create -n MACS -f environment.yml`
+`conda create -n MACS python=3.8 mamba -c conda-forge`
+
+#### Activate Environment
+
+`conda activate MACS`
+
+#### Install main dependencies
+
+```mamba install gdal=3.4 fiona=1.8 rasterio=1.2 geopandas=0.10 pandas scikit-image joblib scipy tqdm scikit-learn numpy whitebox=2.2.0 -c conda-forge```
 
 ### Additional Software requirements
 
 Please install lastools (required for point cloud clipping)
+
+<https://lastools.github.io/>
 
 ## Further Setup Steps
 
@@ -23,6 +34,12 @@ Please install lastools (required for point cloud clipping)
 1. Open Pix4d
 2. Help --> Settings --> Tab (Camera Database) --> Import
 3. Select file: `pix4D_cameras/pix4D-kameradatenbank_MACS-Polar18.xml`
+
+#### Load processing templates
+
+1. Open Pix4d
+2. Open Project
+3. Processing Options --> Manage Templates --> Check "Import/Export" --> Import... --> Select template(s) from `pix4D_processing_templates`
 
 ## Scripts
 
