@@ -1,4 +1,4 @@
-name: MACS37
+name: MACS
 channels:
   - conda-forge
   - defaults
