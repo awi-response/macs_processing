@@ -6,7 +6,23 @@ all elements (scripts, workflows, descriptions, ...) needed for processing macs 
 
 We recommend to use a custom conda environment
 
+### Automatic Install
+
+#### Create new conda environment with environment file
+
 Setup new envirnment using the provided environment.yml file
+
+##### Install to "MACS" conda environment (default)
+
+`conda env create -f conda/environment.yml`
+
+##### Install to conda environment with custom name
+
+`conda env create -f conda/environment.yml -n <ENVIRONMENT_NAME>`
+
+
+### Manual Install
+
 #### Create conda environment
 
 `conda create -n MACS python=3.8 mamba -c conda-forge`
@@ -17,7 +33,7 @@ Setup new envirnment using the provided environment.yml file
 
 #### Install main dependencies
 
-```mamba install gdal=3.4 fiona=1.8 rasterio=1.2 geopandas=0.10 pandas scikit-image joblib scipy tqdm scikit-learn numpy whitebox=2.2.0 -c conda-forge```
+```mamba install gdal=3.4.0 fiona=1.8.20 rasterio=1.2.10 geopandas=0.10.2 pandas scikit-image joblib scipy tqdm scikit-learn numpy whitebox=2.2.0 -c conda-forge```
 
 ### Additional Software requirements
 
