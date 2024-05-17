@@ -1,3 +1,10 @@
+## [0.8.4] - 2024-05-17
+### Added
+- added pix4d processing templates
+### Changed
+- a lot of code cleanup
+- improved documentation
+
 ## [0.7.1] - 2023-01-27
 ### Added
 - added Point Cloud Clipping Script for reprocessing from Archive
