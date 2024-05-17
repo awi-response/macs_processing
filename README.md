@@ -1,6 +1,6 @@
 # macs_processing
 
-all elements (scripts, workflows, descriptions, ...) needed for processing macs images for publication
+all elements (scripts, workflows, descriptions, ...) needed for processing MACS images for publication
 
 ## Conda Environment
 
@@ -10,7 +10,7 @@ We recommend to use a custom conda environment
 
 #### Create new conda environment with environment file
 
-Setup new envirnment using the provided environment.yml file
+Setup new environment using the provided environment.yml file
 
 ##### Install to "MACS" conda environment (default)
 
@@ -19,7 +19,6 @@ Setup new envirnment using the provided environment.yml file
 ##### Install to conda environment with custom name
 
 `conda env create -f conda/environment.yml -n <ENVIRONMENT_NAME>`
-
 
 ### Manual Install
 
