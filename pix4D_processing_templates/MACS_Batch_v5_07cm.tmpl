@@ -6,7 +6,7 @@
 		<p4dVersion>22</p4dVersion>
 	</information>
 	<initial>
-		<runStep>false</runStep>
+		<runStep>true</runStep>
 		<!--    General    -->
 		<!--Keypoints Image Scale-->
 		<keypointsImageScale>Full</keypointsImageScale>
@@ -27,7 +27,7 @@
 		<!--Optimizer-->
 		<optimizerType>Ceres</optimizerType>
 		<!--Camera optimization-->
-		<internalParamOptimization>All</internalParamOptimization>
+		<internalParamOptimization>AllPrior</internalParamOptimization>
 		<externalParamOptimization>All</externalParamOptimization>
 		<leverarmParamOptimization>None</leverarmParamOptimization>
 		<!--Rematch-->
@@ -45,8 +45,8 @@
 		<!--Densification-->
 		<pclImageDownscaleFactor>1</pclImageDownscaleFactor>
 		<pclImageMultiscale>false</pclImageMultiscale>
-		<pclDensity>High</pclDensity>
-		<pclMinNoMatches>6</pclMinNoMatches>
+		<pclDensity>Optimal</pclDensity>
+		<pclMinNoMatches>4</pclMinNoMatches>
 		<!--Export-->
 		<pclExportLAS>true</pclExportLAS>
 		<pclExportLAZ>false</pclExportLAZ>
