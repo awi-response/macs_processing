@@ -3,7 +3,7 @@
 	<version>19</version>
 	<rigs/>
 	<cameras>
-		<camera name="MACS_Polar18_Left33577">
+		<camera name="MACS_Polar18_Left33577_v2">
 			<imageWidth>4864</imageWidth>
 			<imageHeight>3232</imageHeight>
 			<pixelSize>7.4</pixelSize>
@@ -25,7 +25,7 @@
 				<band name="B" centralWaveLength="0" width="0" weight="0"/>
 			</bandConfig>
 		</camera>
-		<camera name="MACS_Polar18_Nadir33552">
+		<camera name="MACS_Polar18_Nadir33552_v2">
 			<imageWidth>4864</imageWidth>
 			<imageHeight>3232</imageHeight>
 			<pixelSize>7.4</pixelSize>
@@ -45,7 +45,7 @@
 				<band name="NIR" centralWaveLength="0" width="0" weight="1"/>
 			</bandConfig>
 		</camera>
-		<camera name="MACS_Polar18_Right33576">
+		<camera name="MACS_Polar18_Right33576_v2">
 			<imageWidth>4864</imageWidth>
 			<imageHeight>3232</imageHeight>
 			<pixelSize>7.4</pixelSize>
@@ -69,8 +69,8 @@
 		</camera>
 	</cameras>
 	<mappings>
-		<mapping exif="MACS_NIR_33552_0.0_4864x3232" camera="MACS_Polar18_Nadir33552"/>
-		<mapping exif="MACS_RGB_Left_33577_0.0_4864x3232" camera="MACS_Polar18_Left33577"/>
-		<mapping exif="MACS_RGB_Right_33576_0.0_4864x3232" camera="MACS_Polar18_Right33576"/>
+		<mapping exif="MACS_NIR_33552_0.0_4864x3232" camera="MACS_Polar18_Nadir33552_v2"/>
+		<mapping exif="MACS_RGB_Left_33577_0.0_4864x3232" camera="MACS_Polar18_Left33577_v2"/>
+		<mapping exif="MACS_RGB_Right_33576_0.0_4864x3232" camera="MACS_Polar18_Right33576_v2"/>
 	</mappings>
 </cameraModelDB>
