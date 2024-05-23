@@ -170,10 +170,14 @@ def check_ortho_validity(df, n_jobs=40):
     flist_rgb = df.query('sensor == "rgb"')['filename'].values
     rgb_validity = Parallel(n_jobs=n_jobs)(delayed(check_tile_validity)(im) for im in flist_rgb[:])
 
+    # Validity for entire subset, needs to have at least one tile with data
+    nir_valid = any(nir_validity)
+    rgb_valid = any(rgb_validity)
+
     # documentation
-    print(f'NIR images have content:{any(nir_validity)}, {sum(nir_validity)}/{len(flist_nir)} images')
-    print(f'RGB images have content:{any(rgb_validity)}, {sum(rgb_validity)}/{len(flist_rgb)} images')
-    is_valid = all([nir_validity, rgb_validity])
+    print(f'NIR images have content:{nir_valid}, {sum(nir_validity)}/{len(flist_nir)} images')
+    print(f'RGB images have content:{rgb_valid}, {sum(rgb_validity)}/{len(flist_rgb)} images')
+    is_valid = nir_valid & rgb_valid
     print(f'Continue Postprocessing: {is_valid}')
 
     return is_valid
