@@ -310,8 +310,18 @@ def main():
         print(f'nav_file_in could not be found! Copy skipped')
     shutil.copy(logfile, processing_info_dir)
 
-    logging.info('Deleting temporary directories!')
     # Cleanup temporary dirs
+    logging.info('Deleting temporary files and directories!')
+    # delete pyramids
+    # DSM
+    overview_dsm = PRODUCT_DIR / 'DSM.vrt.ovr'
+    if overview_dsm.exists():
+        os.remove(overview_dsm)
+    # Ortho    
+    overview_ortho = PRODUCT_DIR / 'Ortho.vrt.ovr'
+    if overview_ortho.exists():
+        os.remove(overview_ortho)    
+
     shutil.rmtree(TMP_MASK_VECTORIZE_DIR)
     shutil.rmtree(TMP_DIR_ORTHO)
     shutil.rmtree(TMP_DIR_VRT)
