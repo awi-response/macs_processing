@@ -58,7 +58,7 @@ def main():
     assert not tar_file_name.exists()
 
     # Example usage
-    excluded_directories = ['33552_NIR', '33576_Right', '33577_Left', '06_DataProducts']
+    excluded_directories = ['33552_NIR', '33576_Right', '33577_Left', '06_DataProducts', '99683_NIR', '121502_RGB']
     excluded_files = [f'{site_name}_postprocessing.log']
     create_zip_archive(product_dir, tar_file_name, excluded_directories, excluded_files)
     
