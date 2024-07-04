@@ -564,3 +564,30 @@ def unzip_tarfile(p_file, site_name, target_dir):
         print('Start extraction to:', target_dir)
         for ff in tqdm.tqdm(unzip_subset[:]):
             f.extract(ff, path=target_dir)
+
+
+def check_las2las_exists():
+    """
+    Check if the 'las2las' command exists in the system PATH.
+
+    This function uses shutil.which() to search for the 'las2las' executable
+    in the directories listed in the system's PATH environment variable.
+
+    Raises:
+        FileNotFoundError: If the 'las2las' command is not found in the system PATH.
+
+    Returns:
+        None
+
+    Example:
+        >>> check_las2las_exists()
+        # If 'las2las' exists, function completes silently.
+        # If 'las2las' doesn't exist, it raises a FileNotFoundError.
+
+    Note:
+        This function is typically used before attempting to execute the 'las2las'
+        command to ensure its availability and provide a clear error message if
+        the command is not installed or not in the PATH.
+    """
+    if shutil.which("las2las") is None:
+        raise FileNotFoundError("The 'las2las' command is not found in the system PATH.")
