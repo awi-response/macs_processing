@@ -1,18 +1,17 @@
+import os
+import shutil
 import tarfile
+from pathlib import Path
 
 import geopandas as gpd
+import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import rasterio
-import matplotlib.pyplot as plt
-import os
-import shutil
-from pathlib import Path
-from joblib import Parallel, delayed
 import tqdm
-from sklearn import preprocessing
+from joblib import Parallel, delayed
 from mpl_toolkits.axes_grid1 import make_axes_locatable
-import re
+from sklearn import preprocessing
 
 
 def flist_to_df(filelist):
@@ -34,24 +33,26 @@ def flist_to_df(filelist):
     rows = []
     cols = []
     for f in filelist:
-        sensor, row, col = f.name[:-4].split('_')[-3:]
+        sensor, row, col = f.name[:-4].split("_")[-3:]
         sensors.append(sensor)
         rows.append(row)
         cols.append(col)
 
-    df = pd.DataFrame(columns=['filename', 'sensor', 'row', 'col'])
-    df['filename'] = filelist
-    df['sensor'] = sensors
-    df['row'] = rows
-    df['col'] = cols
+    df = pd.DataFrame(columns=["filename", "sensor", "row", "col"])
+    df["filename"] = filelist
+    df["sensor"] = sensors
+    df["row"] = rows
+    df["col"] = cols
     return df
 
 
 # create more specific vrt files for each run to avoid duplicates on parallel run
-def stack_output(outmosaic, rgbfile, nirfile, remove_temporary_files=True, vrt_dir=Path('.')):
+def stack_output(
+    outmosaic, rgbfile, nirfile, remove_temporary_files=True, vrt_dir=Path(".")
+):
     """
     Function to stack together RGB and NIR images
-    Input: 
+    Input:
         4 Band RGB (RGB-A)
         2 Band NIR (NIR-A)
     """
@@ -59,26 +60,26 @@ def stack_output(outmosaic, rgbfile, nirfile, remove_temporary_files=True, vrt_d
     basename_rgb = rgbfile.name[:-4]
     basename_nir = nirfile.name[:-4]
 
-    #b_nir = vrt_dir / f'{basename_nir}_1.vrt'
-    mos = vrt_dir / f'{basename_rgb}.vrt'
+    # b_nir = vrt_dir / f'{basename_nir}_1.vrt'
+    mos = vrt_dir / f"{basename_rgb}.vrt"
 
     rgb_vrt = []
     for band in [1, 2, 3]:
-        infile = vrt_dir / f'{basename_rgb}_{band}.vrt'
+        infile = vrt_dir / f"{basename_rgb}_{band}.vrt"
         rgb_vrt.append(infile)
-        s = f'gdalbuildvrt -q -b {band} {infile} {rgbfile}'
+        s = f"gdalbuildvrt -q -b {band} {infile} {rgbfile}"
         os.system(s)
 
     for band in [1]:
-        infile_nir = vrt_dir / f'{basename_nir}_{band}.vrt'
-        s = f'gdalbuildvrt -q -b {band} {infile_nir} {nirfile}'
+        infile_nir = vrt_dir / f"{basename_nir}_{band}.vrt"
+        s = f"gdalbuildvrt -q -b {band} {infile_nir} {nirfile}"
         os.system(s)
-    
+
     b1, b2, b3 = rgb_vrt
-    s = f'gdalbuildvrt -q -separate {mos} {b3} {b2} {b1} {infile_nir}'
+    s = f"gdalbuildvrt -q -separate {mos} {b3} {b2} {b1} {infile_nir}"
     os.system(s)
 
-    s = f'gdal_translate -of COG -a_nodata 0 -co COMPRESS=DEFLATE -q -co BIGTIFF=YES {mos} {outmosaic}'
+    s = f"gdal_translate -of COG -a_nodata 0 -co COMPRESS=DEFLATE -q -co BIGTIFF=YES {mos} {outmosaic}"
     os.system(s)
     if remove_temporary_files:
         for file in [b1, b2, b3, infile_nir, mos]:
@@ -99,7 +100,7 @@ def calculate_pyramids(rasterfile):
     None.
 
     """
-    addo = f'gdaladdo -ro --config COMPRESS_OVERVIEW DEFLATE --config GDAL_NUM_THREADS ALL_CPUS {rasterfile}'
+    addo = f"gdaladdo -ro --config COMPRESS_OVERVIEW DEFLATE --config GDAL_NUM_THREADS ALL_CPUS {rasterfile}"
     os.system(addo)
 
 
@@ -108,21 +109,21 @@ def mask_and_name_bands(mosaic_file):
     Function to mask incomplete spectral data (e.g. with only NIR data and no RGB and vice versa)
     Add names to Bands
     """
-    with rasterio.open(mosaic_file, 'r+') as src:
-        src.profile['nodata'] = 0
+    with rasterio.open(mosaic_file, "r+") as src:
+        src.profile["nodata"] = 0
         data = src.read()
         newmask = ~(data == 0).any(axis=0)
         newmask_write = np.r_[src.count * [newmask]]
         data_masked = data * newmask_write
-        src.set_band_description(1, 'MACS Blue Band')
-        src.set_band_description(2, 'MACS Green Band')
-        src.set_band_description(3, 'MACS Red Band')
-        src.set_band_description(4, 'MACS NIR Band')
+        src.set_band_description(1, "MACS Blue Band")
+        src.set_band_description(2, "MACS Green Band")
+        src.set_band_description(3, "MACS Red Band")
+        src.set_band_description(4, "MACS NIR Band")
         src.write(data_masked)
 
 
 def get_nir_sensor_name(df):
-    for sensor_name in ['nir', 'grayscale']:
+    for sensor_name in ["nir", "grayscale"]:
         if len(df.query(f'sensor=="{sensor_name}"')) > 0:
             return sensor_name
     else:
@@ -130,11 +131,12 @@ def get_nir_sensor_name(df):
 
 
 def get_rgb_sensor_name(df):
-    for sensor_name in ['rgb', 'group1', 'RGB']:
+    for sensor_name in ["rgb", "group1", "RGB"]:
         if len(df.query(f'sensor=="{sensor_name}"')) > 0:
             return sensor_name
     else:
         raise NameError("sensor name for NIR band does not match")
+
 
 def check_tile_validity(image_path):
     with rasterio.open(image_path) as src:
@@ -164,26 +166,41 @@ def check_ortho_validity(df, n_jobs=40):
     """
 
     # test for nir validity
-    flist_nir = df.query('sensor == "nir"')['filename'].values
-    nir_validity = Parallel(n_jobs=n_jobs)(delayed(check_tile_validity)(im) for im in flist_nir[:])
+    flist_nir = df.query('sensor == "nir"')["filename"].values
+    nir_validity = Parallel(n_jobs=n_jobs)(
+        delayed(check_tile_validity)(im) for im in flist_nir[:]
+    )
     # test for rgb validity
-    flist_rgb = df.query('sensor == "rgb"')['filename'].values
-    rgb_validity = Parallel(n_jobs=n_jobs)(delayed(check_tile_validity)(im) for im in flist_rgb[:])
+    flist_rgb = df.query('sensor == "rgb"')["filename"].values
+    rgb_validity = Parallel(n_jobs=n_jobs)(
+        delayed(check_tile_validity)(im) for im in flist_rgb[:]
+    )
 
     # Validity for entire subset, needs to have at least one tile with data
     nir_valid = any(nir_validity)
     rgb_valid = any(rgb_validity)
 
     # documentation
-    print(f'NIR images have content:{nir_valid}, {sum(nir_validity)}/{len(flist_nir)} images')
-    print(f'RGB images have content:{rgb_valid}, {sum(rgb_validity)}/{len(flist_rgb)} images')
+    print(
+        f"NIR images have content:{nir_valid}, {sum(nir_validity)}/{len(flist_nir)} images"
+    )
+    print(
+        f"RGB images have content:{rgb_valid}, {sum(rgb_validity)}/{len(flist_rgb)} images"
+    )
     is_valid = nir_valid & rgb_valid
-    print(f'Continue Postprocessing: {is_valid}')
+    print(f"Continue Postprocessing: {is_valid}")
 
     return is_valid
 
 
-def full_postprocessing_optical(df, tile_id, rgb_name='group1', nir_name='nir', target_dir_mosaic=None, vrt_dir=Path('.')):
+def full_postprocessing_optical(
+    df,
+    tile_id,
+    rgb_name="group1",
+    nir_name="nir",
+    target_dir_mosaic=None,
+    vrt_dir=Path("."),
+):
     """
     Wrapper function to sequentially run
 
@@ -199,19 +216,23 @@ def full_postprocessing_optical(df, tile_id, rgb_name='group1', nir_name='nir', 
     None.
 
     """
-    subset = df[df['tile_id'] == tile_id]
+    subset = df[df["tile_id"] == tile_id]
     rgbfile = subset.query(f'sensor=="{rgb_name}"').filename.values[0]
     nirfile = subset.query(f'sensor=="{nir_name}"').filename.values[0]
     if target_dir_mosaic is not None:
         target_dir_mosaic.mkdir(exist_ok=True)
-        outmosaic = target_dir_mosaic / f'mosaic_{tile_id}.tif'
+        outmosaic = target_dir_mosaic / f"mosaic_{tile_id}.tif"
     else:
-        outmosaic = rgbfile.parent / f'mosaic_{tile_id}.tif'
-    stack_output(outmosaic, rgbfile, nirfile, remove_temporary_files=True, vrt_dir=vrt_dir)
+        outmosaic = rgbfile.parent / f"mosaic_{tile_id}.tif"
+    stack_output(
+        outmosaic, rgbfile, nirfile, remove_temporary_files=True, vrt_dir=vrt_dir
+    )
     mask_and_name_bands(outmosaic)
 
 
-def move_and_rename_processed_tiles(df, out_basename, target_dir, product_type, move=True):
+def move_and_rename_processed_tiles(
+    df, out_basename, target_dir, product_type, move=True
+):
     """
     Parameters
     ----------
@@ -234,7 +255,7 @@ def move_and_rename_processed_tiles(df, out_basename, target_dir, product_type, 
     for index, row in df.iloc[:].iterrows():
         tile_id = row.tile_id
         infile = row.filename
-        outfile = target_dir / f'{out_basename}_{product_type}_{tile_id}.tif'
+        outfile = target_dir / f"{out_basename}_{product_type}_{tile_id}.tif"
 
         if move:
             shutil.move(infile, outfile)
@@ -254,8 +275,12 @@ def move_and_rename_processed_tiles(df, out_basename, target_dir, product_type, 
         """
 
 
-def create_mask_vector(raster_file, temporary_target_dir, remove_raster_mask=False,
-                       polygonize=Path(os.environ['CONDA_PREFIX']) / 'Scripts' / 'gdal_polygonize.py'):
+def create_mask_vector(
+    raster_file,
+    temporary_target_dir,
+    remove_raster_mask=False,
+    polygonize=Path(os.environ["CONDA_PREFIX"]) / "Scripts" / "gdal_polygonize.py",
+):
     """
     Function to create vectors of valid data for a raster file
     Parameters
@@ -275,13 +300,15 @@ def create_mask_vector(raster_file, temporary_target_dir, remove_raster_mask=Fal
         path of output vector footprints file.
 
     """
-    maskfile = temporary_target_dir / (raster_file.stem + '_mask.tif')
-    mask_vector = temporary_target_dir / (raster_file.stem + '_mask.geojson')
+    maskfile = temporary_target_dir / (raster_file.stem + "_mask.tif")
+    mask_vector = temporary_target_dir / (raster_file.stem + "_mask.geojson")
 
-    s_extract_mask = f'gdal_translate -q -ot Byte -b mask -of GTiff {raster_file} {maskfile}'
+    s_extract_mask = (
+        f"gdal_translate -q -ot Byte -b mask -of GTiff {raster_file} {maskfile}"
+    )
     os.system(s_extract_mask)
 
-    s_polygonize_mask = f'python {polygonize} -q -f GeoJSON {maskfile} {mask_vector}'
+    s_polygonize_mask = f"python {polygonize} -q -f GeoJSON {maskfile} {mask_vector}"
     os.system(s_polygonize_mask)
 
     # needs to be fixed - is not deleting at the moment
@@ -293,7 +320,7 @@ def create_mask_vector(raster_file, temporary_target_dir, remove_raster_mask=Fal
 
 def load_and_prepare_footprints(vector_file):
     """
-    
+
 
     Parameters
     ----------
@@ -307,9 +334,9 @@ def load_and_prepare_footprints(vector_file):
 
     """
     gdf = gpd.read_file(vector_file)
-    file_name_raster = Path(str(vector_file).replace('_mask.geojson', '.tif')).name
-    gdf['Orthomosaic'] = file_name_raster
-    gdf['DSM'] = file_name_raster.replace('_Ortho_', '_DSM_')
+    file_name_raster = Path(str(vector_file).replace("_mask.geojson", ".tif")).name
+    gdf["Orthomosaic"] = file_name_raster
+    gdf["DSM"] = file_name_raster.replace("_Ortho_", "_DSM_")
     return gdf
 
 
@@ -338,15 +365,15 @@ def merge_single_vector_files(gdf_list, outfile, site_name, date_local):
     gdf_merged = gpd.GeoDataFrame(pd.concat(gdf_list))
     gdf_merged = gdf_merged.set_crs(crs=gdf_list[0].crs).to_crs(epsg=4326)
 
-    gdf_merged = gdf_merged[gdf_merged['DN'] > 0]
-    gdf_merged = gdf_merged.drop(columns=['DN'])
+    gdf_merged = gdf_merged[gdf_merged["DN"] > 0]
+    gdf_merged = gdf_merged.drop(columns=["DN"])
 
-    gdf_merged['Site_name'] = site_name
-    gdf_merged['Date'] = date_local
+    gdf_merged["Site_name"] = site_name
+    gdf_merged["Date"] = date_local
 
     # dissolve single part to multipart
     cols = gdf_merged.columns
-    gdf_merged = gdf_merged.dissolve(by='Orthomosaic').reset_index(drop=False)[cols]
+    gdf_merged = gdf_merged.dissolve(by="Orthomosaic").reset_index(drop=False)[cols]
 
     gdf_merged.to_file(outfile)
 
@@ -371,16 +398,16 @@ def delete_empty_product_tiles(footprints_file, Orthodir, DSMdir):
 
     df = gpd.read_file(footprints_file)
 
-    flist_ortho = list(Orthodir.glob('*.tif'))
-    delete_ortho = [f for f in flist_ortho if f.name not in df['Orthomosaic'].values]
+    flist_ortho = list(Orthodir.glob("*.tif"))
+    delete_ortho = [f for f in flist_ortho if f.name not in df["Orthomosaic"].values]
     for f in delete_ortho[:]:
         try:
             os.remove(f)
         except:
             print(f"Skipped deleting {f.name}")
 
-    flist_dsm = list(DSMdir.glob('*.tif'))
-    delete_dsm = [f for f in flist_dsm if f.name not in df['DSM'].values]
+    flist_dsm = list(DSMdir.glob("*.tif"))
+    delete_dsm = [f for f in flist_dsm if f.name not in df["DSM"].values]
     for f in delete_dsm[:]:
         try:
             os.remove(f)
@@ -389,13 +416,14 @@ def delete_empty_product_tiles(footprints_file, Orthodir, DSMdir):
 
 
 def parse_site_name(site_name):
-    region, site, site_number, date_tmp, resolution = site_name.split('_')
-    date = f'{date_tmp[:4]}-{date_tmp[4:6]}-{date_tmp[6:]}'
+    region, site, site_number, date_tmp, resolution = site_name.split("_")
+    date = f"{date_tmp[:4]}-{date_tmp[4:6]}-{date_tmp[6:]}"
     return region, site, site_number, date, resolution
 
+
 def parse_site_name_v2(site_name):
-    region, site, date_tmp, resolution, site_number = site_name.split('_')
-    date = f'{date_tmp[:4]}-{date_tmp[4:6]}-{date_tmp[6:]}'
+    region, site, date_tmp, resolution, site_number = site_name.split("_")
+    date = f"{date_tmp[:4]}-{date_tmp[4:6]}-{date_tmp[6:]}"
     return region, site, site_number, date, resolution
 
 
@@ -411,7 +439,9 @@ def prepare_band(inband, noData=0, p_low=0, p_high=98):
     mask = inband == noData
     p2 = np.percentile(inband[~mask], p_low)
     p98 = np.percentile(inband[~mask], p_high)
-    normed = np.clip(preprocessing.MinMaxScaler().fit_transform(np.clip(inband, p2, p98)), 0, 1)
+    normed = np.clip(
+        preprocessing.MinMaxScaler().fit_transform(np.clip(inband, p2, p98)), 0, 1
+    )
     normed[mask] = 0
     return np.ma.masked_where(mask, normed)
 
@@ -419,15 +449,17 @@ def prepare_band(inband, noData=0, p_low=0, p_high=98):
 def show_3band_image(image, savepath=None, **kwargs):
     fig, ax = plt.subplots(dpi=300, **kwargs)
     ax.imshow(image)
-    ax.set_xticklabels('')
+    ax.set_xticklabels("")
     ax.set_xticks([])
-    ax.set_yticklabels('')
+    ax.set_yticklabels("")
     ax.set_yticks([])
     if savepath:
         fig.savefig(savepath)
 
 
-def show_dsm_image(dsm, savepath=None, noData=[-10000, -32768], show_colorbar=False, **kwargs):
+def show_dsm_image(
+    dsm, savepath=None, noData=[-10000, -32768], show_colorbar=False, **kwargs
+):
     # mask no data
     if not isinstance(noData, list):
         noData = [noData]
@@ -441,10 +473,12 @@ def show_dsm_image(dsm, savepath=None, noData=[-10000, -32768], show_colorbar=Fa
 
     # create figure
     fig, ax = plt.subplots(dpi=300, **kwargs)
-    im = ax.imshow(np.ma.masked_where(mask, dsm), vmin=p_low, vmax=p_high, cmap=plt.cm.terrain)
-    ax.set_xticklabels('')
+    im = ax.imshow(
+        np.ma.masked_where(mask, dsm), vmin=p_low, vmax=p_high, cmap=plt.cm.terrain
+    )
+    ax.set_xticklabels("")
     ax.set_xticks([])
-    ax.set_yticklabels('')
+    ax.set_yticklabels("")
     ax.set_yticks([])
 
     # add colorbar
@@ -456,26 +490,36 @@ def show_dsm_image(dsm, savepath=None, noData=[-10000, -32768], show_colorbar=Fa
         fig.savefig(savepath)
 
 
-def load_ortho(image_path, pyramid_level=-2, overviews=[2,4,8]):
-    with rasterio.open(image_path, 'r+') as src:
+def load_ortho(image_path, pyramid_level=-2, overviews=[2, 4, 8]):
+    with rasterio.open(image_path, "r+") as src:
         src.build_overviews(overviews)
         oviews = src.overviews(1)  # list of overviews from biggest to smallest
         oview = oviews[pyramid_level]  # Use second-highest lowest overview
-        print('Decimation factor= {}'.format(oview))
-        red = src.read(3, out_shape=(1, int(src.height // oview), int(src.width // oview)))
-        green = src.read(2, out_shape=(1, int(src.height // oview), int(src.width // oview)))
-        blue = src.read(1, out_shape=(1, int(src.height // oview), int(src.width // oview)))
-        nir = src.read(4, out_shape=(1, int(src.height // oview), int(src.width // oview)))
+        print("Decimation factor= {}".format(oview))
+        red = src.read(
+            3, out_shape=(1, int(src.height // oview), int(src.width // oview))
+        )
+        green = src.read(
+            2, out_shape=(1, int(src.height // oview), int(src.width // oview))
+        )
+        blue = src.read(
+            1, out_shape=(1, int(src.height // oview), int(src.width // oview))
+        )
+        nir = src.read(
+            4, out_shape=(1, int(src.height // oview), int(src.width // oview))
+        )
     return blue, green, red, nir
 
 
-def load_dsm(image_path, pyramid_level=-2, overviews=[2,4,8]):
-    with rasterio.open(image_path, 'r+') as src:
+def load_dsm(image_path, pyramid_level=-2, overviews=[2, 4, 8]):
+    with rasterio.open(image_path, "r+") as src:
         src.build_overviews(overviews)
         oviews = src.overviews(1)  # list of overviews from biggest to smallest
         oview = oviews[pyramid_level]  # Use second-highest lowest overview
-        print('Decimation factor= {}'.format(oview))
-        dsm = src.read(1, out_shape=(1, int(src.height // oview), int(src.width // oview)))
+        print("Decimation factor= {}".format(oview))
+        dsm = src.read(
+            1, out_shape=(1, int(src.height // oview), int(src.width // oview))
+        )
     return dsm
 
 
@@ -487,14 +531,12 @@ def prepare_image_3band(band_list):
 
 
 def create_vrt(products_dir, vrt_script_location):
-    """
-
-    """
+    """ """
     # create vrt
     vrt_script = Path(vrt_script_location).name
     shutil.copy(vrt_script_location, products_dir)
     os.chdir(products_dir)
-    os.system(f'python {vrt_script}')
+    os.system(f"python {vrt_script}")
     os.remove(vrt_script)
 
 
@@ -504,24 +546,29 @@ def create_previews(products_dir, overwrite=False, pyramid_level=-2):
     """
     # check if output files already exist
     basename = products_dir.parent.name
-    filename_rgb = products_dir / f'{basename}_preview_RGB.png'
-    filename_cir = products_dir / f'{basename}_preview_CIR.png'
-    filename_dsm = products_dir / f'{basename}_preview_DSM.png'
+    filename_rgb = products_dir / f"{basename}_preview_RGB.png"
+    filename_cir = products_dir / f"{basename}_preview_CIR.png"
+    filename_dsm = products_dir / f"{basename}_preview_DSM.png"
 
-    fname_exist = [(products_dir / fname).exists() for fname in [filename_rgb, filename_cir, filename_dsm]]
+    fname_exist = [
+        (products_dir / fname).exists()
+        for fname in [filename_rgb, filename_cir, filename_dsm]
+    ]
     if np.all(fname_exist):
-        print('files already exist!')
+        print("files already exist!")
         if not overwrite:
-            print('Skipped processing!')
+            print("Skipped processing!")
             return 0
         else:
-            print('Overwriting output files!')
+            print("Overwriting output files!")
 
-    print('Start processing previews')
+    print("Start processing previews")
 
     # Load Ortho + dsm
-    blue, green, red, nir = load_ortho(products_dir / 'Ortho.vrt', pyramid_level=pyramid_level)
-    dsm = load_dsm(products_dir / 'DSM.vrt', pyramid_level=pyramid_level)
+    blue, green, red, nir = load_ortho(
+        products_dir / "Ortho.vrt", pyramid_level=pyramid_level
+    )
+    dsm = load_dsm(products_dir / "DSM.vrt", pyramid_level=pyramid_level)
 
     # prepare data
     # RGB
@@ -534,15 +581,18 @@ def create_previews(products_dir, overwrite=False, pyramid_level=-2):
     show_dsm_image(dsm, savepath=filename_dsm, show_colorbar=True)
 
 
-def create_unziplist2(flist, subset=['01_rawdata', '02_studysites', '04_pix4d'],
-                      exclude=['2_densification/', '3_dsm_ortho/']):
+def create_unziplist2(
+    flist,
+    subset=["01_rawdata", "02_studysites", "04_pix4d"],
+    exclude=["2_densification/", "3_dsm_ortho/"],
+):
     outlist = []
     for sub in subset:
-        #outlist.extend([f for f in flist if sub in f])
+        # outlist.extend([f for f in flist if sub in f])
         outlist.extend(list(pd.Series(flist)[pd.Series(flist).str.contains(sub)]))
         # exclusion - not working yet
     if len(exclude) > 0:
-        pattern = '|'.join(exclude)
+        pattern = "|".join(exclude)
         r = pd.Series(outlist)
         contains = r.str.contains(pattern)
         outlist = r[~contains].values
@@ -553,15 +603,18 @@ def create_unziplist2(flist, subset=['01_rawdata', '02_studysites', '04_pix4d'],
 def unzip_tarfile(p_file, site_name, target_dir):
     with tarfile.open(p_file) as f:
         flist = f.getnames()
-        print(f'Number of files in archive: {len(flist)}')
+        print(f"Number of files in archive: {len(flist)}")
         # check if rawdata should be processed
-        subset = [f'04_pix4d/{site_name}/2_densification/point_cloud', 'tile_footprints']
+        subset = [
+            f"04_pix4d/{site_name}/2_densification/point_cloud",
+            "tile_footprints",
+        ]
         unzip_subset = create_unziplist2(flist, subset=subset, exclude=[])
         assert len(unzip_subset) > 0
         unzip_subset = [f for f in unzip_subset if not (target_dir / f).exists()]
-        print(f'Number of files to extract: {len(unzip_subset)}')
+        print(f"Number of files to extract: {len(unzip_subset)}")
         # extract
-        print('Start extraction to:', target_dir)
+        print("Start extraction to:", target_dir)
         for ff in tqdm.tqdm(unzip_subset[:]):
             f.extract(ff, path=target_dir)
 
@@ -590,4 +643,6 @@ def check_las2las_exists():
         the command is not installed or not in the PATH.
     """
     if shutil.which("las2las") is None:
-        raise FileNotFoundError("The 'las2las' command is not found in the system PATH.")
+        raise FileNotFoundError(
+            "The 'las2las' command is not found in the system PATH."
+        )
