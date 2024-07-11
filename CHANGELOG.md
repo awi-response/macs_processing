@@ -1,3 +1,14 @@
+## [0.8.5] - 2024-07-11
+
+### Added
+
+- added pix4d processing templates for 15cm (2023)
+- added pix4d camera file for 2023 data
+
+### Changed
+
+- code reformatting with ruff
+
 ## [0.8.4] - 2024-05-17
 
 ### Added
