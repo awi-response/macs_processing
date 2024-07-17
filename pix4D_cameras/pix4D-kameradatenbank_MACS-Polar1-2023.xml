@@ -3,7 +3,7 @@
 	<version>19</version>
 
 	<cameras>
-		<camera name="121502_RGB_0.0_8416x6032">
+		<camera name="MACS_Polar1-2023_RGB121502_v2">
 			<imageWidth>8416</imageWidth>
 			<imageHeight>6032</imageHeight>
 			<pixelSize>4.6</pixelSize>
@@ -24,12 +24,12 @@
 				<band name="Blue" centralWaveLength="470" width="0" weight="0.0722"/>
 			</bandConfig>
 		</camera>
-		<camera name="99683_NIR_0.0_8416x6032">
+		<camera name="MACS_Polar1-2023_NIR99683_v2">
 			<imageWidth>8416</imageWidth>
 			<imageHeight>6032</imageHeight>
 			<pixelSize>4.6</pixelSize>
-			<principalPointXmm>19.3568</principalPointXmm>
-			<principalPointYmm>13.8736</principalPointYmm>
+			<principalPointXmm>19.229518</principalPointXmm>
+			<principalPointYmm>14.00562</principalPointYmm>
 			<lensType>perspective</lensType>
 			<focalLengthmm>36.2658</focalLengthmm>
 			<distortion>3</distortion>
@@ -40,12 +40,12 @@
 			<tangentialT2>0</tangentialT2>
 			<cameraModelSource>user</cameraModelSource>
 			<bandConfig>
-				<band name="Grayscale" centralWaveLength="0" width="0" weight="1"/>
+				<band name="NIR" centralWaveLength="0" width="0" weight="1"/>
 			</bandConfig>
 		</camera>
 	</cameras>
 	<mappings>
-		<mapping exif="121502_RGB_0.0_8416x6032" camera="MACS_Polar1-2023_RGB121502"/>
-		<mapping exif="99683_NIR_0.0_8416x6032" camera="MACS_Polar1-2023_NIR99683"/>
+		<mapping exif="121502_RGB_0.0_8416x6032" camera="MACS_Polar1-2023_RGB121502_v2"/>
+		<mapping exif="99683_NIR_0.0_8416x6032" camera="MACS_Polar1-2023_NIR99683_v2"/>
 	</mappings>
 </cameraModelDB>
