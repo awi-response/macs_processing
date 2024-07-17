@@ -10,7 +10,7 @@
 			<principalPointXmm>19.34484</principalPointXmm>
 			<principalPointYmm>14.055162</principalPointYmm>
 			<lensType>perspective</lensType>
-			<focalLengthmm>23.814982</focalLengthmm>
+			<focalLengthmm>36.0564</focalLengthmm>
 			<distortion>3</distortion>
 			<radialK1>-0.0824</radialK1>
 			<radialK2>0.0777</radialK2>
@@ -31,10 +31,10 @@
 			<principalPointXmm>19.3568</principalPointXmm>
 			<principalPointYmm>13.8736</principalPointYmm>
 			<lensType>perspective</lensType>
-			<focalLengthmm>23.814982</focalLengthmm>
+			<focalLengthmm>36.2658</focalLengthmm>
 			<distortion>3</distortion>
-			<radialK1>-0.0824</radialK1>
-			<radialK2>0.0777</radialK2>
+			<radialK1>-0.0856</radialK1>
+			<radialK2>0.0824</radialK2>
 			<radialK3>0</radialK3>
 			<tangentialT1>0</tangentialT1>
 			<tangentialT2>0</tangentialT2>
