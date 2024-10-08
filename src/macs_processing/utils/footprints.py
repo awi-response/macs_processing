@@ -20,19 +20,12 @@ logging.basicConfig(
 )
 
 
-import pandas as pd
-import geopandas as gpd
-from pathlib import Path
-import logging
-
-# Configure logging
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
-
 def create_dataset_footprints(
-    dataset_path: Path, 
-    CRS: str = "EPSG:4326", 
-    regex_nav: str = "*nav.txt", 
-    verbosity: int = 0
+    dataset_path: Path,
+    CRS: str = "EPSG:4326",
+    regex_nav: str = "*nav.txt",
+    verbosity: int = 0,
+    force_overwrite: bool = False,
 ):
     """
     Processes KML files and generates GeoPackage outputs.
@@ -42,6 +35,7 @@ def create_dataset_footprints(
     - CRS (str): The Coordinate Reference System to be used for GeoDataFrames. Default is 'EPSG:4326'.
     - regex_nav (str): The regex pattern for navigation files. Default is '*nav.txt'.
     - verbosity (int): Level of verbosity for logging. 0 for quiet, 1 for project name only, 2 for full details.
+    - force_overwrite (bool): If True, overwrite existing output files. Default is False.
 
     Returns:
     - None
@@ -72,6 +66,34 @@ def create_dataset_footprints(
         logging.info(f"KML file found: {file_kml[0]}")
         logging.info(f"Navigation file found: {file_nav[0]}")
 
+    # Define output file paths
+    outfile = dataset_path / f"{dataset_id}_footprints_full.gpkg"
+    outfile_dissolved = dataset_path / f"{dataset_id}_footprints_dissolved.gpkg"
+
+    # Check if output files already exist
+    if outfile.exists() and outfile_dissolved.exists():
+        if not force_overwrite:
+            logging.info(
+                f"Output files already exist: {outfile} and {outfile_dissolved}."
+            )
+            return  # Exit the function if both output files exist
+        else:
+            logging.info(
+                f"Deleting existing output files: {outfile} and {outfile_dissolved}."
+            )
+            outfile.unlink()  # Delete the full footprints file
+            outfile_dissolved.unlink()  # Delete the dissolved footprints file
+
+    # Check individual output file existence based on force_overwrite
+    if not force_overwrite:
+        if outfile.exists():
+            logging.info(f"Output file already exists: {outfile}.")
+            return  # Exit the function if the full footprints file exists
+
+        if outfile_dissolved.exists():
+            logging.info(f"Dissolved output file already exists: {outfile_dissolved}.")
+            return  # Exit the function if the dissolved footprints file exists
+
     # Load and concatenate data from KML files
     df_concat = gpd.GeoDataFrame(
         pd.concat(
@@ -86,7 +108,7 @@ def create_dataset_footprints(
 
     # Join navigation data with concatenated KML data
     df_nav = pd.read_csv(file_nav[0], sep="\s+")
-    
+
     # Remove trailing whitespaces from column names
     df_nav.columns = df_nav.columns.str.strip()
 
@@ -113,8 +135,7 @@ def create_dataset_footprints(
     # Create a GeoDataFrame
     df_join = gpd.GeoDataFrame(df_join, crs=CRS, geometry=df_join.geometry)
 
-    # Output file paths
-    outfile = dataset_path / f"{dataset_id}_footprints_full.gpkg"
+    # Output full footprints GeoPackage
     df_join.to_file(outfile, driver="GPKG")
 
     # Log successful output
@@ -126,13 +147,12 @@ def create_dataset_footprints(
     df_dissolved["Dataset"] = dataset_id
 
     # Output for dissolved geometries
-    outfile_dissolved = dataset_path / f"{dataset_id}_footprints_dissolved.gpkg"
     df_dissolved.to_file(outfile_dissolved, driver="GPKG")
 
     # Log successful output for dissolved geometries
     if verbosity >= 1:
         logging.info(f"Dissolved footprints GeoPackage created at: {outfile_dissolved}")
 
+
 # Example usage:
 # create_dataset_footprints(Path('/path/to/dataset'), verbosity=2)
-
