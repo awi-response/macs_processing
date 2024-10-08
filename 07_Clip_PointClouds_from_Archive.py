@@ -2,7 +2,7 @@ import argparse
 
 from joblib import Parallel, delayed
 
-from utils_postprocessing import *
+from macs_processing.utils_postprocessing import *
 
 # warnings.filterwarnings('ignore')
 

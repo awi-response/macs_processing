@@ -1,16 +1,17 @@
 from setuptools import setup, find_packages
+import sys, os
 
 sys.path.append(os.path.dirname(__file__))
 import versioneer
 
 setup(
-    name='macs_processing',
+    version='0.9.0',
+    name='macs-processing',
     packages=find_packages(exclude=['tests*']),
     license='MIT',
     description='Package for pre and postprocessing of DLR MACS Imagery',
     long_description=open('README.md').read(),
-    install_requires=['numpy',
-                      'pandas',
+    install_requires=['pandas',
                       'geopandas',
                       'rasterio',
                       'tqdm',
@@ -20,14 +21,14 @@ setup(
     url='https://github.com/awi-response/macs_processing/',
     author='Ingmar Nitze',
     author_email='ingmar.nitze@awi.de',
-    version=versioneer.get_version(),
-    cmdclass=versioneer.get_cmdclass(),
-    packages=['macs_processing'],
+    #version=versioneer.get_version(),
+    #cmdclass=versioneer.get_cmdclass(),
+    #packages=['macs_processing'],
     entry_points={
         'console_scripts': [
-            '01_SetupData = macs_processing.01_SetupData:main_function',
-            '02_Postprocessing = macs_processing.02_Postprocessing:main_function',
-            '03_MoveProducts = macs_processing.03_MoveProducts:main_function',
+            '01_SetupData = 01_SetupData',
+            '02_Postprocessing = 02_Postprocessing',
+            '03_MoveProducts = macs_processing.03_MoveProducts',
         ],
     },
 )
