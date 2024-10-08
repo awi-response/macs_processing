@@ -6,9 +6,10 @@ import sys
 # ignore warnings
 import warnings
 
+
 from src.macs_processing.utils.processing import *
-from utils_postprocessing import *
-from utils_wbt import *
+from src.macs_processing.utils.postprocessing import *
+from src.macs_processing.utils.whiteboxtools import *
 
 warnings.filterwarnings("ignore")
 warnings.filterwarnings("ignore", category=rasterio.errors.NotGeoreferencedWarning)
