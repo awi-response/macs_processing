@@ -13,6 +13,16 @@ def load_kml(file, sensor_name="RGB", layer=0, looking="center"):
     df = df.set_index("Name", drop=True)
     return df
 
+def load_kml_v2324(file, sensor="RGB", layer=0, sensor_name="111498_RGB"):
+    """
+    sensor_names: 99683_NIR 111498_RGB 1284123_TIR
+    """
+    df = gpd.read_file(file, driver="KML", layer=layer)
+    df["Sensor"] = sensor
+    df["Sensor Name"] = sensor_name
+    df = df.set_index("Name", drop=True)
+    return df
+
 
 # Configure logging
 logging.basicConfig(
@@ -26,19 +36,34 @@ def create_dataset_footprints(
     regex_nav: str = "*nav.txt",
     verbosity: int = 0,
     force_overwrite: bool = False,
+    year: int = 2024
 ):
     """
     Processes KML files and generates GeoPackage outputs.
+
+    This function reads KML files and associated navigation data, processes them into
+    a GeoDataFrame, and outputs two GeoPackage files: one for full footprints and 
+    another for dissolved footprints. The function can handle different KML loading 
+    functions based on the specified year.
 
     Parameters:
     - dataset_path (Path): The path to the dataset folder containing KML and navigation files.
     - CRS (str): The Coordinate Reference System to be used for GeoDataFrames. Default is 'EPSG:4326'.
     - regex_nav (str): The regex pattern for navigation files. Default is '*nav.txt'.
-    - verbosity (int): Level of verbosity for logging. 0 for quiet, 1 for project name only, 2 for full details.
+    - verbosity (int): Level of verbosity for logging. 
+        0 for quiet, 
+        1 for project name only, 
+        2 for full details.
     - force_overwrite (bool): If True, overwrite existing output files. Default is False.
+    - year (int): The year to determine which KML loading function to use. 
+        Supports special handling for 2023 and 2024 with specific loading functions.
 
     Returns:
     - None
+
+    Notes:
+    - If the output files already exist and `force_overwrite` is False, the function will exit without processing.
+    - If `force_overwrite` is True, existing output files will be deleted before creating new ones.
     """
 
     dataset_id = dataset_path.name
@@ -95,16 +120,29 @@ def create_dataset_footprints(
             return  # Exit the function if the dissolved footprints file exists
 
     # Load and concatenate data from KML files
-    df_concat = gpd.GeoDataFrame(
-        pd.concat(
-            [
-                load_kml(file_kml[0], sensor_name="RGB", layer=1, looking="center"),
-                load_kml(file_kml[0], sensor_name="NIR", layer=0, looking="center"),
-                load_kml(file_kml[0], sensor_name="TIR", layer=2, looking="center"),
-            ]
-        ),
-        crs=CRS,
-    )
+    
+    if year in [2023,2024]:
+        df_concat = gpd.GeoDataFrame(
+            pd.concat(
+                [
+                    load_kml_v2324(file_kml[0], sensor="RGB", layer=1, sensor_name="RGB 111498"),
+                    load_kml_v2324(file_kml[0], sensor="NIR", layer=0, sensor_name="NIR 99683"),
+                    load_kml_v2324(file_kml[0], sensor="TIR", layer=2, sensor_name="TIR 1284124"),
+                ]
+            ),
+            crs=CRS,
+        )
+    else:
+        df_concat = gpd.GeoDataFrame(
+            pd.concat(
+                [
+                    load_kml(file_kml[0], sensor_name="RGB", layer=1, looking="center"),
+                    load_kml(file_kml[0], sensor_name="NIR", layer=0, looking="center"),
+                    load_kml(file_kml[0], sensor_name="TIR", layer=2, looking="center"),
+                ]
+            ),
+            crs=CRS,
+        )
 
     # Join navigation data with concatenated KML data
     df_nav = pd.read_csv(file_nav[0], sep="\s+")
