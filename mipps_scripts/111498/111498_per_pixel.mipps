@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE MIPPS-Config-File>
+<MIPPS-Config-File versionMajor="1" versionMinor="0">
+    <QVariantMap>
+        <QVariantList name="Filters">
+            <QVariantMap>
+                <QVariantMap name="Filter">
+                    <QUrl name="[OPENFILE]FactorImage" value="file:111498_factor.tif"/>
+                    <QUrl name="[OPENFILE]OffsetImage" value="file:111498_offset.tif"/>
+                    <bool name="enabled" value="true"/>
+                    <double name="factor" value="30261.9"/>
+                    <QString name="name" value="Offset Factor"/>
+                    <int name="offset" value="0"/>
+                </QVariantMap>
+            </QVariantMap>
+            <QVariantMap>
+                <QVariantMap name="Filter">
+                    <bool name="enabled" value="true"/>
+                    <QString name="name" value="Color adjustment"/>
+                    <double name="scale blue" value="2.00297"/>
+                    <double name="scale green" value="1"/>
+                    <double name="scale red" value="1.57344"/>
+                </QVariantMap>
+            </QVariantMap>
+            <QVariantMap>
+                <QVariantMap name="Filter">
+                    <bool name="enabled" value="true"/>
+                    <NamedEnum name="mode" type="NamedEnum::DebayerMode" value="DebayerDCB"/>
+                    <QString name="name" value="Debayer"/>
+                </QVariantMap>
+            </QVariantMap>
+            <QVariantMap>
+                <QVariantMap name="Filter">
+                    <QString name=".outputDir" value=""/>
+                    <QString name="baseName" value=""/>
+                    <bool name="compression" value="false"/>
+                    <bool name="enabled" value="true"/>
+                    <NamedEnum name="format" type="NamedEnum::OSAKImageFormat" value="OSAKImageFormat_tiff16"/>
+                    <QString name="name" value="Write"/>
+                    <QString name="prefix" value=""/>
+                    <int name="quality" value="100"/>
+                    <QString name="suffix" value=""/>
+                </QVariantMap>
+            </QVariantMap>
+        </QVariantList>
+    </QVariantMap>
+</MIPPS-Config-File>
