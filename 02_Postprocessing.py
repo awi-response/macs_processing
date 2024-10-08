@@ -6,7 +6,7 @@ import sys
 # ignore warnings
 import warnings
 
-from processing_utils import *
+from src.macs_processing.utils.processing import *
 from utils_postprocessing import *
 from utils_wbt import *
 

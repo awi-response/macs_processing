@@ -11,8 +11,8 @@ import zipfile
 import geopandas as gpd
 import rasterio
 
-from processing_utils import *
-from utils_postprocessing import *
+from src.macs_processing.utils.processing import *
+from src.macs_processing.utils.postprocessing import *
 
 warnings.filterwarnings("ignore")
 warnings.filterwarnings("ignore", category=rasterio.errors.NotGeoreferencedWarning)

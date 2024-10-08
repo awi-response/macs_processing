@@ -186,7 +186,10 @@ def retrieve_footprints(overlapping_ds, project_id, parent_data_dir, aoi_file, f
 
     # crashes in 2023 configuration
     # streamline structure for all projects
-    footprints = list((parent_data_dir / project_name).glob(fp_file_regex))[0]
+    footprint_list = list((parent_data_dir / project_name).glob(fp_file_regex))
+    if len(footprint_list) == 0:
+        footprint_list = list((parent_data_dir / project_name).glob(fp_file_regex.replace('.shp', '.gpkg')))
+    footprints = footprint_list[0]
     fp = gpd.read_file(footprints).to_crs(epsg=4326)
     aoi = gpd.read_file(aoi_file).to_crs(epsg=4326)[['geometry']]
 
