@@ -11,8 +11,8 @@ import zipfile
 import geopandas as gpd
 import rasterio
 
-from src.macs_processing.utils.processing import *
 from src.macs_processing.utils.postprocessing import *
+from src.macs_processing.utils.processing import *
 
 warnings.filterwarnings("ignore")
 warnings.filterwarnings("ignore", category=rasterio.errors.NotGeoreferencedWarning)
@@ -73,7 +73,11 @@ args = parser.parse_args()
 if args.footprints:
     args.listds = False  # Override -l flag
 
+# Load settings file - new: support for custom dir access of settings file
 module_name = args.settings.stem
+module_path = args.settings.parent
+if module_path not in sys.path:
+    sys.path.append(module_path)
 settings = importlib.import_module(module_name)
 
 
@@ -178,7 +182,7 @@ def main():
         df_final["full_path"] = df_final.apply(lambda x: f'"{x.full_path}"', axis=1)
 
         print("Total number of images:", len(df_final))
-         #set macs_config var
+        # set macs_config var
         try:
             macs_config = settings.MACS_CONFIG
         except:
@@ -327,7 +331,7 @@ def main():
                 write_exif(
                     (outdir_temporary / sensor), tag=sensor, exifpath=settings.EXIF_PATH
                 )
-        
+
         elif macs_config == "MACS2024":
             for sensor in tqdm.tqdm(["99683_NIR", "111498_RGB"]):
                 write_exif(
@@ -483,7 +487,7 @@ def run_mipps_macs24(chunksize, df_final, max_roll, outdir_temporary):
             outlist = " ".join(df["full_path"].values[:])
             s = f"{settings.MIPPS_BIN} -c={mipps_script_nir} -o={outdir_nir} -j=4 {outlist}"
             os.system(s)
-    
+
     # this is RGB
     if "right" in settings.sensors:
         logging.info("Start transforming RGB files")
