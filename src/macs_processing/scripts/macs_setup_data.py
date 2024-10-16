@@ -1,5 +1,4 @@
 import argparse
-import importlib
 import logging
 import os
 import sys
@@ -11,6 +10,7 @@ import zipfile
 import geopandas as gpd
 import rasterio
 
+from macs_processing.utils.loading import import_module_as_namespace
 from macs_processing.utils.postprocessing import *
 from macs_processing.utils.processing import *
 
@@ -73,12 +73,8 @@ args = parser.parse_args()
 if args.footprints:
     args.listds = False  # Override -l flag
 
-# Load settings file - new: support for custom dir access of settings file
-module_name = args.settings.stem
-module_path = args.settings.parent
-if module_path not in sys.path:
-    sys.path.append(module_path)
-settings = importlib.import_module(module_name)
+# import settings
+settings = import_module_as_namespace(args.settings)
 
 
 def main():
