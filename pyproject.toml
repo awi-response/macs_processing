@@ -1,0 +1,33 @@
+[project]
+name = "macs-processing"
+version = "0.9.0"
+description = "Package for pre and postprocessing of DLR MACS Imagery"
+readme = "README.md"
+license = { text = "MIT" }
+authors = [{ name = "Ingmar Nitze", email = "ingmar.nitze@awi.de" }]
+keywords = ["macs", "imagery", "processing"]
+dependencies = [
+    "pandas",
+    "geopandas",
+    "rasterio",
+    "tqdm",
+    "laspy",
+    "whitebox",
+    "fiona",
+    "pillow==10",
+    "joblib",
+    "scikit-learn",
+    "scikit-image",
+]
+requires-python = "==3.10"  # Specify exact Python version
+
+[project.urls]
+homepage = "https://github.com/awi-response/macs_processing/"
+
+[project.scripts]
+01_SetupData = "macs_processing.scripts.macs_setup_data:main"
+02_Postprocessing = "macs_processing.scripts.postprocessing:main"
+03_MoveData = "macs_processing.scripts.move_products:main"
+[tool.setuptools.packages.find]
+where = ["src"]
+exclude = ["tests*"]
