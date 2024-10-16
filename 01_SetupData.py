@@ -11,8 +11,8 @@ import zipfile
 import geopandas as gpd
 import rasterio
 
-from processing_utils import *
-from utils_postprocessing import *
+from src.macs_processing.utils.postprocessing import *
+from src.macs_processing.utils.processing import *
 
 warnings.filterwarnings("ignore")
 warnings.filterwarnings("ignore", category=rasterio.errors.NotGeoreferencedWarning)
@@ -73,7 +73,11 @@ args = parser.parse_args()
 if args.footprints:
     args.listds = False  # Override -l flag
 
+# Load settings file - new: support for custom dir access of settings file
 module_name = args.settings.stem
+module_path = args.settings.parent
+if module_path not in sys.path:
+    sys.path.append(module_path)
 settings = importlib.import_module(module_name)
 
 
@@ -143,7 +147,6 @@ def main():
         footprints = retrieve_footprints(ds, dataset_id, parent_dir, settings.AOI)
         print("Total number of images:", len(footprints))
         if "Looking" in footprints.columns:
-            macs_config = "MACS2018"
             print("NIR images:", (footprints["Looking"] == "center").sum())
             print("RGB right images:", (footprints["Looking"] == "right").sum())
             print("RGB left images:", (footprints["Looking"] == "left").sum())
@@ -179,13 +182,21 @@ def main():
         df_final["full_path"] = df_final.apply(lambda x: f'"{x.full_path}"', axis=1)
 
         print("Total number of images:", len(df_final))
+        # set macs_config var
+        try:
+            macs_config = settings.MACS_CONFIG
+        except:
+            macs_config = None
+
         if "Looking" in df_final.columns:
-            macs_config = "MACS2018"
+            if not macs_config:
+                macs_config = "MACS2018"
             print("NIR images:", (df_final["Looking"] == "center").sum())
             print("RGB right images:", (df_final["Looking"] == "right").sum())
             print("RGB left images:", (df_final["Looking"] == "left").sum())
         else:
-            macs_config = "MACS2023"
+            if not macs_config:
+                macs_config = "MACS2023"
             print("NIR images:", (df_final["Sensor"] == "NIR").sum())
             print("RGB images:", (df_final["Sensor"] == "RGB").sum())
 
@@ -208,6 +219,8 @@ def main():
             run_mipps_macs18(chunksize, df_final, max_roll, outdir_temporary)
         elif macs_config == "MACS2023":
             run_mipps_macs23(chunksize, df_final, max_roll, outdir_temporary)
+        elif macs_config == "MACS2024":
+            run_mipps_macs24(chunksize, df_final, max_roll, outdir_temporary)
 
         # ### Rescale image values
 
@@ -319,10 +332,16 @@ def main():
                     (outdir_temporary / sensor), tag=sensor, exifpath=settings.EXIF_PATH
                 )
 
+        elif macs_config == "MACS2024":
+            for sensor in tqdm.tqdm(["99683_NIR", "111498_RGB"]):
+                write_exif(
+                    (outdir_temporary / sensor), tag=sensor, exifpath=settings.EXIF_PATH
+                )
+
         # navfile = list(Path(path_infiles).glob('*nav.txt'))[0]
         if macs_config == "MACS2018":
             shutil.copy(navfile, outdir_temp["nir"].parent / "nav.txt")
-        elif macs_config == "MACS2023":
+        elif macs_config in ["MACS2023", "MACS2024"]:
             shutil.copy(navfile, outdir_temporary / "nav.txt")
 
     # 1. merge nav files
@@ -441,6 +460,45 @@ def run_mipps_macs23(chunksize, df_final, max_roll, outdir_temporary):
         if split == 0:
             split += 1
         outdir_rgb = outdir_temporary / "121502_RGB"
+        os.makedirs(outdir_rgb, exist_ok=True)
+        for df in tqdm.tqdm(np.array_split(df_right, split)):
+            outlist = " ".join(df["full_path"].values[:])
+            s = f"{settings.MIPPS_BIN} -c={mipps_script_rgb} -o={outdir_rgb} -j=4 {outlist}"
+            os.system(s)
+
+
+def run_mipps_macs24(chunksize, df_final, max_roll, outdir_temporary):
+    pwd = Path(settings.pwd)
+    if "nir" in settings.sensors:
+        logging.info("Start transforming NIR files")
+        # TODO, unhardcode, change outputdir to sensorname
+        mipps_script_nir = pwd / Path("mipps_scripts/99683/99683_per_pixel.mipps")
+        logging.info(f"MIPPS Script: {mipps_script_nir.name}")
+
+        q = (np.abs(df_final["Roll[deg]"]) < max_roll) & (df_final["Sensor"] == "NIR")
+        df_nir = df_final[q]
+        print(len(df_nir))
+        split = len(df_nir) // chunksize
+        if split == 0:
+            split += 1
+        outdir_nir = outdir_temporary / "99683_NIR"
+        os.makedirs(outdir_nir, exist_ok=True)
+        for df in tqdm.tqdm(np.array_split(df_nir, split)):
+            outlist = " ".join(df["full_path"].values[:])
+            s = f"{settings.MIPPS_BIN} -c={mipps_script_nir} -o={outdir_nir} -j=4 {outlist}"
+            os.system(s)
+
+    # this is RGB
+    if "right" in settings.sensors:
+        logging.info("Start transforming RGB files")
+        mipps_script_rgb = pwd / Path("mipps_scripts/111498/111498_per_pixel.mipps")
+        logging.info(f"MIPPS Script: {mipps_script_rgb.name}")
+        q = (np.abs(df_final["Roll[deg]"]) < max_roll) & (df_final["Sensor"] == "RGB")
+        df_right = df_final[q]
+        split = len(df_right) // chunksize
+        if split == 0:
+            split += 1
+        outdir_rgb = outdir_temporary / "111498_RGB"
         os.makedirs(outdir_rgb, exist_ok=True)
         for df in tqdm.tqdm(np.array_split(df_right, split)):
             outlist = " ".join(df["full_path"].values[:])

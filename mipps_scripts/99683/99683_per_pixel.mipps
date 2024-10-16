@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE MIPPS-Config-File>
+<MIPPS-Config-File versionMajor="1" versionMinor="0">
+    <QVariantMap>
+        <QVariantList name="Filters">
+            <QVariantMap>
+                <QVariantMap name="Filter">
+                    <QUrl name="[OPENFILE]FactorImage" value="file:99683_factor.tif"/>
+                    <QUrl name="[OPENFILE]OffsetImage" value="file:99683_offset.tif"/>
+                    <bool name="enabled" value="true"/>
+                    <double name="factor" value="31541.3"/>
+                    <QString name="name" value="DSNU"/>
+                    <int name="offset" value="0"/>
+                </QVariantMap>
+            </QVariantMap>
+            <QVariantMap>
+                <QVariantMap name="Filter">
+                    <QString name=".outputDir" value=""/>
+                    <bool name="compression" value="false"/>
+                    <bool name="enabled" value="true"/>
+                    <NamedEnum name="format" type="NamedEnum::OSAKImageFormat" value="OSAKImageFormat_tiff16"/>
+                    <QString name="name" value="Write"/>
+                    <QString name="prefix" value=""/>
+                    <int name="quality" value="100"/>
+                    <QString name="suffix" value=""/>
+                </QVariantMap>
+            </QVariantMap>
+        </QVariantList>
+    </QVariantMap>
+</MIPPS-Config-File>
