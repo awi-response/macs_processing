@@ -359,7 +359,7 @@ def main():
             delayed(create_point_cloud_tiles_las2las)(
                 point_cloud_nir,
                 tile,
-                project_name=settings.PIX4d_PROJECT_NAME,
+                settings.PIX4d_PROJECT_NAME,
                 target_dir=settings.TARGET_DIR_PC,
                 product_name="PointCloudNIR",
             )
@@ -371,7 +371,7 @@ def main():
             delayed(create_point_cloud_tiles_las2las)(
                 point_cloud_rgb,
                 tile,
-                project_name=settings.PIX4d_PROJECT_NAME,
+                settings.PIX4d_PROJECT_NAME,
                 target_dir=settings.TARGET_DIR_PC,
                 product_name="PointCloudRGB",
             )
