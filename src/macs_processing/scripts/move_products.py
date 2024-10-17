@@ -8,8 +8,8 @@ import warnings
 
 import rasterio
 
-from src.macs_processing.utils.processing import *
-from utils_postprocessing import *
+from macs_processing.utils.processing import *
+from macs_processing.utils.postprocessing import *
 
 warnings.filterwarnings("ignore")
 warnings.filterwarnings("ignore", category=rasterio.errors.NotGeoreferencedWarning)

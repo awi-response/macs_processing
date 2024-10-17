@@ -7,9 +7,10 @@ import sys
 import warnings
 
 
-from src.macs_processing.utils.processing import *
-from src.macs_processing.utils.postprocessing import *
-from src.macs_processing.utils.whiteboxtools import *
+from macs_processing.utils.processing import *
+from macs_processing.utils.postprocessing import *
+from macs_processing.utils.whiteboxtools import *
+from macs_processing.utils.loading import import_module_as_namespace
 
 warnings.filterwarnings("ignore")
 warnings.filterwarnings("ignore", category=rasterio.errors.NotGeoreferencedWarning)
@@ -56,8 +57,7 @@ parser.add_argument(
 
 args = parser.parse_args()
 
-module_name = args.settings.stem
-settings = importlib.import_module(module_name)
+settings = import_module_as_namespace(args.settings)
 
 ###### START ###
 
@@ -359,7 +359,7 @@ def main():
             delayed(create_point_cloud_tiles_las2las)(
                 point_cloud_nir,
                 tile,
-                settings,
+                project_name=settings.PIX4d_PROJECT_NAME,
                 target_dir=settings.TARGET_DIR_PC,
                 product_name="PointCloudNIR",
             )
@@ -371,7 +371,7 @@ def main():
             delayed(create_point_cloud_tiles_las2las)(
                 point_cloud_rgb,
                 tile,
-                settings,
+                project_name=settings.PIX4d_PROJECT_NAME,
                 target_dir=settings.TARGET_DIR_PC,
                 product_name="PointCloudRGB",
             )
