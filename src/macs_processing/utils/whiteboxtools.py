@@ -108,12 +108,12 @@ def clip_to_tile(input_mosaic, example_tile, target_dir, rename=None):
         clipped = target_dir / f"{stem_out}.tif"
         # run gdal_translate
         # run with pixel count
-        gdal_string = f"gdalwarp -of COG -te {bounds.left} {bounds.top} {bounds.right} {bounds.bottom} -ts {src.width} {src.height} -co COMPRESS=DEFLATE {input_mosaic} {clipped} "
+        gdal_string = f"gdalwarp -of GTiff -te {bounds.left} {bounds.top} {bounds.right} {bounds.bottom} -ts {src.width} {src.height} -co COMPRESS=DEFLATE {input_mosaic} {clipped} "
         os.system(gdal_string)
 
 
 def create_point_cloud_tiles(
-    point_cloud, footprint_tile_path, settings_file, target_dir, product_name="PCNir"
+    point_cloud, footprint_tile_path, project_name, target_dir, product_name="PCNir"
 ):
     """
     point cloud: path to point cloud
@@ -129,7 +129,7 @@ def create_point_cloud_tiles(
     os.system(f'ogr2ogr -f "ESRI Shapefile" {footprint_shp} {footprint}')
     # create output name
     tile_id = footprint.stem.rstrip("_mask").split("_Ortho_")[-1]
-    outfile_name = f"{settings_file.PIX4d_PROJECT_NAME}_{product_name}_{tile_id}.las"
+    outfile_name = f"{project_name}_{product_name}_{tile_id}.las"
     outfile = target_dir / outfile_name
 
     wbt.clip_lidar_to_polygon(i=point_cloud, polygons=footprint_shp, output=outfile)
@@ -137,7 +137,7 @@ def create_point_cloud_tiles(
 
 
 def create_point_cloud_tiles_las2las(
-    point_cloud, footprint_tile_path, settings_file, target_dir, product_name="PCNir"
+    point_cloud, footprint_tile_path, project_name, target_dir, product_name="PCNir"
 ):
     """
     clip point cloud to subset (specified by vector file)
@@ -153,7 +153,7 @@ def create_point_cloud_tiles_las2las(
 
     # create output name
     tile_id = footprint.stem.rstrip("_mask").split("_Ortho_")[-1]
-    outfile_name = f"{settings_file.PIX4d_PROJECT_NAME}_{product_name}_{tile_id}.las"
+    outfile_name = f"{project_name}_{product_name}_{tile_id}.las"
     outfile = target_dir / outfile_name
 
     # get coordinates
