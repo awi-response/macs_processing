@@ -28,6 +28,8 @@ homepage = "https://github.com/awi-response/macs_processing/"
 01_SetupData = "macs_processing.scripts.macs_setup_data:main"
 02_Postprocessing = "macs_processing.scripts.postprocessing:main"
 03_MoveData = "macs_processing.scripts.move_products:main"
+04_ArchiveData = "macs_processing.scripts.macs_archive_data:main"
+
 [tool.setuptools.packages.find]
 where = ["src"]
 exclude = ["tests*"]
