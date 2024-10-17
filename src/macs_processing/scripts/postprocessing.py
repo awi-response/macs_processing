@@ -10,6 +10,7 @@ import warnings
 from macs_processing.utils.processing import *
 from macs_processing.utils.postprocessing import *
 from macs_processing.utils.whiteboxtools import *
+from macs_processing.utils.loading import import_module_as_namespace
 
 warnings.filterwarnings("ignore")
 warnings.filterwarnings("ignore", category=rasterio.errors.NotGeoreferencedWarning)
@@ -56,8 +57,7 @@ parser.add_argument(
 
 args = parser.parse_args()
 
-module_name = args.settings.stem
-settings = importlib.import_module(module_name)
+settings = import_module_as_namespace(args.settings)
 
 ###### START ###
 
