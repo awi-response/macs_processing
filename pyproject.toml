@@ -19,7 +19,7 @@ dependencies = [
     "scikit-learn",
     "scikit-image",
 ]
-requires-python = "==3.10"  # Specify exact Python version
+requires-python = ">=3.10, <3.11"  # Specify exact Python version
 
 [project.urls]
 homepage = "https://github.com/awi-response/macs_processing/"
