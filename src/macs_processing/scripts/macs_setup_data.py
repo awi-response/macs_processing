@@ -57,7 +57,7 @@ parser.add_argument(
     "--horizontal_accuracy",
     type=float,
     default=0.05,
-    help="Horizontal accuracy for pix4D. Default = 1",
+    help="Horizontal accuracy for pix4D. Default = 0.05",
 )
 
 parser.add_argument(
@@ -65,7 +65,7 @@ parser.add_argument(
     "--vertical_accuracy",
     type=float,
     default=0.05,
-    help="Horizontal accuracy for pix4D. Default = 1",
+    help="Horizontal accuracy for pix4D. Default = 0.05",
 )
 
 
