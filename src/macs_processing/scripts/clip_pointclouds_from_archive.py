@@ -98,7 +98,7 @@ def clip_las_file(ortho_file, point_cloud, point_cloud_dir, product_name='PointC
     outfile = ortho_file.stem.replace('Ortho', product_name) + '.las'
     point_cloud_tile = point_cloud_dir / outfile
     if not point_cloud_tile.exists():
-        with rasterio.open(ortho_file) as src:
+        with rasterio.open(ortho_file, options={'IGNORE_COG_LAYOUT_BREAK': 'YES'}) as src:
             min_x, min_y, max_x, max_y = src.bounds
             s = f'las2las -keep_xy {min_x} {min_y} {max_x} {max_y} -i {point_cloud} -o {point_cloud_tile}'
             os.system(s)

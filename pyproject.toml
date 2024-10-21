@@ -29,6 +29,11 @@ homepage = "https://github.com/awi-response/macs_processing/"
 02_Postprocessing = "macs_processing.scripts.postprocessing:main"
 03_MoveProducts = "macs_processing.scripts.move_products:main"
 04_ArchiveData = "macs_processing.scripts.macs_archive_data:main"
+05_PullBackup = "macs_processing.scripts.pull_backup:main"
+06_RenameProject = "macs_processing.scripts.rename_project:main"
+07_Clip_PointClouds_from_Archive = "macs_processing.scripts.clip_pointclouds_from_archive:main"
+08_Create_Products_Report = "macs_processing.scripts.create_product_report:main"
+11_Postprocessing_clip_PC = "macs_processing.scripts.postprocessing_clip_pc:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]
