@@ -1,0 +1,24 @@
+cff-version: 1.2.0
+authors:
+- family-names: "Nitze"
+  given-names: "Ingmar"
+  orcid: "0000-0002-1165-6852"
+  email: ingmar.nitze@awi.de
+  affiliation: Alfred Wegener Institute for Polar and Marine Research
+
+- family-names: "Rettelbach"
+  given-names: "Tabea"
+  orcid: "0000-0002-4187-4113"
+  affiliation: Alfred Wegener Institute for Polar and Marine Research
+
+title: "MACS processing code"
+type: code
+version: 0.9.0
+date-released: 2024-10-23
+url: "https://github.com/awi-response/macs_processing"
+abstract: "Code base for pre and postprocessing of MACS image mosaics"
+keywords:
+  - "aerial imagery"
+  - "stereo photogrammetry"  
+license: "MIT"  # Specify your license type
+repository-code: "https://response.com/initze/thaw-slump-segmentation" 
