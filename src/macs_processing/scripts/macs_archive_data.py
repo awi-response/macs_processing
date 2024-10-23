@@ -31,7 +31,6 @@ parser.add_argument(
 
 args = parser.parse_args()
 
-
 settings = import_module_as_namespace(args.settings)
 
 ###### START ###
@@ -76,7 +75,11 @@ def main():
     assert product_dir.exists()
 
     tar_file_name = product_dir.parent / f"{site_name}.{args.file_type}"
-    assert not tar_file_name.exists()
+
+    # Check if the output file already exists
+    if tar_file_name.exists():
+        print(f"Output file {tar_file_name} already exists. Skipping processing.")
+        return  # Skip further processing
 
     # Example usage
     excluded_directories = [
@@ -89,7 +92,7 @@ def main():
     ]
     excluded_files = [f"{site_name}_postprocessing.log"]
 
-    print(f"Start creating archive {tar_file_name}!")
+    print(f"Start creating archive {tar_file_name}")
     create_zip_archive(product_dir, tar_file_name, excluded_directories, excluded_files)
 
     # move to archive dir
