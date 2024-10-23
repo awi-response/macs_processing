@@ -20,6 +20,12 @@ parser.add_argument(
     "-d", "--delete_indir", action="store_true", help="set option to delete input dir"
 )
 parser.add_argument(
+    "-y",
+    "--yes_to_all",
+    action="store_true",
+    help="automatically confirm deletion of input dir",
+)
+parser.add_argument(
     "-f", "--file_type", type=str, default="zip", help="archive file type (zip or tar)"
 )
 
@@ -82,16 +88,30 @@ def main():
         "121502_RGB",
     ]
     excluded_files = [f"{site_name}_postprocessing.log"]
-    create_zip_archive(product_dir, tar_file_name, excluded_directories, excluded_files)
 
-    # # delete files
-    # if args.delete_indir:
-    #     shutil.rmtree(product_dir)
+    print(f"Start creating archive {tar_file_name}!")
+    create_zip_archive(product_dir, tar_file_name, excluded_directories, excluded_files)
 
     # move to archive dir
     if args.archive_dir is not None:
         print(f"Start moving {tar_file_name} to {args.archive_dir}")
         shutil.move(str(tar_file_name), str(args.archive_dir))
+
+    # delete files
+    if args.delete_indir:
+        if args.yes_to_all:
+            # Automatically confirm deletion
+            shutil.rmtree(product_dir)
+            print(f"Deleted input directory: {product_dir}")
+        else:
+            confirmation = input(
+                "Warning: Input directory will be deleted, are you sure? (y/n): "
+            )
+            if confirmation.lower() == "y":
+                shutil.rmtree(product_dir)
+                print(f"Deleted input directory: {product_dir}")
+            else:
+                print("Deletion cancelled.")
 
 
 if __name__ == "__main__":
