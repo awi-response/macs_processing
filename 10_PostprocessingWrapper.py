@@ -2,11 +2,12 @@ import subprocess
 from pathlib import Path
 
 # set target dir here
-target_dir = Path(r'')
-archive_dir = None
+target_dir = Path(r'S:\p_macsprocessing\PermaX_MACS\PermaX_2024\data_products')
+archive_dir = Path(r'G:\MACS_Data_Storage\2024')
+settings_dir = Path(r'S:\p_macsprocessing\PermaX_MACS\PermaX_2024\settings')
 
 # insert settings files here
-settings_files = []
+settings_files = ['WA_Kotzebue_20240711_15cm_01.py']
 
 if target_dir == Path(r'') or settings_files == []:
     raise ValueError('Please set target directory and Input settings files!')
@@ -15,10 +16,11 @@ if not target_dir.exists():
 
 # iterate over subsets
 for settings_file in settings_files:
+    settings_file = settings_dir / settings_file
     # setup commandline runs
-    run_string = f'python 02_Postprocessing.py -m -s {settings_file}'
-    run_string_move = f'python 03_MoveProducts.py -s {settings_file} -d {target_dir}'
-    run_string_ziparchive = f'python 04_ArchiveData.py -s {settings_file}'
+    run_string = f'02_Postprocessing -m -s {settings_file}'
+    run_string_move = f'03_MoveProducts -s {settings_file} -d {target_dir}'
+    run_string_ziparchive = f'04_ArchiveData -s {settings_file} -a {archive_dir}'
     
     # run postprocessing
     print(run_string)
