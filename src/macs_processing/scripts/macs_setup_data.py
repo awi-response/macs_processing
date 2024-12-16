@@ -76,6 +76,9 @@ if args.footprints:
 # import settings
 settings = import_module_as_namespace(args.settings)
 
+# mipps bin - hardcode and override settings file
+MIPPS_BIN = r"..\tools\Conv\mipps.exe"
+
 
 def main():
     if not args.listds:
@@ -388,7 +391,7 @@ def run_mipps_macs18(chunksize, df_final, max_roll, outdir_temporary):
             split += 1
         for df in tqdm.tqdm(np.array_split(df_nir, split)):
             outlist = " ".join(df["full_path"].values[:])
-            s = f"{settings.MIPPS_BIN} -c={settings.mipps_script_nir} -o={outdir_temporary} -j=4 {outlist}"
+            s = f"{MIPPS_BIN} -c={settings.mipps_script_nir} -o={outdir_temporary} -j=4 {outlist}"
             os.system(s)
     # this is RGB
     if "right" in settings.sensors:
@@ -405,7 +408,7 @@ def run_mipps_macs18(chunksize, df_final, max_roll, outdir_temporary):
             split += 1
         for df in tqdm.tqdm(np.array_split(df_right, split)):
             outlist = " ".join(df["full_path"].values[:])
-            s = f"{settings.MIPPS_BIN} -c={settings.mipps_script_right} -o={outdir_temporary} -j=4 {outlist}"
+            s = f"{MIPPS_BIN} -c={settings.mipps_script_right} -o={outdir_temporary} -j=4 {outlist}"
             os.system(s)
     if "left" in settings.sensors:
         logging.info("Start transforming RGB left files")
@@ -421,7 +424,7 @@ def run_mipps_macs18(chunksize, df_final, max_roll, outdir_temporary):
             split += 1
         for df in tqdm.tqdm(np.array_split(df_left, split)):
             outlist = " ".join(df["full_path"].values[:])
-            s = f"{settings.MIPPS_BIN} -c={settings.mipps_script_left} -o={outdir_temporary} -j=4 {outlist}"
+            s = f"{MIPPS_BIN} -c={settings.mipps_script_left} -o={outdir_temporary} -j=4 {outlist}"
             os.system(s)
 
 
@@ -443,7 +446,7 @@ def run_mipps_macs23(chunksize, df_final, max_roll, outdir_temporary):
         os.makedirs(outdir_nir, exist_ok=True)
         for df in tqdm.tqdm(np.array_split(df_nir, split)):
             outlist = " ".join(df["full_path"].values[:])
-            s = f"{settings.MIPPS_BIN} -c={mipps_script_nir} -o={outdir_nir} -j=4 {outlist}"
+            s = f"{MIPPS_BIN} -c={mipps_script_nir} -o={outdir_nir} -j=4 {outlist}"
             os.system(s)
     # this is RGB
     if "right" in settings.sensors:
@@ -459,7 +462,7 @@ def run_mipps_macs23(chunksize, df_final, max_roll, outdir_temporary):
         os.makedirs(outdir_rgb, exist_ok=True)
         for df in tqdm.tqdm(np.array_split(df_right, split)):
             outlist = " ".join(df["full_path"].values[:])
-            s = f"{settings.MIPPS_BIN} -c={mipps_script_rgb} -o={outdir_rgb} -j=4 {outlist}"
+            s = f"{MIPPS_BIN} -c={mipps_script_rgb} -o={outdir_rgb} -j=4 {outlist}"
             os.system(s)
 
 
@@ -481,7 +484,7 @@ def run_mipps_macs24(chunksize, df_final, max_roll, outdir_temporary):
         os.makedirs(outdir_nir, exist_ok=True)
         for df in tqdm.tqdm(np.array_split(df_nir, split)):
             outlist = " ".join(df["full_path"].values[:])
-            s = f"{settings.MIPPS_BIN} -c={mipps_script_nir} -o={outdir_nir} -j=4 {outlist}"
+            s = f"{MIPPS_BIN} -c={mipps_script_nir} -o={outdir_nir} -j=4 {outlist}"
             os.system(s)
 
     # this is RGB
@@ -498,7 +501,7 @@ def run_mipps_macs24(chunksize, df_final, max_roll, outdir_temporary):
         os.makedirs(outdir_rgb, exist_ok=True)
         for df in tqdm.tqdm(np.array_split(df_right, split)):
             outlist = " ".join(df["full_path"].values[:])
-            s = f"{settings.MIPPS_BIN} -c={mipps_script_rgb} -o={outdir_rgb} -j=4 {outlist}"
+            s = f"{MIPPS_BIN} -c={mipps_script_rgb} -o={outdir_rgb} -j=4 {outlist}"
             os.system(s)
 
 
