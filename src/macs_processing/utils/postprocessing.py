@@ -11,6 +11,7 @@ import rasterio
 import tqdm
 from joblib import Parallel, delayed
 from mpl_toolkits.axes_grid1 import make_axes_locatable
+from osgeo import gdal, ogr
 from sklearn import preprocessing
 
 
@@ -48,60 +49,78 @@ def flist_to_df(filelist):
 
 # create more specific vrt files for each run to avoid duplicates on parallel run
 def stack_output(
-    outmosaic, rgbfile, nirfile, remove_temporary_files=True, vrt_dir=Path(".")
+    outmosaic: str | Path,
+    rgbfile: str | Path,
+    nirfile: str | Path,
+    remove_temporary_files: bool = True,
+    vrt_dir: Path = Path("."),
 ):
     """
-    Function to stack together RGB and NIR images
-    Input:
-        4 Band RGB (RGB-A)
-        2 Band NIR (NIR-A)
+    Stack RGB and NIR images into a single Cloud Optimized GeoTIFF (COG).
+
+    This function reads a 4-band RGB image (RGB-A) and a 2-band NIR image (NIR-A),
+    creates virtual raster datasets (VRTs) for each band, and then combines them
+    into a single COG output file. The function can also remove temporary files
+    created during the process.
+
+    Parameters:
+        outmosaic (str or Path): The path where the output COG file will be saved.
+        rgbfile (str or Path): The path to the input RGB image file.
+        nirfile (str or Path): The path to the input NIR image file.
+        remove_temporary_files (bool): If True, temporary VRT files will be deleted
+                                        after the output is created. Default is True.
+        vrt_dir (Path): The directory where temporary VRT files will be created.
+                        Default is the current directory.
+
+    Returns:
+        None: This function does not return any value. It writes the output file
+              directly to the specified location.
     """
     vrt_dir.mkdir(exist_ok=True)
     basename_rgb = rgbfile.name[:-4]
     basename_nir = nirfile.name[:-4]
 
-    # b_nir = vrt_dir / f'{basename_nir}_1.vrt'
     mos = vrt_dir / f"{basename_rgb}.vrt"
-
     rgb_vrt = []
+
+    # Open RGB bands and create VRTs
+    rgb_dataset = gdal.Open(rgbfile, gdal.GA_ReadOnly)
     for band in [1, 2, 3]:
         infile = vrt_dir / f"{basename_rgb}_{band}.vrt"
-        rgb_vrt.append(infile)
-        s = f"gdalbuildvrt -q -b {band} {infile} {rgbfile}"
-        os.system(s)
+        gdal.Translate(str(infile), rgb_dataset, bandList=[band])
+        rgb_vrt.append(str(infile))
 
-    for band in [1]:
-        infile_nir = vrt_dir / f"{basename_nir}_{band}.vrt"
-        s = f"gdalbuildvrt -q -b {band} {infile_nir} {nirfile}"
-        os.system(s)
+    # Open NIR band and create a VRT
+    infile_nir = vrt_dir / f"{basename_nir}_1.vrt"
+    nir_dataset = gdal.Open(nirfile, gdal.GA_ReadOnly)
+    gdal.Translate(str(infile_nir), nir_dataset, bandList=[1])
 
-    b1, b2, b3 = rgb_vrt
-    s = f"gdalbuildvrt -q -separate {mos} {b3} {b2} {b1} {infile_nir}"
-    os.system(s)
+    # Build the final VRT for RGB and NIR bands
+    gdal.BuildVRT(str(mos), rgb_vrt + [str(infile_nir)], separate=True)
 
-    s = f"gdal_translate -of GTiff -a_nodata 0 -co COMPRESS=DEFLATE -co IGNORE_COG_LAYOUT_BREAK -q -co BIGTIFF=YES {mos} {outmosaic}"
-    os.system(s)
+    # Translate the final VRT to Cloud Optimized GeoTIFF format
+    gdal.Translate(
+        str(outmosaic),
+        str(mos),
+        format="GTiff",
+        noData=0,
+        creationOptions=[
+            "COMPRESS=DEFLATE",
+            "TILED=YES",
+            "BIGTIFF=YES",
+            "COG=YES",
+            "IGNORE_COG_LAYOUT_BREAK",
+        ],
+    )
+
+    # Clean up temporary files if needed
     if remove_temporary_files:
-        for file in [b1, b2, b3, infile_nir, mos]:
+        for file in rgb_vrt + [str(infile_nir), str(mos)]:
             os.remove(file)
 
-
-def calculate_pyramids(rasterfile):
-    """
-    Function to calculate pyramids
-
-    Parameters
-    ----------
-    rasterfile : Path
-        file for which to create pyramids
-
-    Returns
-    -------
-    None.
-
-    """
-    addo = f"gdaladdo -ro --config COMPRESS_OVERVIEW DEFLATE --config GDAL_NUM_THREADS ALL_CPUS {rasterfile}"
-    os.system(addo)
+    # Clean up datasets
+    rgb_dataset = None
+    nir_dataset = None
 
 
 def mask_and_name_bands(mosaic_file):
@@ -109,7 +128,9 @@ def mask_and_name_bands(mosaic_file):
     Function to mask incomplete spectral data (e.g. with only NIR data and no RGB and vice versa)
     Add names to Bands
     """
-    with rasterio.open(mosaic_file, "r+", options={'IGNORE_COG_LAYOUT_BREAK': 'YES'}) as src:
+    with rasterio.open(
+        mosaic_file, "r+", options={"IGNORE_COG_LAYOUT_BREAK": "YES"}
+    ) as src:
         src.profile["nodata"] = 0
         data = src.read()
         newmask = ~(data == 0).any(axis=0)
@@ -139,7 +160,7 @@ def get_rgb_sensor_name(df):
 
 
 def check_tile_validity(image_path):
-    with rasterio.open(image_path, options={'IGNORE_COG_LAYOUT_BREAK': 'YES'}) as src:
+    with rasterio.open(image_path, options={"IGNORE_COG_LAYOUT_BREAK": "YES"}) as src:
         return src.read(1).mean() != 0
 
 
@@ -276,52 +297,95 @@ def move_and_rename_processed_tiles(
 
 
 def create_mask_vector(
-    raster_file,
-    temporary_target_dir,
-    remove_raster_mask=False,
-    polygonize=Path(os.environ["CONDA_PREFIX"]) / "Scripts" / "gdal_polygonize.py",
-):
+    raster_file: Path, temporary_target_dir: Path, remove_raster_mask: bool = False
+) -> Path:
     """
-    Function to create vectors of valid data for a raster file
+    Create a vector mask from a raster file.
+
     Parameters
     ----------
     raster_file : Path
-        input raster file from which to create vector mask.
+        Input raster file from which to create the vector mask.
     temporary_target_dir : Path
-        directory path where temporary files should be stored.
+        Directory where temporary files will be stored.
     remove_raster_mask : bool, optional
-        delete temporary raster mask. The default is False.
-    polygonize : Path, optional
-        Path to gdal polygonize function, Automatically created for (Windows) conda environments. The default is Path(os.environ['CONDA_PREFIX']) / 'Scripts' / 'gdal_polygonize.py'.
+        If True, the temporary raster mask will be deleted. Default is False.
 
     Returns
     -------
-    mask_vector : Path
-        path of output vector footprints file.
-
+    Path
+        Path of the output vector mask file in GeoJSON format.
     """
+
+    # Ensure the temporary directory exists
+    temporary_target_dir.mkdir(parents=True, exist_ok=True)
+
+    # Define paths for the mask raster and output vector
     maskfile = temporary_target_dir / (raster_file.stem + "_mask.tif")
     mask_vector = temporary_target_dir / (raster_file.stem + "_mask.geojson")
 
-    s_extract_mask = (
-        f"gdal_translate -q -ot Byte -b mask -of GTiff {raster_file} {maskfile}"
+    # Open the raster file and create a mask
+    raster_dataset = gdal.Open(str(raster_file), gdal.GA_ReadOnly)
+    
+    if raster_dataset is None:
+        raise FileNotFoundError(f"Unable to open raster file: {raster_file}")
+
+    # Create a mask from the raster dataset
+    gdal.Translate(
+        str(maskfile),
+        raster_dataset,
+        format="GTiff",
+        outputType=gdal.GDT_Byte,
+        bandList=[1],
+        creationOptions=["COMPRESS=DEFLATE", "TILED=YES"],
     )
-    os.system(s_extract_mask)
 
-    s_polygonize_mask = f"python {polygonize} -q -f GeoJSON {maskfile} {mask_vector}"
-    os.system(s_polygonize_mask)
+    # Open the created mask file to ensure it's valid
+    mask_dataset = gdal.Open(str(maskfile), gdal.GA_ReadOnly)
+    
+    if mask_dataset is None:
+        raise FileNotFoundError(f"Unable to open mask file: {maskfile}")
 
-    # needs to be fixed - is not deleting at the moment
+    # Polygonize the mask raster into a vector format
+    driver = ogr.GetDriverByName("GeoJSON")
+    
+    if driver is None:
+        raise RuntimeError("GeoJSON driver not available.")
+
+    # Create an empty vector data source for the output GeoJSON
+    vector_data_source = driver.CreateDataSource(str(mask_vector))
+    
+    if vector_data_source is None:
+        raise RuntimeError(f"Failed to create vector data source: {mask_vector}")
+
+    # Create a layer for the vector data source
+    layer = vector_data_source.CreateLayer("mask", geom_type=ogr.wkbPolygon)
+    
+    if layer is None:
+        raise RuntimeError("Failed to create layer in vector data source.")
+
+    # Use gdal.Polygonize to convert the mask raster to polygons
+    band = mask_dataset.GetRasterBand(1)
+    
+    if band is None:
+        raise RuntimeError("Failed to get band from mask dataset.")
+
+    gdal.Polygonize(band, None, layer, -1, [], callback=None)
+
+    # Clean up datasets
+    raster_dataset = None
+    mask_dataset = None  # Close the mask dataset properly
+    vector_data_source = None  # This will automatically close and save changes
+
+    # Optionally remove the temporary raster mask
     if remove_raster_mask:
-        os.remove(maskfile)
+        maskfile.unlink()  # Use unlink() to remove the file
 
     return mask_vector
 
 
 def load_and_prepare_footprints(vector_file):
     """
-
-
     Parameters
     ----------
     vector_file : Path
@@ -427,12 +491,51 @@ def parse_site_name_v2(site_name):
     return region, site, site_number, date, resolution
 
 
-def clip_dsm_to_bounds(footprints_file, filename, dsmdir, outdir):
+def clip_dsm_to_bounds(footprints_file: Path, filename: str, dsmdir: Path, outdir: Path) -> None:
+    """
+    Clip a DSM (Digital Surface Model) raster to the bounds defined by footprints.
+
+    Parameters
+    ----------
+    footprints_file : Path
+        Path to the vector file containing footprint geometries.
+    filename : str
+        Name of the DSM raster file to be clipped.
+    dsmdir : Path
+        Directory containing the input DSM files.
+    outdir : Path
+        Directory where the clipped output file will be saved.
+
+    Returns
+    -------
+    None
+    """
+    
+    # Define input and output file paths
     infile = dsmdir / filename
     outfile = outdir / filename
-    # here issue
-    s = f'gdalwarp -cutline {footprints_file} -cwhere "DSM={filename}" -q -co COMPRESS=DEFLATE {infile} {outfile}'
-    os.system(s)
+
+    # Open the raster dataset
+    raster_dataset = gdal.Open(str(infile), gdal.GA_ReadOnly)
+    
+    # Open the vector dataset (footprints)
+    vector_dataset = ogr.Open(str(footprints_file))
+    
+    # Create a mask from the footprints based on the specified condition
+    layer = vector_dataset.GetLayer()
+    
+    # Create options for gdal.Warp to clip the raster using the vector layer
+    options = gdal.WarpOptions(cutlineLayer=layer, 
+                                cropToCutline=True, 
+                                format='GTiff', 
+                                creationOptions=['COMPRESS=DEFLATE'])
+
+    # Perform the warping operation (clipping)
+    gdal.Warp(str(outfile), raster_dataset, options=options)
+
+    # Clean up datasets
+    raster_dataset = None
+    vector_dataset = None
 
 
 def prepare_band(inband, noData=0, p_low=0, p_high=98):
@@ -491,7 +594,9 @@ def show_dsm_image(
 
 
 def load_ortho(image_path, pyramid_level=-2, overviews=[2, 4, 8]):
-    with rasterio.open(image_path, "r+", options={'IGNORE_COG_LAYOUT_BREAK': 'YES'}) as src:
+    with rasterio.open(
+        image_path, "r+", options={"IGNORE_COG_LAYOUT_BREAK": "YES"}
+    ) as src:
         src.build_overviews(overviews)
         oviews = src.overviews(1)  # list of overviews from biggest to smallest
         oview = oviews[pyramid_level]  # Use second-highest lowest overview
@@ -512,7 +617,9 @@ def load_ortho(image_path, pyramid_level=-2, overviews=[2, 4, 8]):
 
 
 def load_dsm(image_path, pyramid_level=-2, overviews=[2, 4, 8]):
-    with rasterio.open(image_path, "r+", options={'IGNORE_COG_LAYOUT_BREAK': 'YES'}) as src:
+    with rasterio.open(
+        image_path, "r+", options={"IGNORE_COG_LAYOUT_BREAK": "YES"}
+    ) as src:
         src.build_overviews(overviews)
         oviews = src.overviews(1)  # list of overviews from biggest to smallest
         oview = oviews[pyramid_level]  # Use second-highest lowest overview
