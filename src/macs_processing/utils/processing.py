@@ -52,7 +52,7 @@ def prepare_df_for_mipps(path_footprints, path_infiles):
 
 
 def write_exif(outdir, tag, exifpath):
-    s = f'{exifpath} -overwrite_original -Model="{tag}" {outdir}'
+    s = f'{exifpath} -overwrite_original -Model="{tag}" "{outdir}"'
     print(s)
     os.system(s)
 
