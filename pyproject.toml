@@ -1,6 +1,6 @@
 [project]
 name = "macs-processing"
-version = "0.10.0"
+version = "0.11.0"
 description = "Package for pre and postprocessing of DLR MACS Imagery"
 readme = "README.md"
 license = { text = "MIT" }
@@ -38,3 +38,10 @@ homepage = "https://github.com/awi-response/macs_processing/"
 [tool.setuptools.packages.find]
 where = ["src"]
 exclude = ["tests*"]
+
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[tool.uv]
+package = true
