@@ -1,18 +1,33 @@
 import argparse
 import logging
 import os
+import shutil
 import sys
 
 # ignore warnings
 import warnings
 import zipfile
+from pathlib import Path
 
 import geopandas as gpd
+import numpy as np
+import pandas as pd
 import rasterio
+import tqdm
+from joblib import Parallel, delayed
 
 from macs_processing.utils.loading import import_module_as_namespace
-from macs_processing.utils.postprocessing import *
-from macs_processing.utils.processing import *
+from macs_processing.utils.processing import (
+    get_dataset_name,
+    get_dataset_stats,
+    get_image_stats_multi,
+    get_overlapping_ds,
+    get_shutter_factor,
+    prepare_df_for_mipps,
+    retrieve_footprints,
+    write_exif,
+    write_new_values,
+)
 
 warnings.filterwarnings("ignore")
 warnings.filterwarnings("ignore", category=rasterio.errors.NotGeoreferencedWarning)
@@ -101,7 +116,7 @@ if args.footprints:
 settings = import_module_as_namespace(args.settings)
 
 # mipps bin - hardcode and override settings file
-MIPPS_BIN = r"..\tools\Conv\mipps.exe"
+MIPPS_BIN = Path(r"..\tools\Conv\mipps.exe")
 
 
 def main():
@@ -189,7 +204,6 @@ def main():
 
     # #### Load filtered footprints file
     for dataset_id in dataset_ids:
-        # TODO: might need to be fixed in case of spaces in file name
         dataset_name = get_dataset_name(ds, dataset_id)
         logging.info(f"Start processing dataset: {dataset_name}")
         path_infiles = Path(parent_dir) / dataset_name
