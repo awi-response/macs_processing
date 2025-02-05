@@ -1,18 +1,33 @@
 import argparse
 import logging
 import os
+import shutil
 import sys
 
 # ignore warnings
 import warnings
 import zipfile
+from pathlib import Path
 
 import geopandas as gpd
+import numpy as np
+import pandas as pd
 import rasterio
+import tqdm
+from joblib import Parallel, delayed
 
 from macs_processing.utils.loading import import_module_as_namespace
-from macs_processing.utils.postprocessing import *
-from macs_processing.utils.processing import *
+from macs_processing.utils.processing import (
+    get_dataset_name,
+    get_dataset_stats,
+    get_image_stats_multi,
+    get_overlapping_ds,
+    get_shutter_factor,
+    prepare_df_for_mipps,
+    retrieve_footprints,
+    write_exif,
+    write_new_values,
+)
 
 warnings.filterwarnings("ignore")
 warnings.filterwarnings("ignore", category=rasterio.errors.NotGeoreferencedWarning)
@@ -68,6 +83,30 @@ parser.add_argument(
     help="Horizontal accuracy for pix4D. Default = 0.05",
 )
 
+parser.add_argument(
+    "-fmr",
+    "--filter_max_roll",
+    type=int,
+    default=3,
+    help="Maximum roll angle to process. Default = 3",
+)
+
+parser.add_argument(
+    "-mcs",
+    "--mipps_chunk_size",
+    type=int,
+    default=20,
+    help="Number of images to process in one chunk with mipps. Default = 20",
+)
+
+parser.add_argument(
+    "-mnj",
+    "--mipps_n_jobs",
+    type=int,
+    default=4,
+    help="Number of jobs for mipps. Default = 4",
+)
+
 
 args = parser.parse_args()
 if args.footprints:
@@ -77,7 +116,7 @@ if args.footprints:
 settings = import_module_as_namespace(args.settings)
 
 # mipps bin - hardcode and override settings file
-MIPPS_BIN = r"..\tools\Conv\mipps.exe"
+MIPPS_BIN = Path(r"..\tools\Conv\mipps.exe")
 
 
 def main():
@@ -165,7 +204,6 @@ def main():
 
     # #### Load filtered footprints file
     for dataset_id in dataset_ids:
-        # TODO: might need to be fixed in case of spaces in file name
         dataset_name = get_dataset_name(ds, dataset_id)
         logging.info(f"Start processing dataset: {dataset_name}")
         path_infiles = Path(parent_dir) / dataset_name
@@ -203,16 +241,9 @@ def main():
         # ### Run Process
         os.chdir(settings.MIPPS_DIR)
 
-        max_roll = 3  # Select maximum roll angle to avoid image issues - SET in main settings part?
-        chunksize = 20  # this is a mipps-script thing
+        max_roll = args.filter_max_roll  # Select maximum roll angle to avoid image issues - SET in main settings part?
+        chunksize = args.mipps_chunk_size  # this is a mipps-script thing
 
-        """
-        logging.info(f'Start exporting MACS files to TIFF using DLR mipps')
-        logging.info(f"Total number of images: {len(df_final)}")
-        logging.info(f"NIR images: {(df_final['Looking'] == 'center').sum()}")
-        logging.info(f"RGB right images: {(df_final['Looking'] == 'right').sum()}")
-        logging.info(f"RGB left images:{(df_final['Looking'] == 'left').sum()}")
-        """
         # this is relevant for NIR only
 
         if macs_config == "MACS2018":
@@ -299,25 +330,8 @@ def main():
                 )
             logging.info("Finished Image Scaling")
 
-        # #### Crop Corners of images
-        if settings.CROP_CORNER:
-            logging.info("Start Cropping corners")
-            logging.info(f"Disk Size: {settings.DISK_SIZE}")
-            # mask = make_mask((3232, 4864), disksize=DISK_SIZE)
-            for sensor in settings.sensors[:]:
-                mask = make_mask((3232, 4864), disksize=settings.DISK_SIZE)
-                images = list(outdir_temp[sensor].glob("*"))
-                if sensor != "nir":
-                    mask = np.r_[[mask] * 3]
-                _ = Parallel(n_jobs=4)(
-                    delayed(mask_and_tag)(image, mask, tag=None)
-                    for image in tqdm.tqdm(images)
-                )
-            logging.info("Finished Cropping corners")
-
         # #### Write exif information into all images
         logging.info("Start writing EXIF Tags")
-        # screwed up! - needs to fix
         if macs_config == "MACS2018":
             for sensor in tqdm.tqdm(settings.sensors):
                 print(sensor)
@@ -392,7 +406,7 @@ def run_mipps_macs18(chunksize, df_final, max_roll, outdir_temporary):
             split += 1
         for df in tqdm.tqdm(np.array_split(df_nir, split)):
             outlist = " ".join(df["full_path"].values[:])
-            s = f'{MIPPS_BIN} -c="{settings.mipps_script_nir}" -o="{outdir_temporary}" -j=4 {outlist}'
+            s = f'{MIPPS_BIN} -c="{settings.mipps_script_nir}" -o="{outdir_temporary}" -j={args.mipps_n_jobs} {outlist}'
             os.system(s)
     # this is RGB
     if "right" in settings.sensors:
@@ -409,7 +423,7 @@ def run_mipps_macs18(chunksize, df_final, max_roll, outdir_temporary):
             split += 1
         for df in tqdm.tqdm(np.array_split(df_right, split)):
             outlist = " ".join(df["full_path"].values[:])
-            s = f'{MIPPS_BIN} -c="{settings.mipps_script_right}" -o="{outdir_temporary}" -j=4 {outlist}'
+            s = f'{MIPPS_BIN} -c="{settings.mipps_script_right}" -o="{outdir_temporary}" -j={args.mipps_n_jobs} {outlist}'
             os.system(s)
     if "left" in settings.sensors:
         logging.info("Start transforming RGB left files")
@@ -425,7 +439,7 @@ def run_mipps_macs18(chunksize, df_final, max_roll, outdir_temporary):
             split += 1
         for df in tqdm.tqdm(np.array_split(df_left, split)):
             outlist = " ".join(df["full_path"].values[:])
-            s = f'{MIPPS_BIN} -c="{settings.mipps_script_left}" -o="{outdir_temporary}" -j=4 {outlist}'
+            s = f'{MIPPS_BIN} -c="{settings.mipps_script_left}" -o="{outdir_temporary}" -j={args.mipps_n_jobs} {outlist}'
             os.system(s)
 
 
@@ -447,7 +461,7 @@ def run_mipps_macs23(chunksize, df_final, max_roll, outdir_temporary):
         os.makedirs(outdir_nir, exist_ok=True)
         for df in tqdm.tqdm(np.array_split(df_nir, split)):
             outlist = " ".join(df["full_path"].values[:])
-            s = f'{MIPPS_BIN} -c="{mipps_script_nir}" -o="{outdir_nir}" -j=4 {outlist}'
+            s = f'{MIPPS_BIN} -c="{mipps_script_nir}" -o="{outdir_nir}" -j={args.mipps_n_jobs} {outlist}'
             os.system(s)
     # this is RGB
     if "right" in settings.sensors:
@@ -463,7 +477,7 @@ def run_mipps_macs23(chunksize, df_final, max_roll, outdir_temporary):
         os.makedirs(outdir_rgb, exist_ok=True)
         for df in tqdm.tqdm(np.array_split(df_right, split)):
             outlist = " ".join(df["full_path"].values[:])
-            s = f'{MIPPS_BIN} -c="{mipps_script_rgb}" -o="{outdir_rgb}" -j=4 {outlist}'
+            s = f'{MIPPS_BIN} -c="{mipps_script_rgb}" -o="{outdir_rgb}" -j={args.mipps_n_jobs} {outlist}'
             os.system(s)
 
 
@@ -485,7 +499,7 @@ def run_mipps_macs24(chunksize, df_final, max_roll, outdir_temporary):
         os.makedirs(outdir_nir, exist_ok=True)
         for df in tqdm.tqdm(np.array_split(df_nir, split)):
             outlist = " ".join(df["full_path"].values[:])
-            s = f'{MIPPS_BIN} -c="{mipps_script_nir}" -o="{outdir_nir}" -j=4 {outlist}'
+            s = f'{MIPPS_BIN} -c="{mipps_script_nir}" -o="{outdir_nir}" -j={args.mipps_n_jobs} {outlist}'
             os.system(s)
 
     # this is RGB
@@ -502,7 +516,7 @@ def run_mipps_macs24(chunksize, df_final, max_roll, outdir_temporary):
         os.makedirs(outdir_rgb, exist_ok=True)
         for df in tqdm.tqdm(np.array_split(df_right, split)):
             outlist = " ".join(df["full_path"].values[:])
-            s = f'{MIPPS_BIN} -c="{mipps_script_rgb}" -o="{outdir_rgb}" -j=4 {outlist}'
+            s = f'{MIPPS_BIN} -c="{mipps_script_rgb}" -o="{outdir_rgb}" -j={args.mipps_n_jobs} {outlist}'
             os.system(s)
 
 
