@@ -18,7 +18,6 @@ dependencies = [
     "joblib",
     "scikit-learn",
     "scikit-image",
-    "gdal"
 ]
 requires-python = ">=3.10, <3.11"  # Specify exact Python version
 
