@@ -1,4 +1,3 @@
-# import glob2, glob
 import logging
 from pathlib import Path
 
@@ -13,6 +12,7 @@ def load_kml(file, sensor_name="RGB", layer=0, looking="center"):
     df = df.set_index("Name", drop=True)
     return df
 
+
 def load_kml_v2324(file, sensor="RGB", layer=0, sensor_name="111498_RGB"):
     """
     sensor_names: 99683_NIR 111498_RGB 1284123_TIR
@@ -22,6 +22,25 @@ def load_kml_v2324(file, sensor="RGB", layer=0, sensor_name="111498_RGB"):
     df["Sensor Name"] = sensor_name
     df = df.set_index("Name", drop=True)
     return df
+
+
+def validate_content(input_dir: Path) -> pd.Series:
+    """
+    Checks for the existence of expected KML and navigation files in a project directory.
+
+    Parameters:
+    - input_dir (Path): Path to the project directory to validate.
+
+    Returns:
+    - pd.Series: A pandas Series with:
+        - 'project': The project directory name.
+        - 'navfile': Boolean, True if the navigation file exists.
+        - 'kml': Boolean, True if the KML file exists.
+    """
+    name = input_dir.name
+    kml = (input_dir / f"{name}.kml").exists()
+    nav = (input_dir / f"{name}_nav.txt").exists()
+    return pd.Series(data=[name, nav, kml], index=["project", "navfile", "kml"])
 
 
 # Configure logging
@@ -36,26 +55,26 @@ def create_dataset_footprints(
     regex_nav: str = "*nav.txt",
     verbosity: int = 0,
     force_overwrite: bool = False,
-    year: int = 2024
+    year: int = 2024,
 ):
     """
     Processes KML files and generates GeoPackage outputs.
 
     This function reads KML files and associated navigation data, processes them into
-    a GeoDataFrame, and outputs two GeoPackage files: one for full footprints and 
-    another for dissolved footprints. The function can handle different KML loading 
+    a GeoDataFrame, and outputs two GeoPackage files: one for full footprints and
+    another for dissolved footprints. The function can handle different KML loading
     functions based on the specified year.
 
     Parameters:
     - dataset_path (Path): The path to the dataset folder containing KML and navigation files.
     - CRS (str): The Coordinate Reference System to be used for GeoDataFrames. Default is 'EPSG:4326'.
     - regex_nav (str): The regex pattern for navigation files. Default is '*nav.txt'.
-    - verbosity (int): Level of verbosity for logging. 
-        0 for quiet, 
-        1 for project name only, 
+    - verbosity (int): Level of verbosity for logging.
+        0 for quiet,
+        1 for project name only,
         2 for full details.
     - force_overwrite (bool): If True, overwrite existing output files. Default is False.
-    - year (int): The year to determine which KML loading function to use. 
+    - year (int): The year to determine which KML loading function to use.
         Supports special handling for 2023 and 2024 with specific loading functions.
 
     Returns:
@@ -120,14 +139,37 @@ def create_dataset_footprints(
             return  # Exit the function if the dissolved footprints file exists
 
     # Load and concatenate data from KML files
-    
-    if year in [2023,2024]:
+
+    if year in [2023, 2024]:
         df_concat = gpd.GeoDataFrame(
             pd.concat(
                 [
-                    load_kml_v2324(file_kml[0], sensor="RGB", layer=1, sensor_name="RGB 111498"),
-                    load_kml_v2324(file_kml[0], sensor="NIR", layer=0, sensor_name="NIR 99683"),
-                    load_kml_v2324(file_kml[0], sensor="TIR", layer=2, sensor_name="TIR 1284124"),
+                    load_kml_v2324(
+                        file_kml[0], sensor="RGB", layer=1, sensor_name="RGB 111498"
+                    ),
+                    load_kml_v2324(
+                        file_kml[0], sensor="NIR", layer=0, sensor_name="NIR 99683"
+                    ),
+                    load_kml_v2324(
+                        file_kml[0], sensor="TIR", layer=2, sensor_name="TIR 1284124"
+                    ),
+                ]
+            ),
+            crs=CRS,
+        )
+    elif year in [2025]:
+        df_concat = gpd.GeoDataFrame(
+            pd.concat(
+                [
+                    load_kml_v2324(
+                        file_kml[0], sensor="RGB", layer=1, sensor_name="RGB 111498"
+                    ),
+                    load_kml_v2324(
+                        file_kml[0], sensor="NIR", layer=0, sensor_name="NIR 99683"
+                    ),
+                    load_kml_v2324(
+                        file_kml[0], sensor="TIR", layer=2, sensor_name="TIR 1284123"
+                    ),
                 ]
             ),
             crs=CRS,
@@ -154,22 +196,23 @@ def create_dataset_footprints(
     df_nav["Name"] = df_nav["File"].apply(lambda x: Path(x).name)
     df_nav.set_index(["Name"], inplace=True)
 
-    df_join = (
-        df_nav.join(df_concat)
-        .drop(
-            columns=[
-                "File",
-                "Description",
-                "Easting[m]",
-                "Northing[m]",
-                "Zone",
-                "Date",
-                "Time",
-            ]
-        )
-        .reset_index()
-    )
+    # df_join = (
+    #     df_nav.join(df_concat)
+    #     .drop(
+    #         columns=[
+    #             "File",
+    #             "Description",
+    #             "Easting[m]",
+    #             "Northing[m]",
+    #             "Zone",
+    #             "Date",
+    #             "Time",
+    #         ]
+    #     )
+    #     .reset_index()
+    # )
 
+    df_join = df_nav.join(df_concat).reset_index()
     # Create a GeoDataFrame
     df_join = gpd.GeoDataFrame(df_join, crs=CRS, geometry=df_join.geometry)
 
@@ -181,7 +224,7 @@ def create_dataset_footprints(
         logging.info(f"Full footprints GeoPackage created at: {outfile}")
 
     # Dissolve geometries and create a new GeoDataFrame
-    df_dissolved = gpd.GeoDataFrame(geometry=[df_join.unary_union], crs=CRS)
+    df_dissolved = gpd.GeoDataFrame(geometry=[df_join.union_all()], crs=CRS)
     df_dissolved["Dataset"] = dataset_id
 
     # Output for dissolved geometries
