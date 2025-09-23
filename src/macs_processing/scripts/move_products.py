@@ -1,15 +1,15 @@
 import argparse
 import logging
+import shutil
 import sys
 
 # ignore warnings
 import warnings
+from pathlib import Path
 
 import rasterio
 
 from macs_processing.utils.loading import import_module_as_namespace
-from macs_processing.utils.postprocessing import *
-from macs_processing.utils.processing import *
 
 warnings.filterwarnings("ignore")
 warnings.filterwarnings("ignore", category=rasterio.errors.NotGeoreferencedWarning)
@@ -33,6 +33,7 @@ args = parser.parse_args()
 
 # import settings
 settings = import_module_as_namespace(args.settings)
+
 
 ###### START ###
 def main():

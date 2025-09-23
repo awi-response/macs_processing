@@ -79,7 +79,8 @@ def stack_output(
     s = f"gdalbuildvrt -q -separate {mos} {b3} {b2} {b1} {infile_nir}"
     os.system(s)
 
-    s = f"gdal_translate -of GTiff -a_nodata 0 -co COMPRESS=DEFLATE -co IGNORE_COG_LAYOUT_BREAK -q -co BIGTIFF=YES {mos} {outmosaic}"
+    s = f"gdal_translate -of GTiff -a_nodata 0 -co COMPRESS=DEFLATE -q -co BIGTIFF=YES {mos} {outmosaic}"
+    # s = f"gdal_translate -of GTiff -a_nodata 0 -co COMPRESS=DEFLATE -co IGNORE_COG_LAYOUT_BREAK -q -co BIGTIFF=YES {mos} {outmosaic}"
     os.system(s)
     if remove_temporary_files:
         for file in [b1, b2, b3, infile_nir, mos]:
@@ -109,7 +110,8 @@ def mask_and_name_bands(mosaic_file):
     Function to mask incomplete spectral data (e.g. with only NIR data and no RGB and vice versa)
     Add names to Bands
     """
-    with rasterio.open(mosaic_file, "r+", options={'IGNORE_COG_LAYOUT_BREAK': 'YES'}) as src:
+    # with rasterio.open(mosaic_file, "r+", options={'IGNORE_COG_LAYOUT_BREAK': 'YES'}) as src:
+    with rasterio.open(mosaic_file, "r+") as src:
         src.profile["nodata"] = 0
         data = src.read()
         newmask = ~(data == 0).any(axis=0)
@@ -139,7 +141,8 @@ def get_rgb_sensor_name(df):
 
 
 def check_tile_validity(image_path):
-    with rasterio.open(image_path, options={'IGNORE_COG_LAYOUT_BREAK': 'YES'}) as src:
+    # with rasterio.open(image_path, options={'IGNORE_COG_LAYOUT_BREAK': 'YES'}) as src:
+    with rasterio.open(image_path) as src:
         return src.read(1).mean() != 0
 
 
@@ -491,7 +494,8 @@ def show_dsm_image(
 
 
 def load_ortho(image_path, pyramid_level=-2, overviews=[2, 4, 8]):
-    with rasterio.open(image_path, "r+", options={'IGNORE_COG_LAYOUT_BREAK': 'YES'}) as src:
+    # with rasterio.open(image_path, "r+", options={'IGNORE_COG_LAYOUT_BREAK': 'YES'}) as src:
+    with rasterio.open(image_path, "r+") as src:
         src.build_overviews(overviews)
         oviews = src.overviews(1)  # list of overviews from biggest to smallest
         oview = oviews[pyramid_level]  # Use second-highest lowest overview
@@ -512,6 +516,7 @@ def load_ortho(image_path, pyramid_level=-2, overviews=[2, 4, 8]):
 
 
 def load_dsm(image_path, pyramid_level=-2, overviews=[2, 4, 8]):
+    # with rasterio.open(image_path, "r+", options={'IGNORE_COG_LAYOUT_BREAK': 'YES'}) as src:
     with rasterio.open(image_path, "r+", options={'IGNORE_COG_LAYOUT_BREAK': 'YES'}) as src:
         src.build_overviews(overviews)
         oviews = src.overviews(1)  # list of overviews from biggest to smallest

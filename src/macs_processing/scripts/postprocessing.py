@@ -1,16 +1,14 @@
 import argparse
-import importlib
 import logging
 import sys
 
 # ignore warnings
 import warnings
 
-
-from macs_processing.utils.processing import *
-from macs_processing.utils.postprocessing import *
-from macs_processing.utils.whiteboxtools import *
 from macs_processing.utils.loading import import_module_as_namespace
+from macs_processing.utils.postprocessing import *
+from macs_processing.utils.processing import *
+from macs_processing.utils.whiteboxtools import *
 
 warnings.filterwarnings("ignore")
 warnings.filterwarnings("ignore", category=rasterio.errors.NotGeoreferencedWarning)
