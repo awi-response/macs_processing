@@ -87,8 +87,8 @@ parser.add_argument(
     "-fmr",
     "--filter_max_roll",
     type=int,
-    default=3,
-    help="Maximum roll angle to process. Default = 3",
+    default=10,
+    help="Maximum roll angle to process. Default = 10",
 )
 
 parser.add_argument(
@@ -244,6 +244,7 @@ def main():
         max_roll = args.filter_max_roll  # Select maximum roll angle to avoid image issues - SET in main settings part?
         chunksize = args.mipps_chunk_size  # this is a mipps-script thing
 
+        # """
         # this is relevant for NIR only
 
         if macs_config == "MACS2018":
@@ -252,7 +253,9 @@ def main():
             run_mipps_macs23(chunksize, df_final, max_roll, outdir_temporary)
         elif macs_config == "MACS2024":
             run_mipps_macs24(chunksize, df_final, max_roll, outdir_temporary)
-
+        elif macs_config == "MACS2025":
+            run_mipps_macs24(chunksize, df_final, max_roll, outdir_temporary)
+        # """
         # ### Rescale image values
 
         # #### Image Statistics
@@ -261,7 +264,7 @@ def main():
             outdir_temp[key] = (
                 settings.OUTDIR[key].parent / dataset_name / settings.OUTDIR[key].name
             )
-
+        # """
         if settings.SCALING:
             logging.info("Start reading Image statistics")
 
@@ -329,7 +332,7 @@ def main():
                     for image in tqdm.tqdm(images[:])
                 )
             logging.info("Finished Image Scaling")
-
+        # """
         # #### Write exif information into all images
         logging.info("Start writing EXIF Tags")
         if macs_config == "MACS2018":
@@ -346,7 +349,7 @@ def main():
                     (outdir_temporary / sensor), tag=sensor, exifpath=settings.EXIF_PATH
                 )
 
-        elif macs_config == "MACS2024":
+        elif macs_config == "MACS2024" or macs_config == "MACS2025":
             for sensor in tqdm.tqdm(["99683_NIR", "111498_RGB"]):
                 write_exif(
                     (outdir_temporary / sensor), tag=sensor, exifpath=settings.EXIF_PATH
@@ -355,7 +358,7 @@ def main():
         # navfile = list(Path(path_infiles).glob('*nav.txt'))[0]
         if macs_config == "MACS2018":
             shutil.copy(navfile, outdir_temp["nir"].parent / "nav.txt")
-        elif macs_config in ["MACS2023", "MACS2024"]:
+        elif macs_config in ["MACS2023", "MACS2024", "MACS2025"]:
             shutil.copy(navfile, outdir_temporary / "nav.txt")
 
     # 1. merge nav files

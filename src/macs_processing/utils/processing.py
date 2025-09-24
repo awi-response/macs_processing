@@ -35,7 +35,10 @@ def prepare_df_for_mipps2(path_footprints, path_infiles):
     return df.set_index("Basename").join(df_full.set_index("basename"))
 
 
-def prepare_df_for_mipps(path_footprints, path_infiles):
+def prepare_df_for_mipps(path_footprints: Path|str, path_infiles: Path|str) -> pd.DataFrame:
+    """
+    Prepare a DataFrame for MIPPS processing by joining footprint data with file paths.
+    """
     # Load filtered footprints files
     df = gpd.read_file(path_footprints)
 
@@ -57,11 +60,15 @@ def prepare_df_for_mipps(path_footprints, path_infiles):
     df_full["basename"] = pd.DataFrame(
         df_full["full_path"].apply(lambda x: os.path.basename(x))
     )
+    df_full.set_index("basename", inplace=True)
+    df_full.sort_index(inplace=True)
+
     # return Inner join of lists - create filtered list of filepaths
-    return df.join(df_full.set_index("basename"))
+    # they dont match here
+    return df.join(df_full)
 
 
-def write_exif(outdir, tag, exifpath):
+def write_exif(outdir: str, tag: str, exifpath: str) -> None:
     s = f'{exifpath} -overwrite_original -Model="{tag}" "{outdir}"'
     print(s)
     os.system(s)
@@ -193,7 +200,7 @@ def get_shutter_factor(OUTDIR, sensors):
 # Functions for footprints creation
 
 
-def get_overlapping_ds(aoi_path, projects_file, name_attribute="Dataset"):
+def get_overlapping_ds(aoi_path: str|Path, projects_file: str|Path, name_attribute: str="Dataset") -> gpd.GeoDataFrame:
     # Open Projects file and AOI
     aoi = gpd.read_file(aoi_path).to_crs(epsg=4326)
     if "Dataset" in aoi.columns:

@@ -1,5 +1,7 @@
 import runpy
 from types import SimpleNamespace
+import yaml
+from pathlib import Path
 
 def import_module_as_namespace(settings_file):
     """
@@ -22,3 +24,22 @@ def import_module_as_namespace(settings_file):
     """
     settings = runpy.run_path(settings_file)
     return SimpleNamespace(**settings)
+
+
+def import_settings_from_yaml(yaml_file_path: str|Path) -> dict:
+    """
+    Placeholder for a function to import settings from a YAML file.
+
+    This function is intended to read a YAML configuration file and 
+    convert its contents into a SimpleNamespace object for easy access 
+    to the configuration parameters.
+
+    Note:
+    This function is currently not implemented.
+    """
+    # Example: Resolve project_dir
+# Load config
+    with open(yaml_file_path, "r") as f:
+        config = yaml.safe_load(f)
+    # specify to specific vars
+    return config

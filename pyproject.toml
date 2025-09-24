@@ -1,9 +1,9 @@
 [project]
 name = "macs-processing"
-version = "0.11.0"
+version = "0.11.1"
 description = "Package for pre and postprocessing of DLR MACS Imagery"
 readme = "README.md"
-license = { text = "MIT" }
+#license = { text = "MIT" }
 authors = [{ name = "Ingmar Nitze", email = "ingmar.nitze@awi.de" }]
 keywords = ["macs", "imagery", "processing"]
 dependencies = [
@@ -18,7 +18,10 @@ dependencies = [
     "joblib",
     "scikit-learn",
     "scikit-image",
-    "gdal"
+    "ipykernel>=6.30.1",
+    "jupyterlab>=4.4.7",
+    "matplotlib>=3.10.6",
+    "numpy<2.3"
 ]
 requires-python = ">=3.10, <3.11"  # Specify exact Python version
 
