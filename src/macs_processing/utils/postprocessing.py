@@ -619,7 +619,7 @@ def load_ortho(image_path, pyramid_level=-2, overviews=[2, 4, 8]):
 def load_dsm(image_path, pyramid_level=-2, overviews=[2, 4, 8]):
     # with rasterio.open(image_path, "r+", options={'IGNORE_COG_LAYOUT_BREAK': 'YES'}) as src:
     with rasterio.open(
-        image_path, "r+", options={"IGNORE_COG_LAYOUT_BREAK": "YES"}
+        image_path, "r+"
     ) as src:
         src.build_overviews(overviews)
         oviews = src.overviews(1)  # list of overviews from biggest to smallest
