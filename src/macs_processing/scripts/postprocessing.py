@@ -5,6 +5,7 @@ import sys
 # ignore warnings
 import warnings
 
+from macs_processing.utils.conversions import create_mask_vector_rasterio
 from macs_processing.utils.loading import import_module_as_namespace
 from macs_processing.utils.postprocessing import *
 from macs_processing.utils.processing import *
