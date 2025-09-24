@@ -11,7 +11,6 @@ import rasterio
 import tqdm
 from joblib import Parallel, delayed
 from mpl_toolkits.axes_grid1 import make_axes_locatable
-from sklearn import preprocessing
 
 
 def flist_to_df(filelist):
@@ -395,13 +394,16 @@ def clip_dsm_to_bounds(footprints_file, filename, dsmdir, outdir):
     os.system(s)
 
 
-def prepare_band(inband, noData=0, p_low=0, p_high=98):
+def prepare_band(
+    inband: np.array, noData: int | float = 0, p_low: float = 0, p_high: float = 98
+):
     mask = inband == noData
-    p2 = np.percentile(inband[~mask], p_low)
-    p98 = np.percentile(inband[~mask], p_high)
-    normed = np.clip(
-        preprocessing.MinMaxScaler().fit_transform(np.clip(inband, p2, p98)), 0, 1
-    )
+    p_low = np.percentile(inband[~mask], p_low)
+    p_high = np.percentile(inband[~mask], p_high)
+
+    # Replace with pure NumPy scaling (equivalent to MinMaxScaler)
+    normed = (inband - p_low) / (p_high - p_low)
+    normed = np.clip(normed, 0, 1)
     normed[mask] = 0
     return np.ma.masked_where(mask, normed)
 
