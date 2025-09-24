@@ -287,7 +287,7 @@ def main():
 
     if True:
         vector_list = Parallel(n_jobs=args.n_jobs)(
-            delayed(create_mask_vector)(infile, TMP_MASK_VECTORIZE_DIR)
+            delayed(create_mask_vector_rasterio)(infile, TMP_MASK_VECTORIZE_DIR)
             for infile in tqdm.tqdm(flist_out[:])
         )
 
