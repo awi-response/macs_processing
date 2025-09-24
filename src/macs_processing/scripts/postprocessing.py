@@ -5,6 +5,7 @@ import sys
 # ignore warnings
 import warnings
 
+from macs_processing.utils.conversions import create_mask_vector_rasterio
 from macs_processing.utils.loading import import_module_as_namespace
 from macs_processing.utils.postprocessing import *
 from macs_processing.utils.processing import *
@@ -287,7 +288,7 @@ def main():
 
     if True:
         vector_list = Parallel(n_jobs=args.n_jobs)(
-            delayed(create_mask_vector)(infile, TMP_MASK_VECTORIZE_DIR)
+            delayed(create_mask_vector_rasterio)(infile, TMP_MASK_VECTORIZE_DIR)
             for infile in tqdm.tqdm(flist_out[:])
         )
 

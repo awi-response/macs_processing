@@ -11,7 +11,6 @@ import rasterio
 import tqdm
 from joblib import Parallel, delayed
 from mpl_toolkits.axes_grid1 import make_axes_locatable
-from sklearn import preprocessing
 
 
 def flist_to_df(filelist):
@@ -278,49 +277,6 @@ def move_and_rename_processed_tiles(
         """
 
 
-def create_mask_vector(
-    raster_file,
-    temporary_target_dir,
-    remove_raster_mask=False,
-    polygonize=Path(os.environ["CONDA_PREFIX"]) / "Scripts" / "gdal_polygonize.py",
-):
-    """
-    Function to create vectors of valid data for a raster file
-    Parameters
-    ----------
-    raster_file : Path
-        input raster file from which to create vector mask.
-    temporary_target_dir : Path
-        directory path where temporary files should be stored.
-    remove_raster_mask : bool, optional
-        delete temporary raster mask. The default is False.
-    polygonize : Path, optional
-        Path to gdal polygonize function, Automatically created for (Windows) conda environments. The default is Path(os.environ['CONDA_PREFIX']) / 'Scripts' / 'gdal_polygonize.py'.
-
-    Returns
-    -------
-    mask_vector : Path
-        path of output vector footprints file.
-
-    """
-    maskfile = temporary_target_dir / (raster_file.stem + "_mask.tif")
-    mask_vector = temporary_target_dir / (raster_file.stem + "_mask.geojson")
-
-    s_extract_mask = (
-        f"gdal_translate -q -ot Byte -b mask -of GTiff {raster_file} {maskfile}"
-    )
-    os.system(s_extract_mask)
-
-    s_polygonize_mask = f"python {polygonize} -q -f GeoJSON {maskfile} {mask_vector}"
-    os.system(s_polygonize_mask)
-
-    # needs to be fixed - is not deleting at the moment
-    if remove_raster_mask:
-        os.remove(maskfile)
-
-    return mask_vector
-
-
 def load_and_prepare_footprints(vector_file):
     """
 
@@ -438,13 +394,16 @@ def clip_dsm_to_bounds(footprints_file, filename, dsmdir, outdir):
     os.system(s)
 
 
-def prepare_band(inband, noData=0, p_low=0, p_high=98):
+def prepare_band(
+    inband: np.array, noData: int | float = 0, p_low: float = 0, p_high: float = 98
+):
     mask = inband == noData
-    p2 = np.percentile(inband[~mask], p_low)
-    p98 = np.percentile(inband[~mask], p_high)
-    normed = np.clip(
-        preprocessing.MinMaxScaler().fit_transform(np.clip(inband, p2, p98)), 0, 1
-    )
+    p_low = np.percentile(inband[~mask], p_low)
+    p_high = np.percentile(inband[~mask], p_high)
+
+    # Replace with pure NumPy scaling (equivalent to MinMaxScaler)
+    normed = (inband - p_low) / (p_high - p_low)
+    normed = np.clip(normed, 0, 1)
     normed[mask] = 0
     return np.ma.masked_where(mask, normed)
 
@@ -494,7 +453,6 @@ def show_dsm_image(
 
 
 def load_ortho(image_path, pyramid_level=-2, overviews=[2, 4, 8]):
-    # with rasterio.open(image_path, "r+", options={'IGNORE_COG_LAYOUT_BREAK': 'YES'}) as src:
     with rasterio.open(image_path, "r+") as src:
         src.build_overviews(overviews)
         oviews = src.overviews(1)  # list of overviews from biggest to smallest
@@ -516,8 +474,7 @@ def load_ortho(image_path, pyramid_level=-2, overviews=[2, 4, 8]):
 
 
 def load_dsm(image_path, pyramid_level=-2, overviews=[2, 4, 8]):
-    # with rasterio.open(image_path, "r+", options={'IGNORE_COG_LAYOUT_BREAK': 'YES'}) as src:
-    with rasterio.open(image_path, "r+", options={'IGNORE_COG_LAYOUT_BREAK': 'YES'}) as src:
+    with rasterio.open(image_path, "r+") as src:
         src.build_overviews(overviews)
         oviews = src.overviews(1)  # list of overviews from biggest to smallest
         oview = oviews[pyramid_level]  # Use second-highest lowest overview
@@ -535,6 +492,7 @@ def prepare_image_3band(band_list):
     return rgb_image
 
 
+# TODO: do pythonic way
 def create_vrt(products_dir, vrt_script_location):
     """ """
     # create vrt
