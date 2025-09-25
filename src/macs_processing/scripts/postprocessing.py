@@ -104,6 +104,13 @@ parser.add_argument(
 
 args = parser.parse_args()
 
+if args.mosaic:
+    warnings.warn(
+        "The --mosaic/-m argument is deprecated and currently does nothing. Mosaics are created by default. This option will be removed in a future release.",
+        DeprecationWarning,
+        stacklevel=2,
+    )
+
 settings = import_module_as_namespace(args.settings)
 
 ###### START ###
