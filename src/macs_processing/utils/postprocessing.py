@@ -434,9 +434,10 @@ def show_dsm_image(
         fig.savefig(savepath)
 
 
-def load_ortho(image_path, pyramid_level=-2, overviews=[2, 4, 8]):
-    with rasterio.open(image_path, "r+") as src:
-        src.build_overviews(overviews)
+def load_ortho(image_path, pyramid_level=-2, overviews=[2, 4, 8], build_pyramids=False):
+    with rasterio.open(image_path, "r") as src:
+        if build_pyramids:
+            src.build_overviews(overviews)
         oviews = src.overviews(1)  # list of overviews from biggest to smallest
         oview = oviews[pyramid_level]  # Use second-highest lowest overview
         print("Decimation factor= {}".format(oview))
@@ -455,9 +456,10 @@ def load_ortho(image_path, pyramid_level=-2, overviews=[2, 4, 8]):
     return blue, green, red, nir
 
 
-def load_dsm(image_path, pyramid_level=-2, overviews=[2, 4, 8]):
-    with rasterio.open(image_path, "r+") as src:
-        src.build_overviews(overviews)
+def load_dsm(image_path, pyramid_level=-2, overviews=[2, 4, 8], build_pyramids=False):
+    with rasterio.open(image_path, "r") as src:
+        if build_pyramids:
+            src.build_overviews(overviews)
         oviews = src.overviews(1)  # list of overviews from biggest to smallest
         oview = oviews[pyramid_level]  # Use second-highest lowest overview
         print("Decimation factor= {}".format(oview))
@@ -485,7 +487,7 @@ def create_vrt(products_dir, vrt_script_location):
     os.remove(vrt_script)
 
 
-def create_previews(products_dir, overwrite=False, pyramid_level=-2):
+def create_previews(products_dir: Path, overwrite: bool=False, pyramid_level: int=-2, build_pyramids: bool=False):
     """
     full process wrapper
     """
@@ -510,10 +512,8 @@ def create_previews(products_dir, overwrite=False, pyramid_level=-2):
     print("Start processing previews")
 
     # Load Ortho + dsm
-    blue, green, red, nir = load_ortho(
-        products_dir / "Ortho.vrt", pyramid_level=pyramid_level
-    )
-    dsm = load_dsm(products_dir / "DSM.vrt", pyramid_level=pyramid_level)
+    blue, green, red, nir = load_ortho( products_dir /  f"{basename}_Ortho.tif", pyramid_level=pyramid_level, build_pyramids=build_pyramids)
+    dsm = load_dsm(products_dir / f"{basename}_DSM.tif", pyramid_level=pyramid_level, build_pyramids=build_pyramids)
 
     # prepare data
     # RGB
