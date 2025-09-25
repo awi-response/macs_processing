@@ -4,17 +4,19 @@ all elements (scripts, workflows, descriptions, ...) needed for processing MACS 
 
 ## Related publications
 
-### Preprint
-
-```
-Rettelbach, T., Nitze, I., Grünberg, I., Hammar, J., Schäffler, S., Hein, D., Gessner, M., Bucher, T., Brauchle, J., Hartmann, J., Sachs, T., Boike, J., & Grosse, G. (2023). Super-high-resolution aerial imagery datasets of permafrost landscapes in Alaska and northwestern Canada [Preprint]. ESSD – Ice/Permafrost. https://doi.org/10.5194/essd-2023-193
-```
-
 ### Final Publication
 
-- accepted for publication, will be updated shortly
+```
+Rettelbach, T., Nitze, I., Grünberg, I., Hammar, J., Schäffler, S., Hein, D., Gessner, M., Bucher, T., Brauchle, J., Hartmann, J., Sachs, T., Boike, J., & Grosse, G. (2024). Very high resolution aerial image orthomosaics, point clouds, and elevation datasets of select permafrost landscapes in Alaska and northwestern Canada. Earth System Science Data, 16(12), 5767–5798. https://doi.org/10.5194/essd-16-5767-2024
+```
 
-## Conda Environment
+### Dataset Publication
+
+```
+Rettelbach, T., Nitze, I., Grünberg, I., Hammar, J., Schäffler, S., Hein, D., Gessner, M., Bucher, T., Brauchle, J., Hartmann, J., Sachs, T., Boike, J., & Grosse, G. (2024). Very high resolution aerial image orthomosaics, point clouds, and elevation datasets of select permafrost landscapes in Alaska and northwestern Canada. Earth System Science Data, 16(12), 5767–5798. https://doi.org/10.5194/essd-16-5767-2024
+```
+
+## Installation
 
 We recommend to use a custom conda environment
 
@@ -128,7 +130,6 @@ Same as recommended but input data will be **deleted**, you will be asked to con
 Same as recommended but input data will be **deleted**, you will be asked to confirm. **WARNING** you will not be asked.
 
 `04_ArchiveData -s <SETTINGS_FILE> -a <archive destination> -d -y`
-
 
 ## Workflow
 
