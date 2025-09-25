@@ -105,7 +105,7 @@ def create_mask_vector_rasterio(
 
     try:
         # Read original raster and create mask
-        with rasterio.open(raster_file) as src:
+        with rasterio.open(raster_file, 'r') as src:
             # Read first band
             raster_data = src.read(1)
 
@@ -114,9 +114,9 @@ def create_mask_vector_rasterio(
 
             # Write mask to temporary file
             profile = src.profile.copy()
-            profile.update({"dtype": "uint8", "count": 1, "nodata": 0})
+            profile.update({"dtype": "uint8", "count": 1, "nodata": 0, "driver": "GTiff"})
 
-            with rasterio.open(maskfile, "w", **profile) as dst:
+            with rasterio.open(maskfile, "w", options={'IGNORE_COG_LAYOUT_BREAK': 'YES'}, **profile) as dst:
                 dst.write(binary_mask, 1)
 
         # Polygonize using rasterio features - create polygons for both valid and invalid areas

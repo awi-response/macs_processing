@@ -39,14 +39,15 @@ from macs_processing.utils.postprocessing import (
 # from macs_processing.utils.processing import *
 from macs_processing.utils.whiteboxtools import (
     assign_crs_to_raster,
+    clip_to_tile,
     create_point_cloud_tiles_las2las,
+    crs_from_file,
     fill_holes,
     merge_point_clouds,
     pc_IDW_toDSM,
+    resolution_from_file,
     smooth_DSM,
     wbt,
-    clip_to_tile,crs_from_file,
-    resolution_from_file,
 )
 
 warnings.filterwarnings("ignore")
@@ -76,8 +77,17 @@ parser.add_argument(
     help='Set which point cloud to use. Options: "both", "nir", "rgb"',
 )
 
+# does nothing right now
 parser.add_argument(
     "-m", "--mosaic", action="store_true", help="Set flag to calculate COG mosaic"
+)
+
+# does nothing right now
+parser.add_argument(
+    "-rt",
+    "--remove_tiles",
+    action="store_true",
+    help="Remove individual tiles after processing",
 )
 
 parser.add_argument(
@@ -93,6 +103,13 @@ parser.add_argument(
 
 
 args = parser.parse_args()
+
+if args.mosaic:
+    warnings.warn(
+        "The --mosaic/-m argument is deprecated and currently does nothing. Mosaics are created by default. This option will be removed in a future release.",
+        DeprecationWarning,
+        stacklevel=2,
+    )
 
 settings = import_module_as_namespace(args.settings)
 
@@ -314,8 +331,6 @@ def main():
 
     # #### Create footprints file
     os.makedirs(TMP_MASK_VECTORIZE_DIR, exist_ok=True)
-    # TODO: This is doing nothing
-    Path(os.environ["CONDA_PREFIX"]) / "Scripts" / "gdal_polygonize.py"
 
     # make geopackage - perhaps in the end
     FOOTPRINTS_FILE = PRODUCT_DIR / f"{settings.SITE_NAME}_tile_footprints.geojson"
@@ -423,24 +438,32 @@ def main():
     create_vrt(products_dir=PRODUCT_DIR, vrt_script_location=vrt_path)
     os.chdir(working_dir)
 
-    # create previews
-    logging.info("Creating previews!")
-    create_previews(products_dir=PRODUCT_DIR, pyramid_level=1, overwrite=True)
-
     # """
     # create COG mosaics
-    if args.mosaic:
-        logging.info("Create COG mosaics!")
-        ortho_vrt = PRODUCT_DIR / "Ortho.vrt"
-        ortho_cog = PRODUCT_DIR / f"{settings.SITE_NAME}_Ortho.tif"
-        dsm_vrt = PRODUCT_DIR / "DSM.vrt"
-        dsm_cog = PRODUCT_DIR / f"{settings.SITE_NAME}_DSM.tif"
-        hillshade_cog = PRODUCT_DIR / f"{settings.SITE_NAME}_Hillshade.tif"
-        convert_to_cog(infile=ortho_vrt, outfile=ortho_cog)
-        convert_to_cog(infile=dsm_vrt, outfile=dsm_cog)
-        s_hillshade = f"gdaldem hillshade -multidirectional -of COG -co BIGTIFF=YES -co NUM_THREADS=ALL_CPUS -co COMPRESS=DEFLATE {dsm_cog} {hillshade_cog}"
-        for run in [s_hillshade]:
-            os.system(run)
+    #  if args.mosaic:
+    logging.info("Create COG mosaics!")
+    ortho_vrt = PRODUCT_DIR / "Ortho.vrt"
+    ortho_cog = PRODUCT_DIR / f"{settings.SITE_NAME}_Ortho.tif"
+    dsm_vrt = PRODUCT_DIR / "DSM.vrt"
+    dsm_cog = PRODUCT_DIR / f"{settings.SITE_NAME}_DSM.tif"
+    hillshade_cog = PRODUCT_DIR / f"{settings.SITE_NAME}_Hillshade.tif"
+    convert_to_cog(infile=ortho_vrt, outfile=ortho_cog)
+    convert_to_cog(infile=dsm_vrt, outfile=dsm_cog)
+    s_hillshade = f"gdaldem hillshade -multidirectional -of COG -co BIGTIFF=YES -co NUM_THREADS=ALL_CPUS -co COMPRESS=DEFLATE {dsm_cog} {hillshade_cog}"
+    for run in [s_hillshade]:
+        os.system(run)
+
+    # create previews
+    logging.info("Creating previews!")
+    create_previews(
+        products_dir=PRODUCT_DIR, pyramid_level=1, overwrite=True, build_pyramids=False
+    )
+
+    if args.remove_tiles:
+        logging.info("Removing individual tiles!")
+        shutil.rmtree(settings.TARGET_DIR_ORTHO)
+        shutil.rmtree(settings.TARGET_DIR_DSM)
+        # shutil.rmtree(settings.TARGET_DIR_PC)
 
     # Copy processing report, nav file log file
     logging.info("Copying reports!")
