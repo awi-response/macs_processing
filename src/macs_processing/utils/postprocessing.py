@@ -86,24 +86,6 @@ def stack_output(
             os.remove(file)
 
 
-def calculate_pyramids(rasterfile):
-    """
-    Function to calculate pyramids
-
-    Parameters
-    ----------
-    rasterfile : Path
-        file for which to create pyramids
-
-    Returns
-    -------
-    None.
-
-    """
-    addo = f"gdaladdo -ro --config COMPRESS_OVERVIEW DEFLATE --config GDAL_NUM_THREADS ALL_CPUS {rasterfile}"
-    os.system(addo)
-
-
 def mask_and_name_bands(mosaic_file):
     """
     Function to mask incomplete spectral data (e.g. with only NIR data and no RGB and vice versa)
