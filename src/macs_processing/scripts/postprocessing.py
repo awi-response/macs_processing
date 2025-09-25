@@ -39,14 +39,15 @@ from macs_processing.utils.postprocessing import (
 # from macs_processing.utils.processing import *
 from macs_processing.utils.whiteboxtools import (
     assign_crs_to_raster,
+    clip_to_tile,
     create_point_cloud_tiles_las2las,
+    crs_from_file,
     fill_holes,
     merge_point_clouds,
     pc_IDW_toDSM,
+    resolution_from_file,
     smooth_DSM,
     wbt,
-    clip_to_tile,crs_from_file,
-    resolution_from_file,
 )
 
 warnings.filterwarnings("ignore")
@@ -83,7 +84,10 @@ parser.add_argument(
 
 # does nothing right now
 parser.add_argument(
-    "-rt", "--remove_tiles", action="store_true", help="Remove individual tiles after processing"
+    "-rt",
+    "--remove_tiles",
+    action="store_true",
+    help="Remove individual tiles after processing",
 )
 
 parser.add_argument(
@@ -320,8 +324,6 @@ def main():
 
     # #### Create footprints file
     os.makedirs(TMP_MASK_VECTORIZE_DIR, exist_ok=True)
-    # TODO: This is doing nothing
-    Path(os.environ["CONDA_PREFIX"]) / "Scripts" / "gdal_polygonize.py"
 
     # make geopackage - perhaps in the end
     FOOTPRINTS_FILE = PRODUCT_DIR / f"{settings.SITE_NAME}_tile_footprints.geojson"
@@ -446,7 +448,9 @@ def main():
 
     # create previews
     logging.info("Creating previews!")
-    create_previews(products_dir=PRODUCT_DIR, pyramid_level=1, overwrite=True, build_pyramids=False)
+    create_previews(
+        products_dir=PRODUCT_DIR, pyramid_level=1, overwrite=True, build_pyramids=False
+    )
 
     if args.remove_tiles:
         logging.info("Removing individual tiles!")
