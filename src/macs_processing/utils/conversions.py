@@ -10,8 +10,8 @@ from shapely.geometry import shape
 
 
 def convert_to_cog(
-    input_file: str | Path,
-    output_file: str | Path,
+    infile: str | Path,
+    outfile: str | Path,
     bigtiff: bool = True,
     compress: str = "DEFLATE",
     num_threads: str = "ALL_CPUS",
@@ -37,9 +37,9 @@ def convert_to_cog(
         gdal.SetConfigOption("NUM_THREADS", num_threads)
 
         # Open input dataset
-        src_ds = gdal.Open(input_file)
+        src_ds = gdal.Open(infile)
         if src_ds is None:
-            print(f"Could not open input file: {input_file}")
+            print(f"Could not open input file: {infile}")
             return False
 
         # Create COG driver
@@ -56,13 +56,13 @@ def convert_to_cog(
         ]
 
         # Create output dataset
-        dst_ds = driver.CreateCopy(output_file, src_ds, options=creation_options)
+        dst_ds = driver.CreateCopy(outfile, src_ds, options=creation_options)
 
         # Close datasets
         dst_ds = None
         src_ds = None
 
-        print(f"Successfully converted {input_file} to {output_file}")
+        print(f"Successfully converted {infile} to {outfile}")
         return True
 
     except Exception as e:

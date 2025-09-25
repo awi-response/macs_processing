@@ -1,15 +1,53 @@
 import argparse
 import logging
+import os
+import shutil
 import sys
 
 # ignore warnings
 import warnings
+from pathlib import Path
 
-from macs_processing.utils.conversions import create_mask_vector_rasterio
+import geopandas as gpd
+import pandas as pd
+import rasterio
+import tqdm
+from joblib import Parallel, delayed
+
+from macs_processing.utils.conversions import (
+    convert_to_cog,
+    create_mask_vector_rasterio,
+)
 from macs_processing.utils.loading import import_module_as_namespace
-from macs_processing.utils.postprocessing import *
-from macs_processing.utils.processing import *
-from macs_processing.utils.whiteboxtools import *
+from macs_processing.utils.postprocessing import (
+    check_ortho_validity,
+    clip_dsm_to_bounds,
+    create_previews,
+    create_vrt,
+    delete_empty_product_tiles,
+    flist_to_df,
+    full_postprocessing_optical,
+    get_nir_sensor_name,
+    get_rgb_sensor_name,
+    load_and_prepare_footprints,
+    merge_single_vector_files,
+    move_and_rename_processed_tiles,
+    parse_site_name_v2,
+)
+
+# from macs_processing.utils.postprocessing import *
+# from macs_processing.utils.processing import *
+from macs_processing.utils.whiteboxtools import (
+    assign_crs_to_raster,
+    create_point_cloud_tiles_las2las,
+    fill_holes,
+    merge_point_clouds,
+    pc_IDW_toDSM,
+    smooth_DSM,
+    wbt,
+    clip_to_tile,crs_from_file,
+    resolution_from_file,
+)
 
 warnings.filterwarnings("ignore")
 warnings.filterwarnings("ignore", category=rasterio.errors.NotGeoreferencedWarning)
@@ -398,10 +436,10 @@ def main():
         dsm_vrt = PRODUCT_DIR / "DSM.vrt"
         dsm_cog = PRODUCT_DIR / f"{settings.SITE_NAME}_DSM.tif"
         hillshade_cog = PRODUCT_DIR / f"{settings.SITE_NAME}_Hillshade.tif"
-        s_cog_ortho = f"gdal_translate -stats -of COG -co BIGTIFF=YES -co NUM_THREADS=ALL_CPUS -co COMPRESS=DEFLATE {ortho_vrt} {ortho_cog}"
-        s_cog_dsm = f"gdal_translate -stats -of COG -co BIGTIFF=YES -co NUM_THREADS=ALL_CPUS -co COMPRESS=DEFLATE {dsm_vrt} {dsm_cog}"
+        convert_to_cog(infile=ortho_vrt, outfile=ortho_cog)
+        convert_to_cog(infile=dsm_vrt, outfile=dsm_cog)
         s_hillshade = f"gdaldem hillshade -multidirectional -of COG -co BIGTIFF=YES -co NUM_THREADS=ALL_CPUS -co COMPRESS=DEFLATE {dsm_cog} {hillshade_cog}"
-        for run in [s_cog_ortho, s_cog_dsm, s_hillshade]:
+        for run in [s_hillshade]:
             os.system(run)
 
     # Copy processing report, nav file log file
