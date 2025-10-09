@@ -43,3 +43,19 @@ def import_settings_from_yaml(yaml_file_path: str|Path) -> dict:
         config = yaml.safe_load(f)
     # specify to specific vars
     return config
+
+
+def setup_folder_structure(project_dir: str|Path) -> None:
+    """
+    Create folder structure for MACS processing
+    project_dir: Path
+    """
+    if isinstance(project_dir, str):
+        project_dir = Path(project_dir)
+    # create 01
+    for sdir1 in ["macs", "tif"]:
+        (project_dir / "01_rawdata" / sdir1).mkdir(parents=True, exist_ok=True)
+    # 02
+    for sdir2 in ["02_studysites", "03_mosaica", "04_pix4d", "05_gis"]:
+        (project_dir / sdir2).mkdir(parents=True, exist_ok=True)
+    pass

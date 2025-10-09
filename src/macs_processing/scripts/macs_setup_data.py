@@ -6,7 +6,6 @@ import sys
 
 # ignore warnings
 import warnings
-import zipfile
 from pathlib import Path
 
 import geopandas as gpd
@@ -16,7 +15,7 @@ import rasterio
 import tqdm
 from joblib import Parallel, delayed
 
-from macs_processing.utils.loading import import_module_as_namespace
+from macs_processing.utils.loading import import_module_as_namespace, setup_folder_structure
 from macs_processing.utils.processing import (
     get_dataset_name,
     get_dataset_stats,
@@ -119,11 +118,11 @@ settings = import_module_as_namespace(args.settings)
 MIPPS_BIN = Path(r"..\tools\Conv\mipps.exe")
 
 
+
 def main():
     if not args.listds:
-        # unzip data structure
-        with zipfile.ZipFile(settings.zippath, "r") as zip_ref:
-            zip_ref.extractall(settings.PROJECT_DIR)
+        # # setup data structure
+        setup_folder_structure(settings.PROJECT_DIR)
         shutil.copy(settings.nav_script_path, settings.outdir)
 
         # logger
