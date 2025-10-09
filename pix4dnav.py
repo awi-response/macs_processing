@@ -6,6 +6,8 @@ import pandas as pd
 import os
 
 
+
+
 parser = argparse.ArgumentParser()
 
 parser.add_argument("-i", "--infile", type=str, default='nav.txt',
@@ -44,3 +46,5 @@ df_new = df[['imagename_tif', 'y', 'x', 'Alt[m] ', 'Omega[deg] ',
 
 # #### Export file 
 df_new.to_csv(outfile, sep='\t', header=True, index=False)
+
+
