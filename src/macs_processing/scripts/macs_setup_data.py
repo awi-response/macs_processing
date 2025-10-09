@@ -15,7 +15,7 @@ import rasterio
 import tqdm
 from joblib import Parallel, delayed
 
-from macs_processing.utils.loading import import_module_as_namespace, setup_folder_structure
+from macs_processing.utils.loading import import_module_as_namespace, setup_folder_structure, convert_nav_to_pix4d
 from macs_processing.utils.processing import (
     get_dataset_name,
     get_dataset_stats,
@@ -224,7 +224,7 @@ def main():
             macs_config = settings.MACS_CONFIG
         except:
             macs_config = None
-
+        #"""
         if "Looking" in df_final.columns:
             if not macs_config:
                 macs_config = "MACS2018"
@@ -243,9 +243,7 @@ def main():
         max_roll = args.filter_max_roll  # Select maximum roll angle to avoid image issues - SET in main settings part?
         chunksize = args.mipps_chunk_size  # this is a mipps-script thing
 
-        # """
         # this is relevant for NIR only
-
         if macs_config == "MACS2018":
             run_mipps_macs18(chunksize, df_final, max_roll, outdir_temporary)
         elif macs_config == "MACS2023":
@@ -254,7 +252,7 @@ def main():
             run_mipps_macs24(chunksize, df_final, max_roll, outdir_temporary)
         elif macs_config == "MACS2025":
             run_mipps_macs24(chunksize, df_final, max_roll, outdir_temporary)
-        # """
+        #
         # ### Rescale image values
 
         # #### Image Statistics
@@ -263,7 +261,7 @@ def main():
             outdir_temp[key] = (
                 settings.OUTDIR[key].parent / dataset_name / settings.OUTDIR[key].name
             )
-        # """
+        
         if settings.SCALING:
             logging.info("Start reading Image statistics")
 
@@ -331,7 +329,7 @@ def main():
                     for image in tqdm.tqdm(images[:])
                 )
             logging.info("Finished Image Scaling")
-        # """
+        #
         # #### Write exif information into all images
         logging.info("Start writing EXIF Tags")
         if macs_config == "MACS2018":
@@ -359,21 +357,21 @@ def main():
             shutil.copy(navfile, outdir_temp["nir"].parent / "nav.txt")
         elif macs_config in ["MACS2023", "MACS2024", "MACS2025"]:
             shutil.copy(navfile, outdir_temporary / "nav.txt")
-
+        
     # 1. merge nav files
     # #### Nav
     logging.info("Start preparing nav file")
     navfiles = list(settings.DATA_DIR.glob("*/nav.txt"))
     nav_out = settings.DATA_DIR / "nav.txt"
+    nav_pix4d = settings.DATA_DIR / "geo_pix4d_new.txt"
+
     dfs = [pd.read_csv(nav, sep="\t") for nav in navfiles]
     df_final = pd.concat(dfs)
     df_final.to_csv(nav_out, sep="\t", header=True, index=False)
 
-    # 2. run transformation
-    os.chdir(settings.DATA_DIR)
-    os.system(
-        f"python pix4dnav.py -ha {args.horizontal_accuracy} -va {args.vertical_accuracy}"
-    )
+    # 2. run transformation into pix4d compatible format
+    os.chdir(settings.DATA_DIR) # check if really necessary
+    convert_nav_to_pix4d(nav_out, nav_pix4d, args.horizontal_accuracy, args.vertical_accuracy)
 
     logging.info("Finished preparing nav file")
 
