@@ -1,0 +1,6 @@
+target_dir: "C:/path/to/data_products"
+archive_dir: "C:/path/to/archive"
+settings_dir: "C:/path/to/settings"
+projects:
+  - "WC_ITHSumps01_20250808_15cm_01"
+  - "WC_ITHSumps01_20250808_15cm_02"
