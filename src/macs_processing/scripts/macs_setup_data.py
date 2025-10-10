@@ -102,8 +102,8 @@ parser.add_argument(
     "-mnj",
     "--mipps_n_jobs",
     type=int,
-    default=4,
-    help="Number of jobs for mipps. Default = 4",
+    default=20,
+    help="Number of jobs for mipps. Default = 20",
 )
 
 
@@ -123,7 +123,6 @@ def main():
     if not args.listds:
         # # setup data structure
         setup_folder_structure(settings.PROJECT_DIR)
-        shutil.copy(settings.nav_script_path, settings.outdir)
 
         # logger
         logfile = settings.PROJECT_DIR / f"{settings.PROJECT_DIR.name}.log"
