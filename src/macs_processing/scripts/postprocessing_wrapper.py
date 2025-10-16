@@ -99,7 +99,7 @@ def main():
         if (output_postprocessing == 0) and (output_move == 0):
             print("Archiving files!\n")
             print(run_string_ziparchive)
-            # output_ziparchive = subprocess.call(run_string_ziparchive)
+            output_ziparchive = subprocess.call(run_string_ziparchive)
             print(f"Zipping {target_dir} Successful!\n")
 
 
