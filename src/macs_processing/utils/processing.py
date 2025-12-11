@@ -35,15 +35,14 @@ def prepare_df_for_mipps2(path_footprints, path_infiles):
     return df.set_index("Basename").join(df_full.set_index("basename"))
 
 
-def prepare_df_for_mipps(path_footprints: Path|str, path_infiles: Path|str) -> pd.DataFrame:
+def prepare_df_for_mipps(path_footprints: Path|str, path_infiles: Path|str, search_pattern: str="*.macs") -> pd.DataFrame:
     """
     Prepare a DataFrame for MIPPS processing by joining footprint data with file paths.
     """
     # Load filtered footprints files
     df = gpd.read_file(path_footprints)
 
-    # flist = glob.glob(path_infiles + '/*/*.macs')
-    flist = list(Path(path_infiles).glob("*/*.macs"))
+    flist = list(Path(path_infiles).rglob(search_pattern))
     flist = [str(f) for f in flist]
 
     df_full = pd.DataFrame()
