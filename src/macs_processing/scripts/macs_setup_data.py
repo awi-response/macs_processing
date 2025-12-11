@@ -15,7 +15,11 @@ import rasterio
 import tqdm
 from joblib import Parallel, delayed
 
-from macs_processing.utils.loading import import_module_as_namespace, setup_folder_structure, convert_nav_to_pix4d
+from macs_processing.utils.loading import (
+    convert_nav_to_pix4d,
+    import_module_as_namespace,
+    setup_folder_structure,
+)
 from macs_processing.utils.processing import (
     get_dataset_name,
     get_dataset_stats,
@@ -106,6 +110,14 @@ parser.add_argument(
     help="Number of jobs for mipps. Default = 20",
 )
 
+parser.add_argument(
+    "-fnp",
+    "--filename_pattern",
+    type=str,
+    default="*.macs",
+    help="search pattern for macs files. Default = '*.macs'. Example '*_500.macs' for files only with 500ms exposure time in HDR mode",
+)
+
 
 args = parser.parse_args()
 if args.footprints:
@@ -116,7 +128,6 @@ settings = import_module_as_namespace(args.settings)
 
 # mipps bin - hardcode and override settings file
 MIPPS_BIN = Path(r"..\tools\Conv\mipps.exe")
-
 
 
 def main():
@@ -214,7 +225,9 @@ def main():
         footprints_path = (
             settings.path_footprints.parent / dataset_name / "footprints.gpkg"
         )
-        df_final = prepare_df_for_mipps(footprints_path, path_infiles)
+        df_final = prepare_df_for_mipps(
+            footprints_path, path_infiles, search_pattern=args.filename_pattern
+        )
         df_final["full_path"] = df_final.apply(lambda x: f'"{x.full_path}"', axis=1)
 
         print("Total number of images:", len(df_final))
@@ -223,7 +236,7 @@ def main():
             macs_config = settings.MACS_CONFIG
         except:
             macs_config = None
-        #"""
+        # """
         if "Looking" in df_final.columns:
             if not macs_config:
                 macs_config = "MACS2018"
@@ -260,7 +273,7 @@ def main():
             outdir_temp[key] = (
                 settings.OUTDIR[key].parent / dataset_name / settings.OUTDIR[key].name
             )
-        
+
         if settings.SCALING:
             logging.info("Start reading Image statistics")
 
@@ -356,7 +369,7 @@ def main():
             shutil.copy(navfile, outdir_temp["nir"].parent / "nav.txt")
         elif macs_config in ["MACS2023", "MACS2024", "MACS2025"]:
             shutil.copy(navfile, outdir_temporary / "nav.txt")
-        
+
     # 1. merge nav files
     # #### Nav
     logging.info("Start preparing nav file")
@@ -369,8 +382,10 @@ def main():
     df_final.to_csv(nav_out, sep="\t", header=True, index=False)
 
     # 2. run transformation into pix4d compatible format
-    os.chdir(settings.DATA_DIR) # check if really necessary
-    convert_nav_to_pix4d(nav_out, nav_pix4d, args.horizontal_accuracy, args.vertical_accuracy)
+    os.chdir(settings.DATA_DIR)  # check if really necessary
+    convert_nav_to_pix4d(
+        nav_out, nav_pix4d, args.horizontal_accuracy, args.vertical_accuracy
+    )
 
     logging.info("Finished preparing nav file")
 
