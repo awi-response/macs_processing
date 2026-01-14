@@ -1,0 +1,6 @@
+target_dir: "C:/path/to/data_products"
+archive_dir: "C:/path/to/archive"
+settings_dir: "C:/path/to/settings"
+delete_intermediate: true # true to delete intermediate files after processing
+projects: # recommended to use only 1 project at a time, will ask for confirmation of input dataset id
+  - "WC_ITHSumps01_20250808_15cm_01"

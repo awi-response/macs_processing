@@ -1,0 +1,1361 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pix4dmapper>
+    <software>
+        <projectVersion>4.6.4</projectVersion>
+        <p4dVersion>22</p4dVersion>
+        <cameraModelVersion>19</cameraModelVersion>
+    </software>
+    <options>
+        <initial>
+            <runStep>true</runStep>
+            <!--    General    -->
+            <!--Keypoints Image Scale-->
+            <keypointsImageScale>Full</keypointsImageScale>
+            <imageScale>0.5</imageScale>
+            <!--Quality report-->
+            <generateOrthoInReport>true</generateOrthoInReport>
+            <!--    Matching    -->
+            <!--Matching Image Pairs-->
+            <matchStrategy>AutoAerial</matchStrategy>
+            <matchTimeNbNeighbours>2</matchTimeNbNeighbours>
+            <matchUseTriangulation>true</matchUseTriangulation>
+            <matchRelativeDistanceImages>0</matchRelativeDistanceImages>
+            <matchMtpMaxImagePair>5</matchMtpMaxImagePair>
+            <matchImageSimilarityMaxPairs>1</matchImageSimilarityMaxPairs>
+            <matchTimeMultiCamera>0</matchTimeMultiCamera>
+            <!--Matching Strategy-->
+            <geometricallyVerifiedMatching>true</geometricallyVerifiedMatching>
+            <!--    Calibration    -->
+            <!--Targeted number of keypoints-->
+            <keypointSelectionMethod>Automatic</keypointSelectionMethod>
+            <numberOfKeypoints>10000</numberOfKeypoints>
+            <!--Method-->
+            <calibrationMethod>Standard</calibrationMethod>
+            <!--Optimizer-->
+            <optimizerType>Ceres</optimizerType>
+            <!--Camera optimization-->
+            <internalParamOptimization>AllPrior</internalParamOptimization>
+            <externalParamOptimization>All</externalParamOptimization>
+            <leverarmParamOptimization>None</leverarmParamOptimization>
+            <!--Rematch-->
+            <rematchStrategy>Auto</rematchStrategy>
+            <rematch>true</rematch>
+            <rematchOverlap>0.3000000119</rematchOverlap>
+            <!--SkySegmentation-->
+            <automaticSkyMasking>true</automaticSkyMasking>
+            <!--Export-->
+            <exportCameraParamsAATBBA>true</exportCameraParamsAATBBA>
+            <exportUndistortedImages>false</exportUndistortedImages>
+            <!--    Miscellaneous options    -->
+            <matchAll>false</matchAll>
+            <targetCameraDist>0</targetCameraDist>
+            <descriptorType>0</descriptorType>
+            <minImageDist>0</minImageDist>
+            <rigMatch>true</rigMatch>
+            <saveKMLReport>false</saveKMLReport>
+            <createThumbnails>true</createThumbnails>
+            <threshAdd>20</threshAdd>
+            <threshHom>10</threshHom>
+        </initial>
+        <dense>
+            <runStep>true</runStep>
+            <!--Densification-->
+            <pclImageDownscaleFactor>1</pclImageDownscaleFactor>
+            <pclImageMultiscale>false</pclImageMultiscale>
+            <pclDensity>Optimal</pclDensity>
+            <pclMinNoMatches>4</pclMinNoMatches>
+            <!--Export-->
+            <pclExportLAS>true</pclExportLAS>
+            <pclExportLAZ>false</pclExportLAZ>
+            <pclExportPLY>false</pclExportPLY>
+            <pclExportXYZ>false</pclExportXYZ>
+            <pclExportXYZDelim>Space</pclExportXYZDelim>
+            <pclExportMergeTiles>true</pclExportMergeTiles>
+            <!--    Advanced    -->
+            <!--Densification-->
+            <pclWindowSize>7</pclWindowSize>
+            <!--Image groups-->
+            <pclImageGroups>
+                <group name=""/>
+            </pclImageGroups>
+            <!--Point cloud Filters-->
+            <pclUseProcessingArea>true</pclUseProcessingArea>
+            <pclUseAnnotations>true</pclUseAnnotations>
+            <pclLimitDepthAutomatically>false</pclLimitDepthAutomatically>
+            <!--Classification-->
+            <pclClassify>true</pclClassify>
+            <!--Miscellaneous options-->
+            <pclUniformityThreshold>3.5</pclUniformityThreshold>
+            <pclRegularizedMultiscale>false</pclRegularizedMultiscale>
+        </dense>
+        <mesh>
+            <!--Generation-->
+            <meshGenerate3dTexturedMesh>false</meshGenerate3dTexturedMesh>
+            <!--Settings-->
+            <meshResolution>Medium</meshResolution>
+            <meshMaxOctreeDepth>12</meshMaxOctreeDepth>
+            <meshTextureSize>8192</meshTextureSize>
+            <meshDecimationCriteria>Quantitative</meshDecimationCriteria>
+            <meshMaxTriangles>1000000</meshMaxTriangles>
+            <meshDecimationStrategy>Sensitive</meshDecimationStrategy>
+            <meshTextureColorBalancing>true</meshTextureColorBalancing>
+            <!--Export-->
+            <meshExportPLY>false</meshExportPLY>
+            <meshExportFBX>true</meshExportFBX>
+            <meshExportDXF>false</meshExportDXF>
+            <meshExportOBJ>true</meshExportOBJ>
+            <meshExportTiledOBJ>false</meshExportTiledOBJ>
+            <meshExportPDF3D>false</meshExportPDF3D>
+            <meshExportPDF3DLogoPath></meshExportPDF3DLogoPath>
+            <!--Image groups-->
+            <meshGeometryImageGroups>
+                <group name=""/>
+            </meshGeometryImageGroups>
+            <meshTextureImageGroups>
+                <group name=""/>
+            </meshTextureImageGroups>
+            <!--Mesh generation-->
+            <meshSampleDensityDivider>1</meshSampleDensityDivider>
+            <!--LOD generation-->
+            <lodExportOSGB>false</lodExportOSGB>
+            <lodExportSLPK>false</lodExportSLPK>
+            <lodLevelCount>4</lodLevelCount>
+            <lodTextureQuality>0</lodTextureQuality>
+        </mesh>
+        <ortho>
+            <runStep>true</runStep>
+            <!--    DSM and Orthomosaic   -->
+            <!--Resolution-->
+            <orthoResolution>15</orthoResolution>
+            <!--DSM Filters-->
+            <dsmFilterUseNoiseFilter>true</dsmFilterUseNoiseFilter>
+            <dsmFilterUseSmoothing>true</dsmFilterUseSmoothing>
+            <dsmFilterSmoothingType>Sharp</dsmFilterSmoothingType>
+            <!--Raster DSM-->
+            <dsmTIFF>true</dsmTIFF>
+            <dsmMethod>InverseDistanceWeighting</dsmMethod>
+            <dsmTIFFMergeTiles>false</dsmTIFFMergeTiles>
+            <!--Orthomosaic-->
+            <mosaicTIFF>true</mosaicTIFF>
+            <mosaicTIFFMergeTiles>false</mosaicTIFFMergeTiles>
+            <mosaicTIFFNoTransparency>false</mosaicTIFFNoTransparency>
+            <mosaicKML>false</mosaicKML>
+            <!--    Additional outputs    -->
+            <!--Grid DSM-->
+            <gridDsmXYZ>false</gridDsmXYZ>
+            <gridDsmXYZDelim>Space</gridDsmXYZDelim>
+            <gridDsmLAS>false</gridDsmLAS>
+            <gridDsmLAZ>false</gridDsmLAZ>
+            <gridDsmGridSpacing>100</gridDsmGridSpacing>
+            <!--Raster DTM-->
+            <dtmTIFF>false</dtmTIFF>
+            <dtmTIFFMergeTiles>true</dtmTIFFMergeTiles>
+            <dtmResolution>-5</dtmResolution>
+            <!--Contour lines-->
+            <contourSHP>false</contourSHP>
+            <contourPDF>false</contourPDF>
+            <contourDXF>false</contourDXF>
+            <contourBase>0</contourBase>
+            <contourElevationInterval>10</contourElevationInterval>
+            <contourResolution>100</contourResolution>
+            <contourMinLineSize>20</contourMinLineSize>
+            <!--    Miscellaneous options    -->
+            <meanResolution>-1</meanResolution>
+            <mosaicVisib>true</mosaicVisib>
+            <mosaicGainc>true</mosaicGainc>
+            <dsmPNG>false</dsmPNG>
+        </ortho>
+        <index>
+            <radiometry>
+                <camera id="0">
+                    <radiometricCorrection>none</radiometricCorrection>
+                </camera>
+                <camera id="1">
+                    <radiometricCorrection>none</radiometricCorrection>
+                </camera>
+            </radiometry>
+            <!--Resolution-->
+            <indexResolution>-1</indexResolution>
+            <indexDownsamplingMethod>Gauss</indexDownsamplingMethod>
+            <!--Reflectance Map-->
+            <indexReflectance>false</indexReflectance>
+            <indexReflectanceMergeTiles>false</indexReflectanceMergeTiles>
+            <indices>
+                <index name="red" formula="red" enabled="false"/>
+                <index name="green" formula="green" enabled="false"/>
+                <index name="blue" formula="blue" enabled="false"/>
+                <index name="nir" formula="nir" enabled="false"/>
+                <index name="RGB_grayscale" formula="0.2126 * red + 0.7152 * green + 0.0722 * blue" enabled="false"/>
+                <index name="ndvi" formula="(nir - red) / (nir + red)" enabled="false"/>
+            </indices>
+            <!--Export-->
+            <indexExportPointSHP>false</indexExportPointSHP>
+            <indexExportPointSHPGridSize>200</indexExportPointSHPGridSize>
+            <indexExportPolygonSHP>false</indexExportPolygonSHP>
+            <indexExportPolygonSHPGridSize>400</indexExportPolygonSHPGridSize>
+        </index>
+    </options>
+    <inputs>
+        <cameras>
+            <camera name="MACS_Polar1-2024_RGB111498_v1">
+                <imageWidth>8416</imageWidth>
+                <imageHeight>6032</imageHeight>
+                <pixelSize>4.6</pixelSize>
+                <principalPointXmm>19.357</principalPointXmm>
+                <principalPointYmm>13.874</principalPointYmm>
+                <lensType>perspective</lensType>
+                <focalLengthmm>36.0447</focalLengthmm>
+                <distortion>3</distortion>
+                <radialK1>-0.0885</radialK1>
+                <radialK2>0.085</radialK2>
+                <radialK3>0</radialK3>
+                <tangentialT1>0</tangentialT1>
+                <tangentialT2>0</tangentialT2>
+                <cameraModelSource>user</cameraModelSource>
+                <band name="Red" centralWaveLength="660" width="0" weight="0.2126"/>
+                <band name="Green" centralWaveLength="550" width="0" weight="0.7152"/>
+                <band name="Blue" centralWaveLength="470" width="0" weight="0.0722"/>
+                <serialNumber></serialNumber>
+                <fixedBands>false</fixedBands>
+                <id>0</id>
+            </camera>
+            <camera name="MACS_Polar1-2023_NIR99683_v2">
+                <imageWidth>8416</imageWidth>
+                <imageHeight>6032</imageHeight>
+                <pixelSize>4.6</pixelSize>
+                <principalPointXmm>19.229518</principalPointXmm>
+                <principalPointYmm>14.00562</principalPointYmm>
+                <lensType>perspective</lensType>
+                <focalLengthmm>36.2658</focalLengthmm>
+                <distortion>3</distortion>
+                <radialK1>-0.0856</radialK1>
+                <radialK2>0.0824</radialK2>
+                <radialK3>0</radialK3>
+                <tangentialT1>0</tangentialT1>
+                <tangentialT2>0</tangentialT2>
+                <cameraModelSource>user</cameraModelSource>
+                <band name="NIR" centralWaveLength="0" width="0" weight="1"/>
+                <serialNumber></serialNumber>
+                <fixedBands>false</fixedBands>
+                <id>1</id>
+            </camera>
+        </cameras>
+        <coordinateSystems>
+            <southingWesting>true</southingWesting>
+            <output>
+                <WKT>PROJCS[&quot;WGS 84 / UTM zone 8N&quot;,GEOGCS[&quot;WGS 84&quot;,DATUM[&quot;WGS_1984&quot;,SPHEROID[&quot;WGS 84&quot;,6378137,298.257223563,AUTHORITY[&quot;EPSG&quot;,&quot;7030&quot;]],AUTHORITY[&quot;EPSG&quot;,&quot;6326&quot;]],PRIMEM[&quot;Greenwich&quot;,0,AUTHORITY[&quot;EPSG&quot;,&quot;8901&quot;]],UNIT[&quot;degree&quot;,0.0174532925199433,AUTHORITY[&quot;EPSG&quot;,&quot;9122&quot;]],AUTHORITY[&quot;EPSG&quot;,&quot;4326&quot;]],PROJECTION[&quot;Transverse_Mercator&quot;],PARAMETER[&quot;latitude_of_origin&quot;,0],PARAMETER[&quot;central_meridian&quot;,-135],PARAMETER[&quot;scale_factor&quot;,0.9996],PARAMETER[&quot;false_easting&quot;,500000],PARAMETER[&quot;false_northing&quot;,0],UNIT[&quot;metre&quot;,1,AUTHORITY[&quot;EPSG&quot;,&quot;9001&quot;]],AXIS[&quot;Easting&quot;,EAST],AXIS[&quot;Northing&quot;,NORTH],AUTHORITY[&quot;EPSG&quot;,&quot;32608&quot;]]</WKT>
+                <verticalDef model="geoid" geoidName="EGM 96 Geoid"/>
+            </output>
+            <gcp>
+                <WKT>PROJCS[&quot;WGS 84 / UTM zone 8N&quot;,GEOGCS[&quot;WGS 84&quot;,DATUM[&quot;WGS_1984&quot;,SPHEROID[&quot;WGS 84&quot;,6378137,298.257223563,AUTHORITY[&quot;EPSG&quot;,&quot;7030&quot;]],AUTHORITY[&quot;EPSG&quot;,&quot;6326&quot;]],PRIMEM[&quot;Greenwich&quot;,0,AUTHORITY[&quot;EPSG&quot;,&quot;8901&quot;]],UNIT[&quot;degree&quot;,0.0174532925199433,AUTHORITY[&quot;EPSG&quot;,&quot;9122&quot;]],AUTHORITY[&quot;EPSG&quot;,&quot;4326&quot;]],PROJECTION[&quot;Transverse_Mercator&quot;],PARAMETER[&quot;latitude_of_origin&quot;,0],PARAMETER[&quot;central_meridian&quot;,-135],PARAMETER[&quot;scale_factor&quot;,0.9996],PARAMETER[&quot;false_easting&quot;,500000],PARAMETER[&quot;false_northing&quot;,0],UNIT[&quot;metre&quot;,1,AUTHORITY[&quot;EPSG&quot;,&quot;9001&quot;]],AXIS[&quot;Easting&quot;,EAST],AXIS[&quot;Northing&quot;,NORTH],AUTHORITY[&quot;EPSG&quot;,&quot;32608&quot;]]</WKT>
+                <verticalDef model="geoid" geoidName="EGM 96 Geoid"/>
+            </gcp>
+            <image>
+                <WKT>GEOGCS[&quot;WGS 84&quot;,DATUM[&quot;WGS_1984&quot;,SPHEROID[&quot;WGS 84&quot;,6378137,298.257223563,AUTHORITY[&quot;EPSG&quot;,&quot;7030&quot;]],TOWGS84[0,0,0,0,0,0,0],AUTHORITY[&quot;EPSG&quot;,&quot;6326&quot;]],PRIMEM[&quot;Greenwich&quot;,0,AUTHORITY[&quot;EPSG&quot;,&quot;8901&quot;]],UNIT[&quot;degree&quot;,0.01745329251994328,AUTHORITY[&quot;EPSG&quot;,&quot;9122&quot;]],AUTHORITY[&quot;EPSG&quot;,&quot;4326&quot;]]</WKT>
+                <verticalDef model="geoid" geoidName="EGM 96 Geoid"/>
+            </image>
+        </coordinateSystems>
+        <gcps/>
+        <radiometry/>
+        <images>
+            <image path="E:/MACS/2025/WC_DempsterRTS02_20250803_15cm_98/01_rawdata/tif/111498_RGB/03361_010722248_1000.tif" group="RGB" enabled="true">
+                <camera name="MACS_Polar1-2024_RGB111498_v1" id="0"/>
+                <gps alt="1276.99900000000002365" lat="67.25989247479999733" lng="-135.22020585800001413"/>
+                <xyz x="0" y="0" z="0"/>
+                <accuracyXY>0.05</accuracyXY>
+                <accuracyZ>0.05</accuracyZ>
+                <opk omega="-0.533903487" phi="0.0786056368" kappa="100.105342564"/>
+                <accuracyOpk omega="6" phi="4" kappa="6"/>
+            </image>
+            <image path="E:/MACS/2025/WC_DempsterRTS02_20250803_15cm_98/01_rawdata/tif/111498_RGB/03362_010723248_1000.tif" group="RGB" enabled="true">
+                <camera name="MACS_Polar1-2024_RGB111498_v1" id="0"/>
+                <gps alt="1276.2680000000000291" lat="67.25977808439999706" lng="-135.22175292599999352"/>
+                <xyz x="0" y="0" z="0"/>
+                <accuracyXY>0.05</accuracyXY>
+                <accuracyZ>0.05</accuracyZ>
+                <opk omega="-0.5771764283" phi="-0.0647991107" kappa="100.127948779"/>
+                <accuracyOpk omega="6" phi="4" kappa="6"/>
+            </image>
+            <image path="E:/MACS/2025/WC_DempsterRTS02_20250803_15cm_98/01_rawdata/tif/111498_RGB/03363_010724248_1000.tif" group="RGB" enabled="true">
+                <camera name="MACS_Polar1-2024_RGB111498_v1" id="0"/>
+                <gps alt="1275.35200000000008913" lat="67.25966452560000164" lng="-135.22330270399999108"/>
+                <xyz x="0" y="0" z="0"/>
+                <accuracyXY>0.05</accuracyXY>
+                <accuracyZ>0.05</accuracyZ>
+                <opk omega="-0.9101956148" phi="-0.2180094284" kappa="100.36077204"/>
+                <accuracyOpk omega="6" phi="4" kappa="6"/>
+            </image>
+            <image path="E:/MACS/2025/WC_DempsterRTS02_20250803_15cm_98/01_rawdata/tif/111498_RGB/03364_010725248_1000.tif" group="RGB" enabled="true">
+                <camera name="MACS_Polar1-2024_RGB111498_v1" id="0"/>
+                <gps alt="1274.33099999999990359" lat="67.25955187280000303" lng="-135.22485535699999559"/>
+                <xyz x="0" y="0" z="0"/>
+                <accuracyXY>0.05</accuracyXY>
+                <accuracyZ>0.05</accuracyZ>
+                <opk omega="-0.9404509085" phi="-0.0328683603" kappa="100.671345877"/>
+                <accuracyOpk omega="6" phi="4" kappa="6"/>
+            </image>
+            <image path="E:/MACS/2025/WC_DempsterRTS02_20250803_15cm_98/01_rawdata/tif/111498_RGB/03365_010726248_1000.tif" group="RGB" enabled="true">
+                <camera name="MACS_Polar1-2024_RGB111498_v1" id="0"/>
+                <gps alt="1273.73000000000001819" lat="67.25943966360000559" lng="-135.22641072999999778"/>
+                <xyz x="0" y="0" z="0"/>
+                <accuracyXY>0.05</accuracyXY>
+                <accuracyZ>0.05</accuracyZ>
+                <opk omega="-0.2153260156" phi="-0.01157156" kappa="101.368483951"/>
+                <accuracyOpk omega="6" phi="4" kappa="6"/>
+            </image>
+            <image path="E:/MACS/2025/WC_DempsterRTS02_20250803_15cm_98/01_rawdata/tif/111498_RGB/03366_010727248_1000.tif" group="RGB" enabled="true">
+                <camera name="MACS_Polar1-2024_RGB111498_v1" id="0"/>
+                <gps alt="1273.13899999999989632" lat="67.2593248578999976" lng="-135.22796696300000008"/>
+                <xyz x="0" y="0" z="0"/>
+                <accuracyXY>0.05</accuracyXY>
+                <accuracyZ>0.05</accuracyZ>
+                <opk omega="0.3546499637" phi="0.5663702475" kappa="101.20904936"/>
+                <accuracyOpk omega="6" phi="4" kappa="6"/>
+            </image>
+            <image path="E:/MACS/2025/WC_DempsterRTS02_20250803_15cm_98/01_rawdata/tif/111498_RGB/03367_010728248_1000.tif" group="RGB" enabled="true">
+                <camera name="MACS_Polar1-2024_RGB111498_v1" id="0"/>
+                <gps alt="1273.12100000000009459" lat="67.25920741550000059" lng="-135.2295224560000122"/>
+                <xyz x="0" y="0" z="0"/>
+                <accuracyXY>0.05</accuracyXY>
+                <accuracyZ>0.05</accuracyZ>
+                <opk omega="0.744886156" phi="0.8465004788" kappa="100.669920044"/>
+                <accuracyOpk omega="6" phi="4" kappa="6"/>
+            </image>
+            <image path="E:/MACS/2025/WC_DempsterRTS02_20250803_15cm_98/01_rawdata/tif/111498_RGB/03368_010729248_1000.tif" group="RGB" enabled="true">
+                <camera name="MACS_Polar1-2024_RGB111498_v1" id="0"/>
+                <gps alt="1273.4659999999998945" lat="67.2590890843000011" lng="-135.23107696799999644"/>
+                <xyz x="0" y="0" z="0"/>
+                <accuracyXY>0.05</accuracyXY>
+                <accuracyZ>0.05</accuracyZ>
+                <opk omega="-0.0340878574" phi="0.7252123587" kappa="100.82013706"/>
+                <accuracyOpk omega="6" phi="4" kappa="6"/>
+            </image>
+            <image path="E:/MACS/2025/WC_DempsterRTS02_20250803_15cm_98/01_rawdata/tif/111498_RGB/03369_010730248_1000.tif" group="RGB" enabled="true">
+                <camera name="MACS_Polar1-2024_RGB111498_v1" id="0"/>
+                <gps alt="1273.89499999999998181" lat="67.25897106920000112" lng="-135.23263086299999713"/>
+                <xyz x="0" y="0" z="0"/>
+                <accuracyXY>0.05</accuracyXY>
+                <accuracyZ>0.05</accuracyZ>
+                <opk omega="0.2542361324" phi="0.7725875453" kappa="101.824879266"/>
+                <accuracyOpk omega="6" phi="4" kappa="6"/>
+            </image>
+            <image path="E:/MACS/2025/WC_DempsterRTS02_20250803_15cm_98/01_rawdata/tif/111498_RGB/03370_010731248_1000.tif" group="RGB" enabled="true">
+                <camera name="MACS_Polar1-2024_RGB111498_v1" id="0"/>
+                <gps alt="1274.27399999999988722" lat="67.25885084710000683" lng="-135.2341826790000141"/>
+                <xyz x="0" y="0" z="0"/>
+                <accuracyXY>0.05</accuracyXY>
+                <accuracyZ>0.05</accuracyZ>
+                <opk omega="0.6650965293" phi="0.9408953197" kappa="102.123340374"/>
+                <accuracyOpk omega="6" phi="4" kappa="6"/>
+            </image>
+            <image path="E:/MACS/2025/WC_DempsterRTS02_20250803_15cm_98/01_rawdata/tif/111498_RGB/03371_010732248_1000.tif" group="RGB" enabled="true">
+                <camera name="MACS_Polar1-2024_RGB111498_v1" id="0"/>
+                <gps alt="1274.63499999999999091" lat="67.25872765930000696" lng="-135.23573193699999706"/>
+                <xyz x="0" y="0" z="0"/>
+                <accuracyXY>0.05</accuracyXY>
+                <accuracyZ>0.05</accuracyZ>
+                <opk omega="0.4811420184" phi="0.8563262246" kappa="101.785150006"/>
+                <accuracyOpk omega="6" phi="4" kappa="6"/>
+            </image>
+            <image path="E:/MACS/2025/WC_DempsterRTS02_20250803_15cm_98/01_rawdata/tif/111498_RGB/03372_010733248_1000.tif" group="RGB" enabled="true">
+                <camera name="MACS_Polar1-2024_RGB111498_v1" id="0"/>
+                <gps alt="1274.82899999999995089" lat="67.25860302620000652" lng="-135.23727980000001025"/>
+                <xyz x="0" y="0" z="0"/>
+                <accuracyXY>0.05</accuracyXY>
+                <accuracyZ>0.05</accuracyZ>
+                <opk omega="0.1031801926" phi="0.6674041079" kappa="101.494569609"/>
+                <accuracyOpk omega="6" phi="4" kappa="6"/>
+            </image>
+            <image path="E:/MACS/2025/WC_DempsterRTS02_20250803_15cm_98/01_rawdata/tif/111498_RGB/03373_010734248_1000.tif" group="RGB" enabled="true">
+                <camera name="MACS_Polar1-2024_RGB111498_v1" id="0"/>
+                <gps alt="1274.97900000000004184" lat="67.25847816159999581" lng="-135.23882742099999632"/>
+                <xyz x="0" y="0" z="0"/>
+                <accuracyXY>0.05</accuracyXY>
+                <accuracyZ>0.05</accuracyZ>
+                <opk omega="-0.0615911636" phi="0.8172173238" kappa="101.714936939"/>
+                <accuracyOpk omega="6" phi="4" kappa="6"/>
+            </image>
+            <image path="E:/MACS/2025/WC_DempsterRTS02_20250803_15cm_98/01_rawdata/tif/111498_RGB/03374_010735248_1000.tif" group="RGB" enabled="true">
+                <camera name="MACS_Polar1-2024_RGB111498_v1" id="0"/>
+                <gps alt="1275.34600000000000364" lat="67.25835297019999359" lng="-135.2403743870000028"/>
+                <xyz x="0" y="0" z="0"/>
+                <accuracyXY>0.05</accuracyXY>
+                <accuracyZ>0.05</accuracyZ>
+                <opk omega="-0.7254392141" phi="0.7005977818" kappa="102.247919552"/>
+                <accuracyOpk omega="6" phi="4" kappa="6"/>
+            </image>
+            <image path="E:/MACS/2025/WC_DempsterRTS02_20250803_15cm_98/01_rawdata/tif/111498_RGB/03375_010736248_1000.tif" group="RGB" enabled="true">
+                <camera name="MACS_Polar1-2024_RGB111498_v1" id="0"/>
+                <gps alt="1275.95299999999997453" lat="67.25822676740000361" lng="-135.24191989900000976"/>
+                <xyz x="0" y="0" z="0"/>
+                <accuracyXY>0.05</accuracyXY>
+                <accuracyZ>0.05</accuracyZ>
+                <opk omega="-1.4969954807" phi="0.5467917313" kappa="102.073072396"/>
+                <accuracyOpk omega="6" phi="4" kappa="6"/>
+            </image>
+            <image path="E:/MACS/2025/WC_DempsterRTS02_20250803_15cm_98/01_rawdata/tif/111498_RGB/04560_012721235_1000.tif" group="RGB" enabled="true">
+                <camera name="MACS_Polar1-2024_RGB111498_v1" id="0"/>
+                <gps alt="1285.71199999999998909" lat="67.25688656580000213" lng="-135.21686400999999478"/>
+                <xyz x="0" y="0" z="0"/>
+                <accuracyXY>0.05</accuracyXY>
+                <accuracyZ>0.05</accuracyZ>
+                <opk omega="-0.4556451628" phi="0.2419099869" kappa="100.955148058"/>
+                <accuracyOpk omega="6" phi="4" kappa="6"/>
+            </image>
+            <image path="E:/MACS/2025/WC_DempsterRTS02_20250803_15cm_98/01_rawdata/tif/111498_RGB/04561_012722235_1000.tif" group="RGB" enabled="true">
+                <camera name="MACS_Polar1-2024_RGB111498_v1" id="0"/>
+                <gps alt="1285.46399999999994179" lat="67.25676731849999612" lng="-135.21840793499998767"/>
+                <xyz x="0" y="0" z="0"/>
+                <accuracyXY>0.05</accuracyXY>
+                <accuracyZ>0.05</accuracyZ>
+                <opk omega="-0.6009908779" phi="0.2489961542" kappa="101.069793352"/>
+                <accuracyOpk omega="6" phi="4" kappa="6"/>
+            </image>
+            <image path="E:/MACS/2025/WC_DempsterRTS02_20250803_15cm_98/01_rawdata/tif/111498_RGB/04562_012723235_1000.tif" group="RGB" enabled="true">
+                <camera name="MACS_Polar1-2024_RGB111498_v1" id="0"/>
+                <gps alt="1285.23299999999994725" lat="67.25664835150000442" lng="-135.21995252700000378"/>
+                <xyz x="0" y="0" z="0"/>
+                <accuracyXY>0.05</accuracyXY>
+                <accuracyZ>0.05</accuracyZ>
+                <opk omega="-0.6595940171" phi="0.1436557245" kappa="101.157457833"/>
+                <accuracyOpk omega="6" phi="4" kappa="6"/>
+            </image>
+            <image path="E:/MACS/2025/WC_DempsterRTS02_20250803_15cm_98/01_rawdata/tif/111498_RGB/04563_012724235_1000.tif" group="RGB" enabled="true">
+                <camera name="MACS_Polar1-2024_RGB111498_v1" id="0"/>
+                <gps alt="1284.7840000000001055" lat="67.2565297419999979" lng="-135.22149781300001337"/>
+                <xyz x="0" y="0" z="0"/>
+                <accuracyXY>0.05</accuracyXY>
+                <accuracyZ>0.05</accuracyZ>
+                <opk omega="-0.8189327254" phi="0.1886940229" kappa="101.272167396"/>
+                <accuracyOpk omega="6" phi="4" kappa="6"/>
+            </image>
+            <image path="E:/MACS/2025/WC_DempsterRTS02_20250803_15cm_98/01_rawdata/tif/111498_RGB/04564_012725235_1000.tif" group="RGB" enabled="true">
+                <camera name="MACS_Polar1-2024_RGB111498_v1" id="0"/>
+                <gps alt="1284.27999999999997272" lat="67.25641154870000094" lng="-135.22304365100001178"/>
+                <xyz x="0" y="0" z="0"/>
+                <accuracyXY>0.05</accuracyXY>
+                <accuracyZ>0.05</accuracyZ>
+                <opk omega="-1.2825717884" phi="0.1735777247" kappa="101.319010581"/>
+                <accuracyOpk omega="6" phi="4" kappa="6"/>
+            </image>
+            <image path="E:/MACS/2025/WC_DempsterRTS02_20250803_15cm_98/01_rawdata/tif/111498_RGB/04565_012726235_1000.tif" group="RGB" enabled="true">
+                <camera name="MACS_Polar1-2024_RGB111498_v1" id="0"/>
+                <gps alt="1283.84999999999990905" lat="67.25629397410000365" lng="-135.22458990199999107"/>
+                <xyz x="0" y="0" z="0"/>
+                <accuracyXY>0.05</accuracyXY>
+                <accuracyZ>0.05</accuracyZ>
+                <opk omega="-1.2672056551" phi="0.0948464856" kappa="101.139621068"/>
+                <accuracyOpk omega="6" phi="4" kappa="6"/>
+            </image>
+            <image path="E:/MACS/2025/WC_DempsterRTS02_20250803_15cm_98/01_rawdata/tif/111498_RGB/04566_012727235_1000.tif" group="RGB" enabled="true">
+                <camera name="MACS_Polar1-2024_RGB111498_v1" id="0"/>
+                <gps alt="1283.41499999999996362" lat="67.2561772205000068" lng="-135.22613693200000284"/>
+                <xyz x="0" y="0" z="0"/>
+                <accuracyXY>0.05</accuracyXY>
+                <accuracyZ>0.05</accuracyZ>
+                <opk omega="-1.0313025605" phi="0.1063239118" kappa="100.764332263"/>
+                <accuracyOpk omega="6" phi="4" kappa="6"/>
+            </image>
+            <image path="E:/MACS/2025/WC_DempsterRTS02_20250803_15cm_98/01_rawdata/tif/111498_RGB/04567_012728235_1000.tif" group="RGB" enabled="true">
+                <camera name="MACS_Polar1-2024_RGB111498_v1" id="0"/>
+                <gps alt="1282.95599999999990359" lat="67.25606166049999501" lng="-135.22768515499998898"/>
+                <xyz x="0" y="0" z="0"/>
+                <accuracyXY>0.05</accuracyXY>
+                <accuracyZ>0.05</accuracyZ>
+                <opk omega="-0.9212971626" phi="-0.0456247461" kappa="100.570018043"/>
+                <accuracyOpk omega="6" phi="4" kappa="6"/>
+            </image>
+            <image path="E:/MACS/2025/WC_DempsterRTS02_20250803_15cm_98/01_rawdata/tif/111498_RGB/04568_012729235_1000.tif" group="RGB" enabled="true">
+                <camera name="MACS_Polar1-2024_RGB111498_v1" id="0"/>
+                <gps alt="1282.3669999999999618" lat="67.25594734919999951" lng="-135.22923505599999316"/>
+                <xyz x="0" y="0" z="0"/>
+                <accuracyXY>0.05</accuracyXY>
+                <accuracyZ>0.05</accuracyZ>
+                <opk omega="-0.3833470253" phi="0.1231904618" kappa="100.789532902"/>
+                <accuracyOpk omega="6" phi="4" kappa="6"/>
+            </image>
+            <image path="E:/MACS/2025/WC_DempsterRTS02_20250803_15cm_98/01_rawdata/tif/111498_RGB/04569_012730235_1000.tif" group="RGB" enabled="true">
+                <camera name="MACS_Polar1-2024_RGB111498_v1" id="0"/>
+                <gps alt="1281.93599999999992178" lat="67.25583296300000313" lng="-135.23078608000000145"/>
+                <xyz x="0" y="0" z="0"/>
+                <accuracyXY>0.05</accuracyXY>
+                <accuracyZ>0.05</accuracyZ>
+                <opk omega="-0.1447042521" phi="0.1547920691" kappa="100.998937536"/>
+                <accuracyOpk omega="6" phi="4" kappa="6"/>
+            </image>
+            <image path="E:/MACS/2025/WC_DempsterRTS02_20250803_15cm_98/01_rawdata/tif/111498_RGB/04570_012731235_1000.tif" group="RGB" enabled="true">
+                <camera name="MACS_Polar1-2024_RGB111498_v1" id="0"/>
+                <gps alt="1281.59799999999995634" lat="67.25571789830000569" lng="-135.23233774499999527"/>
+                <xyz x="0" y="0" z="0"/>
+                <accuracyXY>0.05</accuracyXY>
+                <accuracyZ>0.05</accuracyZ>
+                <opk omega="-0.133849437" phi="0.1810401625" kappa="101.145372333"/>
+                <accuracyOpk omega="6" phi="4" kappa="6"/>
+            </image>
+            <image path="E:/MACS/2025/WC_DempsterRTS02_20250803_15cm_98/01_rawdata/tif/111498_RGB/04571_012732235_1000.tif" group="RGB" enabled="true">
+                <camera name="MACS_Polar1-2024_RGB111498_v1" id="0"/>
+                <gps alt="1281.30700000000001637" lat="67.25560201890000656" lng="-135.23388965899999903"/>
+                <xyz x="0" y="0" z="0"/>
+                <accuracyXY>0.05</accuracyXY>
+                <accuracyZ>0.05</accuracyZ>
+                <opk omega="0.2122088609" phi="0.030527762" kappa="101.268406365"/>
+                <accuracyOpk omega="6" phi="4" kappa="6"/>
+            </image>
+            <image path="E:/MACS/2025/WC_DempsterRTS02_20250803_15cm_98/01_rawdata/tif/111498_RGB/04572_012733235_1000.tif" group="RGB" enabled="true">
+                <camera name="MACS_Polar1-2024_RGB111498_v1" id="0"/>
+                <gps alt="1280.75" lat="67.25548442839999552" lng="-135.23544198100000813"/>
+                <xyz x="0" y="0" z="0"/>
+                <accuracyXY>0.05</accuracyXY>
+                <accuracyZ>0.05</accuracyZ>
+                <opk omega="0.4141242095" phi="-0.1610045195" kappa="101.127850729"/>
+                <accuracyOpk omega="6" phi="4" kappa="6"/>
+            </image>
+            <image path="E:/MACS/2025/WC_DempsterRTS02_20250803_15cm_98/01_rawdata/tif/111498_RGB/04573_012734235_1000.tif" group="RGB" enabled="true">
+                <camera name="MACS_Polar1-2024_RGB111498_v1" id="0"/>
+                <gps alt="1279.73299999999994725" lat="67.2553652349999993" lng="-135.23699549400001274"/>
+                <xyz x="0" y="0" z="0"/>
+                <accuracyXY>0.05</accuracyXY>
+                <accuracyZ>0.05</accuracyZ>
+                <opk omega="0.4046350282" phi="-0.027819621" kappa="100.851396338"/>
+                <accuracyOpk omega="6" phi="4" kappa="6"/>
+            </image>
+            <image path="E:/MACS/2025/WC_DempsterRTS02_20250803_15cm_98/01_rawdata/tif/111498_RGB/04574_012735235_1000.tif" group="RGB" enabled="true">
+                <camera name="MACS_Polar1-2024_RGB111498_v1" id="0"/>
+                <gps alt="1278.63899999999989632" lat="67.25524536769999884" lng="-135.23855064399998582"/>
+                <xyz x="0" y="0" z="0"/>
+                <accuracyXY>0.05</accuracyXY>
+                <accuracyZ>0.05</accuracyZ>
+                <opk omega="-0.5199014787" phi="0.3289224781" kappa="100.816290836"/>
+                <accuracyOpk omega="6" phi="4" kappa="6"/>
+            </image>
+            <image path="E:/MACS/2025/WC_DempsterRTS02_20250803_15cm_98/01_rawdata/tif/111498_RGB/05769_014730221_1000.tif" group="RGB" enabled="true">
+                <camera name="MACS_Polar1-2024_RGB111498_v1" id="0"/>
+                <gps alt="1276.91499999999996362" lat="67.25372144520000006" lng="-135.21523587300001168"/>
+                <xyz x="0" y="0" z="0"/>
+                <accuracyXY>0.05</accuracyXY>
+                <accuracyZ>0.05</accuracyZ>
+                <opk omega="-1.1519864721" phi="1.0664991893" kappa="100.652379376"/>
+                <accuracyOpk omega="6" phi="4" kappa="6"/>
+            </image>
+            <image path="E:/MACS/2025/WC_DempsterRTS02_20250803_15cm_98/01_rawdata/tif/111498_RGB/05770_014731221_1000.tif" group="RGB" enabled="true">
+                <camera name="MACS_Polar1-2024_RGB111498_v1" id="0"/>
+                <gps alt="1277.76500000000010004" lat="67.25360912509999878" lng="-135.21679165099999409"/>
+                <xyz x="0" y="0" z="0"/>
+                <accuracyXY>0.05</accuracyXY>
+                <accuracyZ>0.05</accuracyZ>
+                <opk omega="-1.1015307106" phi="1.2207454859" kappa="100.866565391"/>
+                <accuracyOpk omega="6" phi="4" kappa="6"/>
+            </image>
+            <image path="E:/MACS/2025/WC_DempsterRTS02_20250803_15cm_98/01_rawdata/tif/111498_RGB/05771_014732221_1000.tif" group="RGB" enabled="true">
+                <camera name="MACS_Polar1-2024_RGB111498_v1" id="0"/>
+                <gps alt="1278.71800000000007458" lat="67.25349778170000548" lng="-135.21834277199999974"/>
+                <xyz x="0" y="0" z="0"/>
+                <accuracyXY>0.05</accuracyXY>
+                <accuracyZ>0.05</accuracyZ>
+                <opk omega="-0.8045557392" phi="1.4934063308" kappa="100.906115406"/>
+                <accuracyOpk omega="6" phi="4" kappa="6"/>
+            </image>
+            <image path="E:/MACS/2025/WC_DempsterRTS02_20250803_15cm_98/01_rawdata/tif/111498_RGB/05772_014733221_1000.tif" group="RGB" enabled="true">
+                <camera name="MACS_Polar1-2024_RGB111498_v1" id="0"/>
+                <gps alt="1279.84699999999997999" lat="67.25338711409999348" lng="-135.21988849300001334"/>
+                <xyz x="0" y="0" z="0"/>
+                <accuracyXY>0.05</accuracyXY>
+                <accuracyZ>0.05</accuracyZ>
+                <opk omega="-1.1411614288" phi="1.3674939559" kappa="100.86855155"/>
+                <accuracyOpk omega="6" phi="4" kappa="6"/>
+            </image>
+            <image path="E:/MACS/2025/WC_DempsterRTS02_20250803_15cm_98/01_rawdata/tif/111498_RGB/05773_014734221_1000.tif" group="RGB" enabled="true">
+                <camera name="MACS_Polar1-2024_RGB111498_v1" id="0"/>
+                <gps alt="1281.04800000000000182" lat="67.2532774518000025" lng="-135.2214292220000118"/>
+                <xyz x="0" y="0" z="0"/>
+                <accuracyXY>0.05</accuracyXY>
+                <accuracyZ>0.05</accuracyZ>
+                <opk omega="-0.6103285548" phi="1.653610168" kappa="100.722599233"/>
+                <accuracyOpk omega="6" phi="4" kappa="6"/>
+            </image>
+            <image path="E:/MACS/2025/WC_DempsterRTS02_20250803_15cm_98/01_rawdata/tif/111498_RGB/05774_014735221_1000.tif" group="RGB" enabled="true">
+                <camera name="MACS_Polar1-2024_RGB111498_v1" id="0"/>
+                <gps alt="1282.45299999999997453" lat="67.25316857340000354" lng="-135.22296474600000238"/>
+                <xyz x="0" y="0" z="0"/>
+                <accuracyXY>0.05</accuracyXY>
+                <accuracyZ>0.05</accuracyZ>
+                <opk omega="-0.2781721727" phi="1.5039660223" kappa="100.851441447"/>
+                <accuracyOpk omega="6" phi="4" kappa="6"/>
+            </image>
+            <image path="E:/MACS/2025/WC_DempsterRTS02_20250803_15cm_98/01_rawdata/tif/111498_RGB/05775_014736221_1000.tif" group="RGB" enabled="true">
+                <camera name="MACS_Polar1-2024_RGB111498_v1" id="0"/>
+                <gps alt="1283.67100000000004911" lat="67.2530594509999986" lng="-135.22449541000000295"/>
+                <xyz x="0" y="0" z="0"/>
+                <accuracyXY>0.05</accuracyXY>
+                <accuracyZ>0.05</accuracyZ>
+                <opk omega="0.4856970563" phi="1.5401386471" kappa="101.04320238"/>
+                <accuracyOpk omega="6" phi="4" kappa="6"/>
+            </image>
+            <image path="E:/MACS/2025/WC_DempsterRTS02_20250803_15cm_98/01_rawdata/tif/111498_RGB/05776_014737221_1000.tif" group="RGB" enabled="true">
+                <camera name="MACS_Polar1-2024_RGB111498_v1" id="0"/>
+                <gps alt="1284.62699999999995271" lat="67.25294879519999824" lng="-135.22602108699999235"/>
+                <xyz x="0" y="0" z="0"/>
+                <accuracyXY>0.05</accuracyXY>
+                <accuracyZ>0.05</accuracyZ>
+                <opk omega="1.2200481458" phi="1.6110137624" kappa="101.111037494"/>
+                <accuracyOpk omega="6" phi="4" kappa="6"/>
+            </image>
+            <image path="E:/MACS/2025/WC_DempsterRTS02_20250803_15cm_98/01_rawdata/tif/111498_RGB/05777_014738221_1000.tif" group="RGB" enabled="true">
+                <camera name="MACS_Polar1-2024_RGB111498_v1" id="0"/>
+                <gps alt="1285.46499999999991815" lat="67.25283576229999483" lng="-135.22754168299999833"/>
+                <xyz x="0" y="0" z="0"/>
+                <accuracyXY>0.05</accuracyXY>
+                <accuracyZ>0.05</accuracyZ>
+                <opk omega="1.1895363837" phi="1.5624314447" kappa="101.176700598"/>
+                <accuracyOpk omega="6" phi="4" kappa="6"/>
+            </image>
+            <image path="E:/MACS/2025/WC_DempsterRTS02_20250803_15cm_98/01_rawdata/tif/111498_RGB/05778_014739221_1000.tif" group="RGB" enabled="true">
+                <camera name="MACS_Polar1-2024_RGB111498_v1" id="0"/>
+                <gps alt="1286.14899999999988722" lat="67.25272065689999579" lng="-135.22905753500000969"/>
+                <xyz x="0" y="0" z="0"/>
+                <accuracyXY>0.05</accuracyXY>
+                <accuracyZ>0.05</accuracyZ>
+                <opk omega="1.0001373698" phi="1.4045334223" kappa="101.520229416"/>
+                <accuracyOpk omega="6" phi="4" kappa="6"/>
+            </image>
+            <image path="E:/MACS/2025/WC_DempsterRTS02_20250803_15cm_98/01_rawdata/tif/111498_RGB/05779_014740221_1000.tif" group="RGB" enabled="true">
+                <camera name="MACS_Polar1-2024_RGB111498_v1" id="0"/>
+                <gps alt="1286.54800000000000182" lat="67.2526035605000061" lng="-135.2305692820000047"/>
+                <xyz x="0" y="0" z="0"/>
+                <accuracyXY>0.05</accuracyXY>
+                <accuracyZ>0.05</accuracyZ>
+                <opk omega="0.3978620904" phi="1.2305856636" kappa="101.993171556"/>
+                <accuracyOpk omega="6" phi="4" kappa="6"/>
+            </image>
+            <image path="E:/MACS/2025/WC_DempsterRTS02_20250803_15cm_98/01_rawdata/tif/111498_RGB/05780_014741221_1000.tif" group="RGB" enabled="true">
+                <camera name="MACS_Polar1-2024_RGB111498_v1" id="0"/>
+                <gps alt="1286.93299999999999272" lat="67.2524845694999982" lng="-135.2320773470000006"/>
+                <xyz x="0" y="0" z="0"/>
+                <accuracyXY>0.05</accuracyXY>
+                <accuracyZ>0.05</accuracyZ>
+                <opk omega="0.2977125493" phi="1.1981603758" kappa="102.347143085"/>
+                <accuracyOpk omega="6" phi="4" kappa="6"/>
+            </image>
+            <image path="E:/MACS/2025/WC_DempsterRTS02_20250803_15cm_98/01_rawdata/tif/111498_RGB/05781_014742221_1000.tif" group="RGB" enabled="true">
+                <camera name="MACS_Polar1-2024_RGB111498_v1" id="0"/>
+                <gps alt="1287.35599999999999454" lat="67.25236325359999512" lng="-135.23358187900001326"/>
+                <xyz x="0" y="0" z="0"/>
+                <accuracyXY>0.05</accuracyXY>
+                <accuracyZ>0.05</accuracyZ>
+                <opk omega="0.8917326378" phi="0.978734512" kappa="102.192792224"/>
+                <accuracyOpk omega="6" phi="4" kappa="6"/>
+            </image>
+            <image path="E:/MACS/2025/WC_DempsterRTS02_20250803_15cm_98/01_rawdata/tif/111498_RGB/05782_014743221_1000.tif" group="RGB" enabled="true">
+                <camera name="MACS_Polar1-2024_RGB111498_v1" id="0"/>
+                <gps alt="1287.51500000000010004" lat="67.25223979579999423" lng="-135.23508421899998666"/>
+                <xyz x="0" y="0" z="0"/>
+                <accuracyXY>0.05</accuracyXY>
+                <accuracyZ>0.05</accuracyZ>
+                <opk omega="0.6776599482" phi="1.0133380516" kappa="102.062822661"/>
+                <accuracyOpk omega="6" phi="4" kappa="6"/>
+            </image>
+            <image path="E:/MACS/2025/WC_DempsterRTS02_20250803_15cm_98/01_rawdata/tif/111498_RGB/05783_014744221_1000.tif" group="RGB" enabled="true">
+                <camera name="MACS_Polar1-2024_RGB111498_v1" id="0"/>
+                <gps alt="1287.73800000000005639" lat="67.25211492590000262" lng="-135.23658486400000811"/>
+                <xyz x="0" y="0" z="0"/>
+                <accuracyXY>0.05</accuracyXY>
+                <accuracyZ>0.05</accuracyZ>
+                <opk omega="0.4208260918" phi="0.9286274066" kappa="102.254637659"/>
+                <accuracyOpk omega="6" phi="4" kappa="6"/>
+            </image>
+            <image path="E:/MACS/2025/WC_DempsterRTS02_20250803_15cm_98/01_rawdata/tif/111498_RGB/06986_020747207_1000.tif" group="RGB" enabled="true">
+                <camera name="MACS_Polar1-2024_RGB111498_v1" id="0"/>
+                <gps alt="1286.79099999999993997" lat="67.25060589679999623" lng="-135.21313062400000149"/>
+                <xyz x="0" y="0" z="0"/>
+                <accuracyXY>0.05</accuracyXY>
+                <accuracyZ>0.05</accuracyZ>
+                <opk omega="1.6520936127" phi="0.0747827145" kappa="101.555903597"/>
+                <accuracyOpk omega="6" phi="4" kappa="6"/>
+            </image>
+            <image path="E:/MACS/2025/WC_DempsterRTS02_20250803_15cm_98/01_rawdata/tif/111498_RGB/06987_020748207_1000.tif" group="RGB" enabled="true">
+                <camera name="MACS_Polar1-2024_RGB111498_v1" id="0"/>
+                <gps alt="1285.99399999999991451" lat="67.25048619570000596" lng="-135.21472292600000742"/>
+                <xyz x="0" y="0" z="0"/>
+                <accuracyXY>0.05</accuracyXY>
+                <accuracyZ>0.05</accuracyZ>
+                <opk omega="1.8992320385" phi="0.6872271808" kappa="102.0266413"/>
+                <accuracyOpk omega="6" phi="4" kappa="6"/>
+            </image>
+            <image path="E:/MACS/2025/WC_DempsterRTS02_20250803_15cm_98/01_rawdata/tif/111498_RGB/06988_020749207_1000.tif" group="RGB" enabled="true">
+                <camera name="MACS_Polar1-2024_RGB111498_v1" id="0"/>
+                <gps alt="1285.87300000000004729" lat="67.2503625565999954" lng="-135.21631293199999391"/>
+                <xyz x="0" y="0" z="0"/>
+                <accuracyXY>0.05</accuracyXY>
+                <accuracyZ>0.05</accuracyZ>
+                <opk omega="0.8426959756" phi="1.0632435912" kappa="102.420197602"/>
+                <accuracyOpk omega="6" phi="4" kappa="6"/>
+            </image>
+            <image path="E:/MACS/2025/WC_DempsterRTS02_20250803_15cm_98/01_rawdata/tif/111498_RGB/06989_020750207_1000.tif" group="RGB" enabled="true">
+                <camera name="MACS_Polar1-2024_RGB111498_v1" id="0"/>
+                <gps alt="1286.29199999999991633" lat="67.25023643279999419" lng="-135.21789900900000703"/>
+                <xyz x="0" y="0" z="0"/>
+                <accuracyXY>0.05</accuracyXY>
+                <accuracyZ>0.05</accuracyZ>
+                <opk omega="-0.0276763673" phi="0.9626564324" kappa="102.804896927"/>
+                <accuracyOpk omega="6" phi="4" kappa="6"/>
+            </image>
+            <image path="E:/MACS/2025/WC_DempsterRTS02_20250803_15cm_98/01_rawdata/tif/111498_RGB/06990_020751207_1000.tif" group="RGB" enabled="true">
+                <camera name="MACS_Polar1-2024_RGB111498_v1" id="0"/>
+                <gps alt="1286.71000000000003638" lat="67.25010926699999914" lng="-135.2194813639999893"/>
+                <xyz x="0" y="0" z="0"/>
+                <accuracyXY>0.05</accuracyXY>
+                <accuracyZ>0.05</accuracyZ>
+                <opk omega="-0.5195687937" phi="1.0123468571" kappa="102.955217419"/>
+                <accuracyOpk omega="6" phi="4" kappa="6"/>
+            </image>
+            <image path="E:/MACS/2025/WC_DempsterRTS02_20250803_15cm_98/01_rawdata/tif/111498_RGB/06991_020752207_1000.tif" group="RGB" enabled="true">
+                <camera name="MACS_Polar1-2024_RGB111498_v1" id="0"/>
+                <gps alt="1287.48800000000005639" lat="67.24998250699999858" lng="-135.22106078499999171"/>
+                <xyz x="0" y="0" z="0"/>
+                <accuracyXY>0.05</accuracyXY>
+                <accuracyZ>0.05</accuracyZ>
+                <opk omega="-1.7920548157" phi="0.4997823247" kappa="103.14563328"/>
+                <accuracyOpk omega="6" phi="4" kappa="6"/>
+            </image>
+            <image path="E:/MACS/2025/WC_DempsterRTS02_20250803_15cm_98/01_rawdata/tif/111498_RGB/06992_020753207_1000.tif" group="RGB" enabled="true">
+                <camera name="MACS_Polar1-2024_RGB111498_v1" id="0"/>
+                <gps alt="1288.48900000000003274" lat="67.24985718829999826" lng="-135.22263860800001112"/>
+                <xyz x="0" y="0" z="0"/>
+                <accuracyXY>0.05</accuracyXY>
+                <accuracyZ>0.05</accuracyZ>
+                <opk omega="-1.8484410196" phi="0.0871619806" kappa="102.955509347"/>
+                <accuracyOpk omega="6" phi="4" kappa="6"/>
+            </image>
+            <image path="E:/MACS/2025/WC_DempsterRTS02_20250803_15cm_98/01_rawdata/tif/111498_RGB/06993_020754207_1000.tif" group="RGB" enabled="true">
+                <camera name="MACS_Polar1-2024_RGB111498_v1" id="0"/>
+                <gps alt="1288.92900000000008731" lat="67.2497332277000055" lng="-135.22421605499999941"/>
+                <xyz x="0" y="0" z="0"/>
+                <accuracyXY>0.05</accuracyXY>
+                <accuracyZ>0.05</accuracyZ>
+                <opk omega="-1.087341267" phi="-0.0360353006" kappa="102.252344133"/>
+                <accuracyOpk omega="6" phi="4" kappa="6"/>
+            </image>
+            <image path="E:/MACS/2025/WC_DempsterRTS02_20250803_15cm_98/01_rawdata/tif/111498_RGB/06994_020755207_1000.tif" group="RGB" enabled="true">
+                <camera name="MACS_Polar1-2024_RGB111498_v1" id="0"/>
+                <gps alt="1288.62300000000004729" lat="67.24961106620000351" lng="-135.22579493200001366"/>
+                <xyz x="0" y="0" z="0"/>
+                <accuracyXY>0.05</accuracyXY>
+                <accuracyZ>0.05</accuracyZ>
+                <opk omega="-0.7104112546" phi="-0.2688714359" kappa="101.820494705"/>
+                <accuracyOpk omega="6" phi="4" kappa="6"/>
+            </image>
+            <image path="E:/MACS/2025/WC_DempsterRTS02_20250803_15cm_98/01_rawdata/tif/111498_RGB/06995_020756207_1000.tif" group="RGB" enabled="true">
+                <camera name="MACS_Polar1-2024_RGB111498_v1" id="0"/>
+                <gps alt="1287.73600000000010368" lat="67.24949088409999831" lng="-135.2273763709999912"/>
+                <xyz x="0" y="0" z="0"/>
+                <accuracyXY>0.05</accuracyXY>
+                <accuracyZ>0.05</accuracyZ>
+                <opk omega="-0.963048514" phi="-0.0683310538" kappa="102.088338073"/>
+                <accuracyOpk omega="6" phi="4" kappa="6"/>
+            </image>
+            <image path="E:/MACS/2025/WC_DempsterRTS02_20250803_15cm_98/01_rawdata/tif/111498_RGB/06996_020757207_1000.tif" group="RGB" enabled="true">
+                <camera name="MACS_Polar1-2024_RGB111498_v1" id="0"/>
+                <gps alt="1286.78600000000005821" lat="67.24937175070000706" lng="-135.22895916999999599"/>
+                <xyz x="0" y="0" z="0"/>
+                <accuracyXY>0.05</accuracyXY>
+                <accuracyZ>0.05</accuracyZ>
+                <opk omega="-1.1145335132" phi="-0.211129731" kappa="102.454593973"/>
+                <accuracyOpk omega="6" phi="4" kappa="6"/>
+            </image>
+            <image path="E:/MACS/2025/WC_DempsterRTS02_20250803_15cm_98/01_rawdata/tif/111498_RGB/06997_020758207_1000.tif" group="RGB" enabled="true">
+                <camera name="MACS_Polar1-2024_RGB111498_v1" id="0"/>
+                <gps alt="1285.81999999999993634" lat="67.24925221899999883" lng="-135.23054224200001272"/>
+                <xyz x="0" y="0" z="0"/>
+                <accuracyXY>0.05</accuracyXY>
+                <accuracyZ>0.05</accuracyZ>
+                <opk omega="-1.3732067347" phi="0.4246821484" kappa="102.136658591"/>
+                <accuracyOpk omega="6" phi="4" kappa="6"/>
+            </image>
+            <image path="E:/MACS/2025/WC_DempsterRTS02_20250803_15cm_98/01_rawdata/tif/111498_RGB/06998_020759207_1000.tif" group="RGB" enabled="true">
+                <camera name="MACS_Polar1-2024_RGB111498_v1" id="0"/>
+                <gps alt="1285.94499999999993634" lat="67.24913229669999737" lng="-135.23212406100000749"/>
+                <xyz x="0" y="0" z="0"/>
+                <accuracyXY>0.05</accuracyXY>
+                <accuracyZ>0.05</accuracyZ>
+                <opk omega="-1.8776902743" phi="0.1444523047" kappa="100.950354863"/>
+                <accuracyOpk omega="6" phi="4" kappa="6"/>
+            </image>
+            <image path="E:/MACS/2025/WC_DempsterRTS02_20250803_15cm_98/01_rawdata/tif/111498_RGB/06999_020800207_1000.tif" group="RGB" enabled="true">
+                <camera name="MACS_Polar1-2024_RGB111498_v1" id="0"/>
+                <gps alt="1286.52899999999999636" lat="67.24901486890000513" lng="-135.2337069129999918"/>
+                <xyz x="0" y="0" z="0"/>
+                <accuracyXY>0.05</accuracyXY>
+                <accuracyZ>0.05</accuracyZ>
+                <opk omega="-1.7189486815" phi="-0.1649447311" kappa="100.02507112"/>
+                <accuracyOpk omega="6" phi="4" kappa="6"/>
+            </image>
+            <image path="E:/MACS/2025/WC_DempsterRTS02_20250803_15cm_98/01_rawdata/tif/111498_RGB/07000_020801207_1000.tif" group="RGB" enabled="true">
+                <camera name="MACS_Polar1-2024_RGB111498_v1" id="0"/>
+                <gps alt="1287.06799999999998363" lat="67.24890177940000058" lng="-135.23529279600001018"/>
+                <xyz x="0" y="0" z="0"/>
+                <accuracyXY>0.05</accuracyXY>
+                <accuracyZ>0.05</accuracyZ>
+                <opk omega="-3.1041535873" phi="-0.4400257401" kappa="100.170653599"/>
+                <accuracyOpk omega="6" phi="4" kappa="6"/>
+            </image>
+            <image path="E:/MACS/2025/WC_DempsterRTS02_20250803_15cm_98/01_rawdata/tif/99683_NIR/03361_010722314_1000.tif" group="NIR" enabled="true">
+                <camera name="MACS_Polar1-2023_NIR99683_v2" id="1"/>
+                <gps alt="1276.99900000000002365" lat="67.25989338860000544" lng="-135.22020633599998973"/>
+                <xyz x="0" y="0" z="0"/>
+                <accuracyXY>0.05</accuracyXY>
+                <accuracyZ>0.05</accuracyZ>
+                <opk omega="-0.533903487" phi="0.0786056368" kappa="100.105342564"/>
+                <accuracyOpk omega="6" phi="4" kappa="6"/>
+            </image>
+            <image path="E:/MACS/2025/WC_DempsterRTS02_20250803_15cm_98/01_rawdata/tif/99683_NIR/03362_010723314_1000.tif" group="NIR" enabled="true">
+                <camera name="MACS_Polar1-2023_NIR99683_v2" id="1"/>
+                <gps alt="1276.2680000000000291" lat="67.25977899820000516" lng="-135.22175340499998697"/>
+                <xyz x="0" y="0" z="0"/>
+                <accuracyXY>0.05</accuracyXY>
+                <accuracyZ>0.05</accuracyZ>
+                <opk omega="-0.5771764283" phi="-0.0647991107" kappa="100.127948779"/>
+                <accuracyOpk omega="6" phi="4" kappa="6"/>
+            </image>
+            <image path="E:/MACS/2025/WC_DempsterRTS02_20250803_15cm_98/01_rawdata/tif/99683_NIR/03363_010724314_1000.tif" group="NIR" enabled="true">
+                <camera name="MACS_Polar1-2023_NIR99683_v2" id="1"/>
+                <gps alt="1275.35100000000011278" lat="67.25966543859999547" lng="-135.22330319299999246"/>
+                <xyz x="0" y="0" z="0"/>
+                <accuracyXY>0.05</accuracyXY>
+                <accuracyZ>0.05</accuracyZ>
+                <opk omega="-0.9101956148" phi="-0.2180094284" kappa="100.36077204"/>
+                <accuracyOpk omega="6" phi="4" kappa="6"/>
+            </image>
+            <image path="E:/MACS/2025/WC_DempsterRTS02_20250803_15cm_98/01_rawdata/tif/99683_NIR/03364_010725314_1000.tif" group="NIR" enabled="true">
+                <camera name="MACS_Polar1-2023_NIR99683_v2" id="1"/>
+                <gps alt="1274.32999999999992724" lat="67.25955278470000565" lng="-135.22485585800001218"/>
+                <xyz x="0" y="0" z="0"/>
+                <accuracyXY>0.05</accuracyXY>
+                <accuracyZ>0.05</accuracyZ>
+                <opk omega="-0.9404509085" phi="-0.0328683603" kappa="100.671345877"/>
+                <accuracyOpk omega="6" phi="4" kappa="6"/>
+            </image>
+            <image path="E:/MACS/2025/WC_DempsterRTS02_20250803_15cm_98/01_rawdata/tif/99683_NIR/03365_010726314_1000.tif" group="NIR" enabled="true">
+                <camera name="MACS_Polar1-2023_NIR99683_v2" id="1"/>
+                <gps alt="1273.73000000000001819" lat="67.2594405730999938" lng="-135.2264112599999919"/>
+                <xyz x="0" y="0" z="0"/>
+                <accuracyXY>0.05</accuracyXY>
+                <accuracyZ>0.05</accuracyZ>
+                <opk omega="-0.2153260156" phi="-0.01157156" kappa="101.368483951"/>
+                <accuracyOpk omega="6" phi="4" kappa="6"/>
+            </image>
+            <image path="E:/MACS/2025/WC_DempsterRTS02_20250803_15cm_98/01_rawdata/tif/99683_NIR/03366_010727314_1000.tif" group="NIR" enabled="true">
+                <camera name="MACS_Polar1-2023_NIR99683_v2" id="1"/>
+                <gps alt="1273.14000000000010004" lat="67.25932576789999473" lng="-135.22796748600001138"/>
+                <xyz x="0" y="0" z="0"/>
+                <accuracyXY>0.05</accuracyXY>
+                <accuracyZ>0.05</accuracyZ>
+                <opk omega="0.3546499637" phi="0.5663702475" kappa="101.20904936"/>
+                <accuracyOpk omega="6" phi="4" kappa="6"/>
+            </image>
+            <image path="E:/MACS/2025/WC_DempsterRTS02_20250803_15cm_98/01_rawdata/tif/99683_NIR/03367_010728314_1000.tif" group="NIR" enabled="true">
+                <camera name="MACS_Polar1-2023_NIR99683_v2" id="1"/>
+                <gps alt="1273.12300000000004729" lat="67.25920832730000143" lng="-135.22952295600001094"/>
+                <xyz x="0" y="0" z="0"/>
+                <accuracyXY>0.05</accuracyXY>
+                <accuracyZ>0.05</accuracyZ>
+                <opk omega="0.744886156" phi="0.8465004788" kappa="100.669920044"/>
+                <accuracyOpk omega="6" phi="4" kappa="6"/>
+            </image>
+            <image path="E:/MACS/2025/WC_DempsterRTS02_20250803_15cm_98/01_rawdata/tif/99683_NIR/03368_010729314_1000.tif" group="NIR" enabled="true">
+                <camera name="MACS_Polar1-2023_NIR99683_v2" id="1"/>
+                <gps alt="1273.46700000000009823" lat="67.2590899956999948" lng="-135.23107747500000642"/>
+                <xyz x="0" y="0" z="0"/>
+                <accuracyXY>0.05</accuracyXY>
+                <accuracyZ>0.05</accuracyZ>
+                <opk omega="-0.0340878574" phi="0.7252123587" kappa="100.82013706"/>
+                <accuracyOpk omega="6" phi="4" kappa="6"/>
+            </image>
+            <image path="E:/MACS/2025/WC_DempsterRTS02_20250803_15cm_98/01_rawdata/tif/99683_NIR/03369_010730314_1000.tif" group="NIR" enabled="true">
+                <camera name="MACS_Polar1-2023_NIR99683_v2" id="1"/>
+                <gps alt="1273.89699999999993452" lat="67.25897197689999985" lng="-135.23263141099999984"/>
+                <xyz x="0" y="0" z="0"/>
+                <accuracyXY>0.05</accuracyXY>
+                <accuracyZ>0.05</accuracyZ>
+                <opk omega="0.2542361324" phi="0.7725875453" kappa="101.824879266"/>
+                <accuracyOpk omega="6" phi="4" kappa="6"/>
+            </image>
+            <image path="E:/MACS/2025/WC_DempsterRTS02_20250803_15cm_98/01_rawdata/tif/99683_NIR/03370_010731314_1000.tif" group="NIR" enabled="true">
+                <camera name="MACS_Polar1-2023_NIR99683_v2" id="1"/>
+                <gps alt="1274.27700000000004366" lat="67.25885175359999835" lng="-135.2341832390000036"/>
+                <xyz x="0" y="0" z="0"/>
+                <accuracyXY>0.05</accuracyXY>
+                <accuracyZ>0.05</accuracyZ>
+                <opk omega="0.6650965293" phi="0.9408953197" kappa="102.123340374"/>
+                <accuracyOpk omega="6" phi="4" kappa="6"/>
+            </image>
+            <image path="E:/MACS/2025/WC_DempsterRTS02_20250803_15cm_98/01_rawdata/tif/99683_NIR/03371_010732314_1000.tif" group="NIR" enabled="true">
+                <camera name="MACS_Polar1-2023_NIR99683_v2" id="1"/>
+                <gps alt="1274.63699999999994361" lat="67.25872856719999504" lng="-135.23573248400001034"/>
+                <xyz x="0" y="0" z="0"/>
+                <accuracyXY>0.05</accuracyXY>
+                <accuracyZ>0.05</accuracyZ>
+                <opk omega="0.4811420184" phi="0.8563262246" kappa="101.785150006"/>
+                <accuracyOpk omega="6" phi="4" kappa="6"/>
+            </image>
+            <image path="E:/MACS/2025/WC_DempsterRTS02_20250803_15cm_98/01_rawdata/tif/99683_NIR/03372_010733314_1000.tif" group="NIR" enabled="true">
+                <camera name="MACS_Polar1-2023_NIR99683_v2" id="1"/>
+                <gps alt="1274.82999999999992724" lat="67.25860393530000181" lng="-135.23728033399999049"/>
+                <xyz x="0" y="0" z="0"/>
+                <accuracyXY>0.05</accuracyXY>
+                <accuracyZ>0.05</accuracyZ>
+                <opk omega="0.1031801926" phi="0.6674041079" kappa="101.494569609"/>
+                <accuracyOpk omega="6" phi="4" kappa="6"/>
+            </image>
+            <image path="E:/MACS/2025/WC_DempsterRTS02_20250803_15cm_98/01_rawdata/tif/99683_NIR/03373_010734314_1000.tif" group="NIR" enabled="true">
+                <camera name="MACS_Polar1-2023_NIR99683_v2" id="1"/>
+                <gps alt="1274.98000000000001819" lat="67.25847906990000524" lng="-135.23882796399999506"/>
+                <xyz x="0" y="0" z="0"/>
+                <accuracyXY>0.05</accuracyXY>
+                <accuracyZ>0.05</accuracyZ>
+                <opk omega="-0.0615911636" phi="0.8172173238" kappa="101.714936939"/>
+                <accuracyOpk omega="6" phi="4" kappa="6"/>
+            </image>
+            <image path="E:/MACS/2025/WC_DempsterRTS02_20250803_15cm_98/01_rawdata/tif/99683_NIR/03374_010735314_1000.tif" group="NIR" enabled="true">
+                <camera name="MACS_Polar1-2023_NIR99683_v2" id="1"/>
+                <gps alt="1275.34600000000000364" lat="67.25835387649999575" lng="-135.2403749530000141"/>
+                <xyz x="0" y="0" z="0"/>
+                <accuracyXY>0.05</accuracyXY>
+                <accuracyZ>0.05</accuracyZ>
+                <opk omega="-0.7254392141" phi="0.7005977818" kappa="102.247919552"/>
+                <accuracyOpk omega="6" phi="4" kappa="6"/>
+            </image>
+            <image path="E:/MACS/2025/WC_DempsterRTS02_20250803_15cm_98/01_rawdata/tif/99683_NIR/03375_010736314_1000.tif" group="NIR" enabled="true">
+                <camera name="MACS_Polar1-2023_NIR99683_v2" id="1"/>
+                <gps alt="1275.95100000000002183" lat="67.25822767430000226" lng="-135.24192045699999198"/>
+                <xyz x="0" y="0" z="0"/>
+                <accuracyXY>0.05</accuracyXY>
+                <accuracyZ>0.05</accuracyZ>
+                <opk omega="-1.4969954807" phi="0.5467917313" kappa="102.073072396"/>
+                <accuracyOpk omega="6" phi="4" kappa="6"/>
+            </image>
+            <image path="E:/MACS/2025/WC_DempsterRTS02_20250803_15cm_98/01_rawdata/tif/99683_NIR/04560_012721314_1000.tif" group="NIR" enabled="true">
+                <camera name="MACS_Polar1-2023_NIR99683_v2" id="1"/>
+                <gps alt="1285.71199999999998909" lat="67.2568874768000029" lng="-135.21686452200000872"/>
+                <xyz x="0" y="0" z="0"/>
+                <accuracyXY>0.05</accuracyXY>
+                <accuracyZ>0.05</accuracyZ>
+                <opk omega="-0.4556451628" phi="0.2419099869" kappa="100.955148058"/>
+                <accuracyOpk omega="6" phi="4" kappa="6"/>
+            </image>
+            <image path="E:/MACS/2025/WC_DempsterRTS02_20250803_15cm_98/01_rawdata/tif/99683_NIR/04561_012722314_1000.tif" group="NIR" enabled="true">
+                <camera name="MACS_Polar1-2023_NIR99683_v2" id="1"/>
+                <gps alt="1285.46399999999994179" lat="67.25676822910000396" lng="-135.21840845299999501"/>
+                <xyz x="0" y="0" z="0"/>
+                <accuracyXY>0.05</accuracyXY>
+                <accuracyZ>0.05</accuracyZ>
+                <opk omega="-0.6009908779" phi="0.2489961542" kappa="101.069793352"/>
+                <accuracyOpk omega="6" phi="4" kappa="6"/>
+            </image>
+            <image path="E:/MACS/2025/WC_DempsterRTS02_20250803_15cm_98/01_rawdata/tif/99683_NIR/04562_012723314_1000.tif" group="NIR" enabled="true">
+                <camera name="MACS_Polar1-2023_NIR99683_v2" id="1"/>
+                <gps alt="1285.23299999999994725" lat="67.25664926170000513" lng="-135.21995304800000781"/>
+                <xyz x="0" y="0" z="0"/>
+                <accuracyXY>0.05</accuracyXY>
+                <accuracyZ>0.05</accuracyZ>
+                <opk omega="-0.6595940171" phi="0.1436557245" kappa="101.157457833"/>
+                <accuracyOpk omega="6" phi="4" kappa="6"/>
+            </image>
+            <image path="E:/MACS/2025/WC_DempsterRTS02_20250803_15cm_98/01_rawdata/tif/99683_NIR/04563_012724314_1000.tif" group="NIR" enabled="true">
+                <camera name="MACS_Polar1-2023_NIR99683_v2" id="1"/>
+                <gps alt="1284.7840000000001055" lat="67.25653065180000567" lng="-135.22149833800000351"/>
+                <xyz x="0" y="0" z="0"/>
+                <accuracyXY>0.05</accuracyXY>
+                <accuracyZ>0.05</accuracyZ>
+                <opk omega="-0.8189327254" phi="0.1886940229" kappa="101.272167396"/>
+                <accuracyOpk omega="6" phi="4" kappa="6"/>
+            </image>
+            <image path="E:/MACS/2025/WC_DempsterRTS02_20250803_15cm_98/01_rawdata/tif/99683_NIR/04564_012725314_1000.tif" group="NIR" enabled="true">
+                <camera name="MACS_Polar1-2023_NIR99683_v2" id="1"/>
+                <gps alt="1284.27899999999999636" lat="67.25641245840000693" lng="-135.2230441780000092"/>
+                <xyz x="0" y="0" z="0"/>
+                <accuracyXY>0.05</accuracyXY>
+                <accuracyZ>0.05</accuracyZ>
+                <opk omega="-1.2825717884" phi="0.1735777247" kappa="101.319010581"/>
+                <accuracyOpk omega="6" phi="4" kappa="6"/>
+            </image>
+            <image path="E:/MACS/2025/WC_DempsterRTS02_20250803_15cm_98/01_rawdata/tif/99683_NIR/04565_012726314_1000.tif" group="NIR" enabled="true">
+                <camera name="MACS_Polar1-2023_NIR99683_v2" id="1"/>
+                <gps alt="1283.8489999999999327" lat="67.25629488430000436" lng="-135.22459042200000567"/>
+                <xyz x="0" y="0" z="0"/>
+                <accuracyXY>0.05</accuracyXY>
+                <accuracyZ>0.05</accuracyZ>
+                <opk omega="-1.2672056551" phi="0.0948464856" kappa="101.139621068"/>
+                <accuracyOpk omega="6" phi="4" kappa="6"/>
+            </image>
+            <image path="E:/MACS/2025/WC_DempsterRTS02_20250803_15cm_98/01_rawdata/tif/99683_NIR/04566_012727314_1000.tif" group="NIR" enabled="true">
+                <camera name="MACS_Polar1-2023_NIR99683_v2" id="1"/>
+                <gps alt="1283.41399999999998727" lat="67.25617813210000406" lng="-135.2261374359999877"/>
+                <xyz x="0" y="0" z="0"/>
+                <accuracyXY>0.05</accuracyXY>
+                <accuracyZ>0.05</accuracyZ>
+                <opk omega="-1.0313025605" phi="0.1063239118" kappa="100.764332263"/>
+                <accuracyOpk omega="6" phi="4" kappa="6"/>
+            </image>
+            <image path="E:/MACS/2025/WC_DempsterRTS02_20250803_15cm_98/01_rawdata/tif/99683_NIR/04567_012728314_1000.tif" group="NIR" enabled="true">
+                <camera name="MACS_Polar1-2023_NIR99683_v2" id="1"/>
+                <gps alt="1282.95499999999992724" lat="67.25606257280000477" lng="-135.22768565199999102"/>
+                <xyz x="0" y="0" z="0"/>
+                <accuracyXY>0.05</accuracyXY>
+                <accuracyZ>0.05</accuracyZ>
+                <opk omega="-0.9212971626" phi="-0.0456247461" kappa="100.570018043"/>
+                <accuracyOpk omega="6" phi="4" kappa="6"/>
+            </image>
+            <image path="E:/MACS/2025/WC_DempsterRTS02_20250803_15cm_98/01_rawdata/tif/99683_NIR/04568_012729314_1000.tif" group="NIR" enabled="true">
+                <camera name="MACS_Polar1-2023_NIR99683_v2" id="1"/>
+                <gps alt="1282.3669999999999618" lat="67.25594826079999677" lng="-135.22923556200001372"/>
+                <xyz x="0" y="0" z="0"/>
+                <accuracyXY>0.05</accuracyXY>
+                <accuracyZ>0.05</accuracyZ>
+                <opk omega="-0.3833470253" phi="0.1231904618" kappa="100.789532902"/>
+                <accuracyOpk omega="6" phi="4" kappa="6"/>
+            </image>
+            <image path="E:/MACS/2025/WC_DempsterRTS02_20250803_15cm_98/01_rawdata/tif/99683_NIR/04569_012730314_1000.tif" group="NIR" enabled="true">
+                <camera name="MACS_Polar1-2023_NIR99683_v2" id="1"/>
+                <gps alt="1281.93599999999992178" lat="67.25583387380000033" lng="-135.23078659399999424"/>
+                <xyz x="0" y="0" z="0"/>
+                <accuracyXY>0.05</accuracyXY>
+                <accuracyZ>0.05</accuracyZ>
+                <opk omega="-0.1447042521" phi="0.1547920691" kappa="100.998937536"/>
+                <accuracyOpk omega="6" phi="4" kappa="6"/>
+            </image>
+            <image path="E:/MACS/2025/WC_DempsterRTS02_20250803_15cm_98/01_rawdata/tif/99683_NIR/04570_012731314_1000.tif" group="NIR" enabled="true">
+                <camera name="MACS_Polar1-2023_NIR99683_v2" id="1"/>
+                <gps alt="1281.59799999999995634" lat="67.25571880859999396" lng="-135.23233826500000987"/>
+                <xyz x="0" y="0" z="0"/>
+                <accuracyXY>0.05</accuracyXY>
+                <accuracyZ>0.05</accuracyZ>
+                <opk omega="-0.133849437" phi="0.1810401625" kappa="101.145372333"/>
+                <accuracyOpk omega="6" phi="4" kappa="6"/>
+            </image>
+            <image path="E:/MACS/2025/WC_DempsterRTS02_20250803_15cm_98/01_rawdata/tif/99683_NIR/04571_012732314_1000.tif" group="NIR" enabled="true">
+                <camera name="MACS_Polar1-2023_NIR99683_v2" id="1"/>
+                <gps alt="1281.30799999999999272" lat="67.25560292870000012" lng="-135.23389018399998918"/>
+                <xyz x="0" y="0" z="0"/>
+                <accuracyXY>0.05</accuracyXY>
+                <accuracyZ>0.05</accuracyZ>
+                <opk omega="0.2122088609" phi="0.030527762" kappa="101.268406365"/>
+                <accuracyOpk omega="6" phi="4" kappa="6"/>
+            </image>
+            <image path="E:/MACS/2025/WC_DempsterRTS02_20250803_15cm_98/01_rawdata/tif/99683_NIR/04572_012733314_1000.tif" group="NIR" enabled="true">
+                <camera name="MACS_Polar1-2023_NIR99683_v2" id="1"/>
+                <gps alt="1280.75099999999997635" lat="67.25548533869999801" lng="-135.23544250099999431"/>
+                <xyz x="0" y="0" z="0"/>
+                <accuracyXY>0.05</accuracyXY>
+                <accuracyZ>0.05</accuracyZ>
+                <opk omega="0.4141242095" phi="-0.1610045195" kappa="101.127850729"/>
+                <accuracyOpk omega="6" phi="4" kappa="6"/>
+            </image>
+            <image path="E:/MACS/2025/WC_DempsterRTS02_20250803_15cm_98/01_rawdata/tif/99683_NIR/04573_012734314_1000.tif" group="NIR" enabled="true">
+                <camera name="MACS_Polar1-2023_NIR99683_v2" id="1"/>
+                <gps alt="1279.73499999999989996" lat="67.25536614620000364" lng="-135.23699600300000156"/>
+                <xyz x="0" y="0" z="0"/>
+                <accuracyXY>0.05</accuracyXY>
+                <accuracyZ>0.05</accuracyZ>
+                <opk omega="0.4046350282" phi="-0.027819621" kappa="100.851396338"/>
+                <accuracyOpk omega="6" phi="4" kappa="6"/>
+            </image>
+            <image path="E:/MACS/2025/WC_DempsterRTS02_20250803_15cm_98/01_rawdata/tif/99683_NIR/04574_012735314_1000.tif" group="NIR" enabled="true">
+                <camera name="MACS_Polar1-2023_NIR99683_v2" id="1"/>
+                <gps alt="1278.63899999999989632" lat="67.25524627919999432" lng="-135.2385511509999958"/>
+                <xyz x="0" y="0" z="0"/>
+                <accuracyXY>0.05</accuracyXY>
+                <accuracyZ>0.05</accuracyZ>
+                <opk omega="-0.5199014787" phi="0.3289224781" kappa="100.816290836"/>
+                <accuracyOpk omega="6" phi="4" kappa="6"/>
+            </image>
+            <image path="E:/MACS/2025/WC_DempsterRTS02_20250803_15cm_98/01_rawdata/tif/99683_NIR/05769_014730314_1000.tif" group="NIR" enabled="true">
+                <camera name="MACS_Polar1-2023_NIR99683_v2" id="1"/>
+                <gps alt="1276.91399999999998727" lat="67.25372235730000625" lng="-135.21523637300001042"/>
+                <xyz x="0" y="0" z="0"/>
+                <accuracyXY>0.05</accuracyXY>
+                <accuracyZ>0.05</accuracyZ>
+                <opk omega="-1.1519864721" phi="1.0664991893" kappa="100.652379376"/>
+                <accuracyOpk omega="6" phi="4" kappa="6"/>
+            </image>
+            <image path="E:/MACS/2025/WC_DempsterRTS02_20250803_15cm_98/01_rawdata/tif/99683_NIR/05770_014731314_1000.tif" group="NIR" enabled="true">
+                <camera name="MACS_Polar1-2023_NIR99683_v2" id="1"/>
+                <gps alt="1277.76399999999989632" lat="67.2536100364000049" lng="-135.21679215899999349"/>
+                <xyz x="0" y="0" z="0"/>
+                <accuracyXY>0.05</accuracyXY>
+                <accuracyZ>0.05</accuracyZ>
+                <opk omega="-1.1015307106" phi="1.2207454859" kappa="100.866565391"/>
+                <accuracyOpk omega="6" phi="4" kappa="6"/>
+            </image>
+            <image path="E:/MACS/2025/WC_DempsterRTS02_20250803_15cm_98/01_rawdata/tif/99683_NIR/05771_014732314_1000.tif" group="NIR" enabled="true">
+                <camera name="MACS_Polar1-2023_NIR99683_v2" id="1"/>
+                <gps alt="1278.71800000000007458" lat="67.25349869299999739" lng="-135.21834328200000641"/>
+                <xyz x="0" y="0" z="0"/>
+                <accuracyXY>0.05</accuracyXY>
+                <accuracyZ>0.05</accuracyZ>
+                <opk omega="-0.8045557392" phi="1.4934063308" kappa="100.906115406"/>
+                <accuracyOpk omega="6" phi="4" kappa="6"/>
+            </image>
+            <image path="E:/MACS/2025/WC_DempsterRTS02_20250803_15cm_98/01_rawdata/tif/99683_NIR/05772_014733314_1000.tif" group="NIR" enabled="true">
+                <camera name="MACS_Polar1-2023_NIR99683_v2" id="1"/>
+                <gps alt="1279.84699999999997999" lat="67.25338802539999961" lng="-135.21988900100001274"/>
+                <xyz x="0" y="0" z="0"/>
+                <accuracyXY>0.05</accuracyXY>
+                <accuracyZ>0.05</accuracyZ>
+                <opk omega="-1.1411614288" phi="1.3674939559" kappa="100.86855155"/>
+                <accuracyOpk omega="6" phi="4" kappa="6"/>
+            </image>
+            <image path="E:/MACS/2025/WC_DempsterRTS02_20250803_15cm_98/01_rawdata/tif/99683_NIR/05773_014734314_1000.tif" group="NIR" enabled="true">
+                <camera name="MACS_Polar1-2023_NIR99683_v2" id="1"/>
+                <gps alt="1281.04800000000000182" lat="67.25327836360000333" lng="-135.22142972500000724"/>
+                <xyz x="0" y="0" z="0"/>
+                <accuracyXY>0.05</accuracyXY>
+                <accuracyZ>0.05</accuracyZ>
+                <opk omega="-0.6103285548" phi="1.653610168" kappa="100.722599233"/>
+                <accuracyOpk omega="6" phi="4" kappa="6"/>
+            </image>
+            <image path="E:/MACS/2025/WC_DempsterRTS02_20250803_15cm_98/01_rawdata/tif/99683_NIR/05774_014735314_1000.tif" group="NIR" enabled="true">
+                <camera name="MACS_Polar1-2023_NIR99683_v2" id="1"/>
+                <gps alt="1282.45399999999995089" lat="67.25316948479999724" lng="-135.22296525300001235"/>
+                <xyz x="0" y="0" z="0"/>
+                <accuracyXY>0.05</accuracyXY>
+                <accuracyZ>0.05</accuracyZ>
+                <opk omega="-0.2781721727" phi="1.5039660223" kappa="100.851441447"/>
+                <accuracyOpk omega="6" phi="4" kappa="6"/>
+            </image>
+            <image path="E:/MACS/2025/WC_DempsterRTS02_20250803_15cm_98/01_rawdata/tif/99683_NIR/05775_014736314_1000.tif" group="NIR" enabled="true">
+                <camera name="MACS_Polar1-2023_NIR99683_v2" id="1"/>
+                <gps alt="1283.67300000000000182" lat="67.25306036150000466" lng="-135.22449592500001359"/>
+                <xyz x="0" y="0" z="0"/>
+                <accuracyXY>0.05</accuracyXY>
+                <accuracyZ>0.05</accuracyZ>
+                <opk omega="0.4856970563" phi="1.5401386471" kappa="101.04320238"/>
+                <accuracyOpk omega="6" phi="4" kappa="6"/>
+            </image>
+            <image path="E:/MACS/2025/WC_DempsterRTS02_20250803_15cm_98/01_rawdata/tif/99683_NIR/05776_014737314_1000.tif" group="NIR" enabled="true">
+                <camera name="MACS_Polar1-2023_NIR99683_v2" id="1"/>
+                <gps alt="1284.63000000000010914" lat="67.25294970509999359" lng="-135.22602160499999968"/>
+                <xyz x="0" y="0" z="0"/>
+                <accuracyXY>0.05</accuracyXY>
+                <accuracyZ>0.05</accuracyZ>
+                <opk omega="1.2200481458" phi="1.6110137624" kappa="101.111037494"/>
+                <accuracyOpk omega="6" phi="4" kappa="6"/>
+            </image>
+            <image path="E:/MACS/2025/WC_DempsterRTS02_20250803_15cm_98/01_rawdata/tif/99683_NIR/05777_014738314_1000.tif" group="NIR" enabled="true">
+                <camera name="MACS_Polar1-2023_NIR99683_v2" id="1"/>
+                <gps alt="1285.46800000000007458" lat="67.25283667200000082" lng="-135.22754220400000236"/>
+                <xyz x="0" y="0" z="0"/>
+                <accuracyXY>0.05</accuracyXY>
+                <accuracyZ>0.05</accuracyZ>
+                <opk omega="1.1895363837" phi="1.5624314447" kappa="101.176700598"/>
+                <accuracyOpk omega="6" phi="4" kappa="6"/>
+            </image>
+            <image path="E:/MACS/2025/WC_DempsterRTS02_20250803_15cm_98/01_rawdata/tif/99683_NIR/05778_014739314_1000.tif" group="NIR" enabled="true">
+                <camera name="MACS_Polar1-2023_NIR99683_v2" id="1"/>
+                <gps alt="1286.15300000000002001" lat="67.25272156549999636" lng="-135.22905807000000777"/>
+                <xyz x="0" y="0" z="0"/>
+                <accuracyXY>0.05</accuracyXY>
+                <accuracyZ>0.05</accuracyZ>
+                <opk omega="1.0001373698" phi="1.4045334223" kappa="101.520229416"/>
+                <accuracyOpk omega="6" phi="4" kappa="6"/>
+            </image>
+            <image path="E:/MACS/2025/WC_DempsterRTS02_20250803_15cm_98/01_rawdata/tif/99683_NIR/05779_014740314_1000.tif" group="NIR" enabled="true">
+                <camera name="MACS_Polar1-2023_NIR99683_v2" id="1"/>
+                <gps alt="1286.54999999999995453" lat="67.25260446759999411" lng="-135.23056983600000081"/>
+                <xyz x="0" y="0" z="0"/>
+                <accuracyXY>0.05</accuracyXY>
+                <accuracyZ>0.05</accuracyZ>
+                <opk omega="0.3978620904" phi="1.2305856636" kappa="101.993171556"/>
+                <accuracyOpk omega="6" phi="4" kappa="6"/>
+            </image>
+            <image path="E:/MACS/2025/WC_DempsterRTS02_20250803_15cm_98/01_rawdata/tif/99683_NIR/05780_014741314_1000.tif" group="NIR" enabled="true">
+                <camera name="MACS_Polar1-2023_NIR99683_v2" id="1"/>
+                <gps alt="1286.93499999999994543" lat="67.25248547530000565" lng="-135.2320779160000086"/>
+                <xyz x="0" y="0" z="0"/>
+                <accuracyXY>0.05</accuracyXY>
+                <accuracyZ>0.05</accuracyZ>
+                <opk omega="0.2977125493" phi="1.1981603758" kappa="102.347143085"/>
+                <accuracyOpk omega="6" phi="4" kappa="6"/>
+            </image>
+            <image path="E:/MACS/2025/WC_DempsterRTS02_20250803_15cm_98/01_rawdata/tif/99683_NIR/05781_014742314_1000.tif" group="NIR" enabled="true">
+                <camera name="MACS_Polar1-2023_NIR99683_v2" id="1"/>
+                <gps alt="1287.3589999999999236" lat="67.25236415979999549" lng="-135.23358244199999945"/>
+                <xyz x="0" y="0" z="0"/>
+                <accuracyXY>0.05</accuracyXY>
+                <accuracyZ>0.05</accuracyZ>
+                <opk omega="0.8917326378" phi="0.978734512" kappa="102.192792224"/>
+                <accuracyOpk omega="6" phi="4" kappa="6"/>
+            </image>
+            <image path="E:/MACS/2025/WC_DempsterRTS02_20250803_15cm_98/01_rawdata/tif/99683_NIR/05782_014743314_1000.tif" group="NIR" enabled="true">
+                <camera name="MACS_Polar1-2023_NIR99683_v2" id="1"/>
+                <gps alt="1287.51700000000005275" lat="67.25224070250000352" lng="-135.23508477600000788"/>
+                <xyz x="0" y="0" z="0"/>
+                <accuracyXY>0.05</accuracyXY>
+                <accuracyZ>0.05</accuracyZ>
+                <opk omega="0.6776599482" phi="1.0133380516" kappa="102.062822661"/>
+                <accuracyOpk omega="6" phi="4" kappa="6"/>
+            </image>
+            <image path="E:/MACS/2025/WC_DempsterRTS02_20250803_15cm_98/01_rawdata/tif/99683_NIR/05783_014744314_1000.tif" group="NIR" enabled="true">
+                <camera name="MACS_Polar1-2023_NIR99683_v2" id="1"/>
+                <gps alt="1287.74000000000000909" lat="67.25211583200000121" lng="-135.23658542900000157"/>
+                <xyz x="0" y="0" z="0"/>
+                <accuracyXY>0.05</accuracyXY>
+                <accuracyZ>0.05</accuracyZ>
+                <opk omega="0.4208260918" phi="0.9286274066" kappa="102.254637659"/>
+                <accuracyOpk omega="6" phi="4" kappa="6"/>
+            </image>
+            <image path="E:/MACS/2025/WC_DempsterRTS02_20250803_15cm_98/01_rawdata/tif/99683_NIR/06986_020747314_1000.tif" group="NIR" enabled="true">
+                <camera name="MACS_Polar1-2023_NIR99683_v2" id="1"/>
+                <gps alt="1286.79400000000009641" lat="67.25060680500000387" lng="-135.21313116199999627"/>
+                <xyz x="0" y="0" z="0"/>
+                <accuracyXY>0.05</accuracyXY>
+                <accuracyZ>0.05</accuracyZ>
+                <opk omega="1.6520936127" phi="0.0747827145" kappa="101.555903597"/>
+                <accuracyOpk omega="6" phi="4" kappa="6"/>
+            </image>
+            <image path="E:/MACS/2025/WC_DempsterRTS02_20250803_15cm_98/01_rawdata/tif/99683_NIR/06987_020748314_1000.tif" group="NIR" enabled="true">
+                <camera name="MACS_Polar1-2023_NIR99683_v2" id="1"/>
+                <gps alt="1285.99900000000002365" lat="67.25048710199999391" lng="-135.21472348200001079"/>
+                <xyz x="0" y="0" z="0"/>
+                <accuracyXY>0.05</accuracyXY>
+                <accuracyZ>0.05</accuracyZ>
+                <opk omega="1.8992320385" phi="0.6872271808" kappa="102.0266413"/>
+                <accuracyOpk omega="6" phi="4" kappa="6"/>
+            </image>
+            <image path="E:/MACS/2025/WC_DempsterRTS02_20250803_15cm_98/01_rawdata/tif/99683_NIR/06988_020749314_1000.tif" group="NIR" enabled="true">
+                <camera name="MACS_Polar1-2023_NIR99683_v2" id="1"/>
+                <gps alt="1285.87599999999997635" lat="67.25036346189999392" lng="-135.2163135039999986"/>
+                <xyz x="0" y="0" z="0"/>
+                <accuracyXY>0.05</accuracyXY>
+                <accuracyZ>0.05</accuracyZ>
+                <opk omega="0.8426959756" phi="1.0632435912" kappa="102.420197602"/>
+                <accuracyOpk omega="6" phi="4" kappa="6"/>
+            </image>
+            <image path="E:/MACS/2025/WC_DempsterRTS02_20250803_15cm_98/01_rawdata/tif/99683_NIR/06989_020750314_1000.tif" group="NIR" enabled="true">
+                <camera name="MACS_Polar1-2023_NIR99683_v2" id="1"/>
+                <gps alt="1286.29299999999989268" lat="67.25023733689999972" lng="-135.21789959700001305"/>
+                <xyz x="0" y="0" z="0"/>
+                <accuracyXY>0.05</accuracyXY>
+                <accuracyZ>0.05</accuracyZ>
+                <opk omega="-0.0276763673" phi="0.9626564324" kappa="102.804896927"/>
+                <accuracyOpk omega="6" phi="4" kappa="6"/>
+            </image>
+            <image path="E:/MACS/2025/WC_DempsterRTS02_20250803_15cm_98/01_rawdata/tif/99683_NIR/06990_020751314_1000.tif" group="NIR" enabled="true">
+                <camera name="MACS_Polar1-2023_NIR99683_v2" id="1"/>
+                <gps alt="1286.71000000000003638" lat="67.25011017059999574" lng="-135.21948195799998871"/>
+                <xyz x="0" y="0" z="0"/>
+                <accuracyXY>0.05</accuracyXY>
+                <accuracyZ>0.05</accuracyZ>
+                <opk omega="-0.5195687937" phi="1.0123468571" kappa="102.955217419"/>
+                <accuracyOpk omega="6" phi="4" kappa="6"/>
+            </image>
+            <image path="E:/MACS/2025/WC_DempsterRTS02_20250803_15cm_98/01_rawdata/tif/99683_NIR/06991_020752314_1000.tif" group="NIR" enabled="true">
+                <camera name="MACS_Polar1-2023_NIR99683_v2" id="1"/>
+                <gps alt="1287.48600000000010368" lat="67.24998340960000576" lng="-135.22106138699999178"/>
+                <xyz x="0" y="0" z="0"/>
+                <accuracyXY>0.05</accuracyXY>
+                <accuracyZ>0.05</accuracyZ>
+                <opk omega="-1.7920548157" phi="0.4997823247" kappa="103.14563328"/>
+                <accuracyOpk omega="6" phi="4" kappa="6"/>
+            </image>
+            <image path="E:/MACS/2025/WC_DempsterRTS02_20250803_15cm_98/01_rawdata/tif/99683_NIR/06992_020753314_1000.tif" group="NIR" enabled="true">
+                <camera name="MACS_Polar1-2023_NIR99683_v2" id="1"/>
+                <gps alt="1288.48700000000008004" lat="67.24985809160000372" lng="-135.22263920299999995"/>
+                <xyz x="0" y="0" z="0"/>
+                <accuracyXY>0.05</accuracyXY>
+                <accuracyZ>0.05</accuracyZ>
+                <opk omega="-1.8484410196" phi="0.0871619806" kappa="102.955509347"/>
+                <accuracyOpk omega="6" phi="4" kappa="6"/>
+            </image>
+            <image path="E:/MACS/2025/WC_DempsterRTS02_20250803_15cm_98/01_rawdata/tif/99683_NIR/06993_020754314_1000.tif" group="NIR" enabled="true">
+                <camera name="MACS_Polar1-2023_NIR99683_v2" id="1"/>
+                <gps alt="1288.92800000000011096" lat="67.24973413390000587" lng="-135.22421661999999287"/>
+                <xyz x="0" y="0" z="0"/>
+                <accuracyXY>0.05</accuracyXY>
+                <accuracyZ>0.05</accuracyZ>
+                <opk omega="-1.087341267" phi="-0.0360353006" kappa="102.252344133"/>
+                <accuracyOpk omega="6" phi="4" kappa="6"/>
+            </image>
+            <image path="E:/MACS/2025/WC_DempsterRTS02_20250803_15cm_98/01_rawdata/tif/99683_NIR/06994_020755314_1000.tif" group="NIR" enabled="true">
+                <camera name="MACS_Polar1-2023_NIR99683_v2" id="1"/>
+                <gps alt="1288.62300000000004729" lat="67.2496119741000058" lng="-135.22579547999998795"/>
+                <xyz x="0" y="0" z="0"/>
+                <accuracyXY>0.05</accuracyXY>
+                <accuracyZ>0.05</accuracyZ>
+                <opk omega="-0.7104112546" phi="-0.2688714359" kappa="101.820494705"/>
+                <accuracyOpk omega="6" phi="4" kappa="6"/>
+            </image>
+            <image path="E:/MACS/2025/WC_DempsterRTS02_20250803_15cm_98/01_rawdata/tif/99683_NIR/06995_020756314_1000.tif" group="NIR" enabled="true">
+                <camera name="MACS_Polar1-2023_NIR99683_v2" id="1"/>
+                <gps alt="1287.73499999999989996" lat="67.24949179099999697" lng="-135.22737692999999126"/>
+                <xyz x="0" y="0" z="0"/>
+                <accuracyXY>0.05</accuracyXY>
+                <accuracyZ>0.05</accuracyZ>
+                <opk omega="-0.963048514" phi="-0.0683310538" kappa="102.088338073"/>
+                <accuracyOpk omega="6" phi="4" kappa="6"/>
+            </image>
+            <image path="E:/MACS/2025/WC_DempsterRTS02_20250803_15cm_98/01_rawdata/tif/99683_NIR/06996_020757314_1000.tif" group="NIR" enabled="true">
+                <camera name="MACS_Polar1-2023_NIR99683_v2" id="1"/>
+                <gps alt="1286.78500000000008185" lat="67.24937265609999315" lng="-135.22895974400000796"/>
+                <xyz x="0" y="0" z="0"/>
+                <accuracyXY>0.05</accuracyXY>
+                <accuracyZ>0.05</accuracyZ>
+                <opk omega="-1.1145335132" phi="-0.211129731" kappa="102.454593973"/>
+                <accuracyOpk omega="6" phi="4" kappa="6"/>
+            </image>
+            <image path="E:/MACS/2025/WC_DempsterRTS02_20250803_15cm_98/01_rawdata/tif/99683_NIR/06997_020758314_1000.tif" group="NIR" enabled="true">
+                <camera name="MACS_Polar1-2023_NIR99683_v2" id="1"/>
+                <gps alt="1285.81799999999998363" lat="67.24925312560000634" lng="-135.23054280299999164"/>
+                <xyz x="0" y="0" z="0"/>
+                <accuracyXY>0.05</accuracyXY>
+                <accuracyZ>0.05</accuracyZ>
+                <opk omega="-1.3732067347" phi="0.4246821484" kappa="102.136658591"/>
+                <accuracyOpk omega="6" phi="4" kappa="6"/>
+            </image>
+            <image path="E:/MACS/2025/WC_DempsterRTS02_20250803_15cm_98/01_rawdata/tif/99683_NIR/06998_020759314_1000.tif" group="NIR" enabled="true">
+                <camera name="MACS_Polar1-2023_NIR99683_v2" id="1"/>
+                <gps alt="1285.94200000000000728" lat="67.249133207400007" lng="-135.23212457299999301"/>
+                <xyz x="0" y="0" z="0"/>
+                <accuracyXY>0.05</accuracyXY>
+                <accuracyZ>0.05</accuracyZ>
+                <opk omega="-1.8776902743" phi="0.1444523047" kappa="100.950354863"/>
+                <accuracyOpk omega="6" phi="4" kappa="6"/>
+            </image>
+            <image path="E:/MACS/2025/WC_DempsterRTS02_20250803_15cm_98/01_rawdata/tif/99683_NIR/06999_020800314_1000.tif" group="NIR" enabled="true">
+                <camera name="MACS_Polar1-2023_NIR99683_v2" id="1"/>
+                <gps alt="1286.5260000000000673" lat="67.24901578280000081" lng="-135.2337073870000097"/>
+                <xyz x="0" y="0" z="0"/>
+                <accuracyXY>0.05</accuracyXY>
+                <accuracyZ>0.05</accuracyZ>
+                <opk omega="-1.7189486815" phi="-0.1649447311" kappa="100.02507112"/>
+                <accuracyOpk omega="6" phi="4" kappa="6"/>
+            </image>
+            <image path="E:/MACS/2025/WC_DempsterRTS02_20250803_15cm_98/01_rawdata/tif/99683_NIR/07000_020801314_1000.tif" group="NIR" enabled="true">
+                <camera name="MACS_Polar1-2023_NIR99683_v2" id="1"/>
+                <gps alt="1287.06400000000007822" lat="67.24890269200000148" lng="-135.23529327599999306"/>
+                <xyz x="0" y="0" z="0"/>
+                <accuracyXY>0.05</accuracyXY>
+                <accuracyZ>0.05</accuracyZ>
+                <opk omega="-3.1041535873" phi="-0.4400257401" kappa="100.170653599"/>
+                <accuracyOpk omega="6" phi="4" kappa="6"/>
+            </image>
+        </images>
+        <processingArea>
+            <geoCoord2D x="489958.242008557" y="7459911.458431717"/>
+            <geoCoord2D x="490273.544074859" y="7459974.860060203"/>
+            <geoCoord2D x="490345.174747773" y="7459675.978065751"/>
+            <geoCoord2D x="490037.948838619" y="7459620.60219068"/>
+        </processingArea>
+        <indexRegions/>
+        <indexClasses/>
+        <objects>
+            <object name="Clipping Box" type="CLIPPING_BOX" centerX="490195" centerY="7459765" centerZ="1282" sizeX="5" sizeY="5" sizeZ="5" rotationZ="0" fresh="true"/>
+            <object name="Unclassified" type="POINT_GROUP" groupId="0" classificationId="0" locked="false"/>
+            <object name="Disabled" type="POINT_GROUP" groupId="1" classificationId="0" locked="false"/>
+            <object name="Ground" type="POINT_GROUP" groupId="100" classificationId="0" locked="false"/>
+            <object name="Road Surface" type="POINT_GROUP" groupId="106" classificationId="0" locked="false"/>
+            <object name="High Vegetation" type="POINT_GROUP" groupId="102" classificationId="0" locked="false"/>
+            <object name="Building" type="POINT_GROUP" groupId="103" classificationId="0" locked="false"/>
+            <object name="Human Made Object" type="POINT_GROUP" groupId="109" classificationId="0" locked="false"/>
+        </objects>
+    </inputs>
+</pix4dmapper>

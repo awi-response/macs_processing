@@ -24,11 +24,11 @@ We recommend to use a custom conda environment
 
 #### Create conda environment
 
-`conda create -n MACS2024 python=3.10 mamba conda -c conda-forge`
+`conda create -n MACS2025 python=3.10 mamba conda -c conda-forge`
 
 #### Activate Environment
 
-`conda activate MACS2024`
+`conda activate MACS2025`
 
 #### Install macs_processing software
 
@@ -59,7 +59,10 @@ Please install lastools (required for point cloud clipping)
 
 1. Open Pix4d
 2. Help --> Settings --> Tab (Camera Database) --> Import
-3. Select file: `pix4D_cameras/pix4D-kameradatenbank_MACS-Polar18.xml`
+3. Select files: 
+   1. `pix4D_cameras/pix4D-kameradatenbank_MACS-Polar18.xml`
+   2. `pix4D_cameras/pix4D-kameradatenbank_MACS-Polar1-2023.xml`
+   3. `pix4D_cameras/pix4D-kameradatenbank_MACS-Polar1-2024.xml`
 
 #### Load processing templates
 
@@ -142,8 +145,24 @@ Convert MACS data to TIFF and setup processing structure
 
 #### 2 Processing
 
+##### Manual
+
 * Run Pix 4d
 * Use Processing templates in `pix4D_processing_templates`
+
+##### Automated processing
+
+`99_MACSProcessing -c processing.yaml`
+
+```
+# config yaml
+target_dir: "C:/path/to/data_products"
+archive_dir: "C:/path/to/archive"
+settings_dir: "C:/path/to/settings"
+delete_intermediate: true # true to delete intermediate files after processing
+projects: # recommended to use only 1 project at a time, will ask for confirmation of input dataset id
+  - "WC_ITHSumps01_20250808_15cm_01"
+```
 
 #### 3 Postprocessing
 
