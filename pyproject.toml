@@ -1,6 +1,6 @@
 [project]
 name = "macs-processing"
-version = "v0.0.1"
+version = "v0.15.0"
 description = "Package for pre and postprocessing of DLR MACS Imagery"
 readme = "README.md"
 #license = { text = "MIT" }
@@ -21,6 +21,7 @@ dependencies = [
     "jupyterlab>=4.4.7",
     "matplotlib>=3.10.6",
     "numpy<2.3",
+    "rich>=14.2.0",
 ]
 requires-python = ">=3.10, <3.11"  # Specify exact Python version
 
@@ -29,6 +30,8 @@ homepage = "https://github.com/awi-response/macs_processing/"
 
 [project.scripts]
 01_SetupData = "macs_processing.scripts.macs_setup_data:main"
+01b_SetupPix4d = "macs_processing.scripts.macs_setup_pix4d:main"
+01c_RunPix4d = "macs_processing.scripts.run_pix4d:main"
 02_Postprocessing = "macs_processing.scripts.postprocessing:main"
 03_MoveProducts = "macs_processing.scripts.move_products:main"
 04_ArchiveData = "macs_processing.scripts.macs_archive_data:main"
