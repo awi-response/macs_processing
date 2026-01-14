@@ -41,6 +41,7 @@ homepage = "https://github.com/awi-response/macs_processing/"
 08_Create_Products_Report = "macs_processing.scripts.create_product_report:main"
 10_PostprocessingWrapper = "macs_processing.scripts.postprocessing_wrapper:main"
 11_Postprocessing_clip_PC = "macs_processing.scripts.postprocessing_clip_pc:main"
+99_MACSProcessing = "macs_processing.scripts.processing_wrapper:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]
