@@ -1,6 +1,6 @@
 [project]
 name = "macs-processing"
-version = "v0.15.1"
+version = "v0.15.2"
 description = "Package for pre and postprocessing of DLR MACS Imagery"
 readme = "README.md"
 #license = { text = "MIT" }
